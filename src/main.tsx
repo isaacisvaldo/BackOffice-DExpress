@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import './index.css'
-import LoginPage from './pages/LoginPage'
+import LoginPage from './pages/auth/LoginPage'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
