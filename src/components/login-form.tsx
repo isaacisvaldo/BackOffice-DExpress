@@ -19,8 +19,13 @@ export function LoginForm({
     setLoading(true)
 
     try {
-      const { token } = await login(email, password)
-      localStorage.setItem("token", token)
+      const { accessToken,refreshToken } = await login(email, password)
+     
+      if (!accessToken) {
+        throw new Error("accessToken não recebido")
+      }
+      localStorage.setItem("accessToken", accessToken)
+      localStorage.setItem("refreshToken", refreshToken)
 
       toast.success("Login realizado com sucesso!") 
       setTimeout(() => {
