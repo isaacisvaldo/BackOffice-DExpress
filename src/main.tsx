@@ -1,18 +1,13 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import './index.css'
-import LoginPage from './pages/auth/LoginPage'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { Toaster } from 'react-hot-toast'
+
+import './index.css';
+import App from './App';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<LoginPage />} />
-        <Route path="/dashboard" element={<div>Dashboard</div>} />
-        {/* Adicione outras rotas conforme necessário */}
-        <Route path="*" element={<div>404 Not Found</div>} />
-      </Routes>
-    </BrowserRouter>
+    <App />
+      <Toaster position="top-center" reverseOrder={false} />
   </React.StrictMode>,
-)
+);
