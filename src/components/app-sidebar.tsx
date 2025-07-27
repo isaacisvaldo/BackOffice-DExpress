@@ -2,18 +2,15 @@
 
 import * as React from "react"
 import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
-  Command,
-  Frame,
-  GalleryVerticalEnd,
-  Map,
-  PieChart,
+  Users,
+  Briefcase,
+  MapPin,
+  ClipboardList,
   Settings2,
-  SquareTerminal,
+  Shield,
+  FileText,
+  PieChart,
 } from "lucide-react"
-
 
 import {
   Sidebar,
@@ -22,137 +19,99 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
-import { TeamSwitcher } from "./team-switcher"
 import { NavMain } from "./nav-main"
 import { NavProjects } from "./nav-projects"
 import { NavUser } from "./nav-user"
 
-// This is sample data.
+// Pega a URL do logo do .env ou usa uma imagem padrão
+const logoUrl = import.meta.env.VITE_LOGO_URL || "/logo.png"
+
+// Dados reais do DExpress (menus e atalhos)
+const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
 const data = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
+    name: storedUser.name || 'Usuário',
+    email: storedUser.email || '',
+    avatar: "/avatars/admin.jpg",
   },
-  teams: [
-    {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
   navMain: [
     {
-      title: "Playground",
-      url: "#",
-      icon: SquareTerminal,
+      title: "Clientes",
+      url: "/clients",
+      icon: Users,
       isActive: true,
       items: [
-        {
-          title: "History",
-          url: "#",
-        },
-        {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
+        { title: "Clientes (PF)", url: "/clients/individual" },
+        { title: "Empresas (PJ)", url: "/clients/company" },
       ],
     },
     {
-      title: "Models",
-      url: "#",
-      icon: Bot,
+      title: "Profissionais",
+      url: "/professionals",
+      icon: Briefcase,
       items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
+        { title: "Lista de Profissionais", url: "/professionals" },
+        { title: "Especialidades", url: "/professionals/specialties" },
+        { title: "Disponibilidades", url: "/professionals/availability" },
       ],
     },
     {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
+      title: "Candidaturas & Vagas",
+      url: "/applications",
+      icon: ClipboardList,
       items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
+        { title: "Candidaturas", url: "/applications" },
+        { title: "Vagas", url: "/jobs" },
       ],
     },
     {
-      title: "Settings",
-      url: "#",
+      title: "Localizações",
+      url: "/locations",
+      icon: MapPin,
+      items: [
+        { title: "Cidades", url: "/locations/cities" },
+        { title: "Distritos", url: "/locations/districts" },
+      ],
+    },
+    {
+      title: "Administração",
+      url: "/admin",
+      icon: Shield,
+      items: [
+        { title: "Usuários Internos", url: "/admin/users" },
+        { title: "Perfis e Permissões", url: "/admin/roles" },
+      ],
+    },
+    {
+      title: "Relatórios",
+      url: "/reports",
+      icon: FileText,
+      items: [
+        { title: "Relatório de Clientes", url: "/reports/clients" },
+        { title: "Relatório de Profissionais", url: "/reports/professionals" },
+        { title: "Relatório Financeiro", url: "/reports/finance" },
+      ],
+    },
+    {
+      title: "Configurações",
+      url: "/settings",
       icon: Settings2,
       items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
+        { title: "Geral", url: "/settings/general" },
+        { title: "Notificações", url: "/settings/notifications" },
       ],
     },
   ],
   projects: [
     {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
+      name: "Operações Ativas",
+      url: "/dashboard/operations",
       icon: PieChart,
     },
     {
-      name: "Travel",
-      url: "#",
-      icon: Map,
+      name: "Gestão de Equipes",
+      url: "/dashboard/teams",
+      icon: Users,
     },
   ],
 }
@@ -160,16 +119,26 @@ const data = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
-      </SidebarHeader>
+      {/* Header com o Logo */}
+  <SidebarHeader className="flex justify-start items-center px-4 py-4">
+  <a href="/dashboard" className="flex items-center">
+    <img
+      src={logoUrl}
+      alt="DExpress Logo"
+      className="h-10 w-auto"
+    />
+  </a>
+</SidebarHeader>
+
       <SidebarContent>
         <NavMain items={data.navMain} />
         <NavProjects projects={data.projects} />
       </SidebarContent>
+
       <SidebarFooter>
         <NavUser user={data.user} />
       </SidebarFooter>
+
       <SidebarRail />
     </Sidebar>
   )
