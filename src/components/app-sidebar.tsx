@@ -22,6 +22,7 @@ import {
 import { NavMain } from "./nav-main"
 import { NavProjects } from "./nav-projects"
 import { NavUser } from "./nav-user"
+import { NavDashboard } from "./nav-dashboard"
 
 // Pega a URL do logo do .env ou usa uma imagem padrão
 const logoUrl = import.meta.env.VITE_LOGO_URL || "/logo.png"
@@ -34,7 +35,13 @@ const data = {
     email: storedUser.email || '',
     avatar: "/avatars/admin.jpg",
   },
+    dashboard: {
+    name: "Dashboard",
+    url: "/dashboard",
+    icon: PieChart,
+  },
   navMain: [
+    
     {
       title: "Clientes",
       url: "/clients",
@@ -131,6 +138,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 </SidebarHeader>
 
       <SidebarContent>
+        <NavDashboard dashboard={data.dashboard} />  
         <NavMain items={data.navMain} />
         <NavProjects projects={data.projects} />
       </SidebarContent>
