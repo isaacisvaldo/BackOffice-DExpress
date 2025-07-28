@@ -25,7 +25,7 @@ export default function NotFoundPage() {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
-                  <BreadcrumbPage> </BreadcrumbPage>
+                  <BreadcrumbPage>Página Não Encontrada </BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>

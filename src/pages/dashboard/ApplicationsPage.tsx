@@ -31,18 +31,11 @@ export default function ApplicationsPage() {
             </Breadcrumb>
           </div>
         </header>
-     <div className="flex flex-1 flex-col">
-          <div className="@container/main flex flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
- 
+          <div className="flex flex-1 flex-col p-6">
+          <h1 className="text-2xl font-bold mb-4">Lista de Aplicações</h1>
+            <p>Esta é a página de aplicações. Mais conteúdo será adicionado em breve.</p>
+        </div>
 
-            <div className="flex flex-col items-center justify-center h-screen">
-        <h1 className="text-2xl font-bold mb-4">Applications Page</h1>
-        <p>This is the applications page. More content will be added soon.</p>
-        </div>
-            </div>
-          </div>
-        </div>
       </SidebarInset>
     </SidebarProvider>
        
