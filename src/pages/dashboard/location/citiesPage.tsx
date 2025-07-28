@@ -2,57 +2,52 @@
 
 import { useEffect, useState } from "react"
 import { AppSidebar } from "@/components/app-sidebar";
-import { columns, type Application } from "@/components/candidacy/columns";
 import { DataTable } from "@/components/data-table";
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from "@/components/ui/breadcrumb";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@radix-ui/react-separator";
-import { getApplications } from "@/services/candidacy/candidacyService";
+import { cityColumns, type City } from "@/components/location/citiesColunn";
+import getCities from "@/services/location/cities";
 
-export default function ApplicationsPage() {
-  const [data, setData] = useState<Application[]>([])
+
+export default function CitiesPage() {
+   const [data, setData] = useState<City[]>([])
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
-  const [limit, setLimit] = useState(10) // Agora controlável
+  const [limit, setLimit] = useState(10)
   const [totalPages, setTotalPages] = useState(1)
+  const [nameFilter, setNameFilter] = useState<string>("")
 
-
-  // Estados para filtros
-  const [emailFilter, setEmailFilter] = useState("")
-  const [statusFilter, setStatusFilter] = useState<string>("")
-  
   useEffect(() => {
     async function fetchData() {
       setLoading(true)
       try {
-        const result = await getApplications({ 
-          page, 
+        const result = await getCities({
+          page,
           limit: limit === 0 ? undefined : limit, // 0 = todos
-          status: statusFilter 
+          name: nameFilter || undefined,          // filtro por nome
         })
 
-        const mappedData: Application[] = result.data.map((item: any) => ({
+      
+
+        // Mapeia os dados para o formato do DataTable
+        const mappedData: City[] = result.data.map((item: any) => ({
           id: item.id,
-          candidateName: item.fullName,
-          email: item.email,
-          phone: item.phoneNumber || "-",
-          location: `${item.location?.city?.name ?? ""} - ${item.location?.district?.name ?? ""}`,
-          position: item.desiredPosition,
-          status: item.status,
-          appliedAt: new Date(item.createdAt).toLocaleDateString("pt-PT"),
+          name: item.name,
+          createdAt: new Date(item.createdAt).toLocaleDateString("pt-PT"),
         }))
 
         setData(mappedData)
-        setTotalPages(result.totalPages || 1) // previne totalPages undefined
+        setTotalPages(result.totalPages || 1) // evita undefined
       } catch (error) {
-        console.error("Erro ao carregar candidaturas", error)
+        console.error("Erro ao carregar cidades", error)
       } finally {
         setLoading(false)
       }
     }
-    fetchData()
-  }, [page, limit, statusFilter]) // atualiza quando mudam
 
+    fetchData()
+  }, [page, limit, nameFilter])
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -64,7 +59,7 @@ export default function ApplicationsPage() {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">Applications</BreadcrumbLink>
+                  <BreadcrumbLink href="#">Cidades</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
@@ -75,13 +70,13 @@ export default function ApplicationsPage() {
           </div>
         </header>
         <div className="flex flex-1 flex-col p-6">
-          <h1 className="text-2xl font-bold mb-4">Lista de Candidaturas</h1>
+          <h1 className="text-2xl font-bold mb-4">Lista de Cidades</h1>
           <div className="container mx-auto py-10">
             {loading ? (
               <p>Carregando...</p>
             ) : (
- <DataTable
-  columns={columns}
+<DataTable
+  columns={cityColumns}
   data={data}
   page={page}
   setPage={setPage}
@@ -91,27 +86,14 @@ export default function ApplicationsPage() {
   filters={[
     {
       type: "input",
-      column: "email",
-      placeholder: "Filtrar emails...",
-      value: emailFilter,
-      onChange: setEmailFilter
+      column: "name",
+      placeholder: "Filtrar por nome...",
+      value: nameFilter,
+      onChange: setNameFilter,
     },
-    {
-      type: "select",
-      placeholder: "Filtrar status",
-      value: statusFilter || "all",
-      onChange: (val) => setStatusFilter(val === "all" ? "" : val),
-      options: [
-        { label: "Todos", value: "all" },
-        { label: "Pendente", value: "PENDING" },
-        { label: "Em Análise", value: "IN_REVIEW" },
-        { label: "Entrevista", value: "INTERVIEW" },
-        { label: "Aprovado", value: "ACCEPTED" },
-        { label: "Rejeitado", value: "REJECTED" },
-      ]
-    }
   ]}
 />
+
 
             )}
           </div>

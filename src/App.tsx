@@ -4,6 +4,7 @@ import PrivateRoute from './components/PrivateRoute';
 import DashboardPage from './pages/dashboard/DashboardPage';
 import ApplicationsPage from './pages/dashboard/candidacy/ApplicationsPage';
 import NotFoundPage from './pages/dashboard/error/404';
+import CitiesPage from './pages/dashboard/location/citiesPage';
 
 export default function App() {
   return (
@@ -15,6 +16,14 @@ export default function App() {
           element={
             <PrivateRoute>
               <DashboardPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/locations/cities"
+          element={
+            <PrivateRoute>
+              <CitiesPage />
             </PrivateRoute>
           }
         />
