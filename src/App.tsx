@@ -2,8 +2,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import LoginPage from './pages/auth/LoginPage';
 import PrivateRoute from './components/PrivateRoute';
 import DashboardPage from './pages/dashboard/DashboardPage';
-import ApplicationsPage from './pages/dashboard/ApplicationsPage';
-import NotFoundPage from './pages/dashboard/404';
+import ApplicationsPage from './pages/dashboard/candidacy/ApplicationsPage';
+import NotFoundPage from './pages/dashboard/error/404';
 
 export default function App() {
   return (
