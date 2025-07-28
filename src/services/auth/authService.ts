@@ -50,6 +50,5 @@ export async function refreshAccessToken() {
   if (!response.ok) {
     throw new Error("Erro ao atualizar o token de acesso")
   }
-
   return response.json()
 }

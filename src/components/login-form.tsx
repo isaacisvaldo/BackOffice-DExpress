@@ -19,14 +19,21 @@ export function LoginForm({
     setLoading(true)
 
     try {
-      const { accessToken,refreshToken } = await login(email, password)
+      const { accessToken,refreshToken,user } = await login(email, password)
      
       if (!accessToken) {
         throw new Error("accessToken não recebido")
       }
+    
+     // Se o login for bem-sucedido, redireciona para o dashboard
+      toast.dismiss() // Limpa notificações anteriores
+      toast.loading("Entrando...") // Exibe uma notificação de carregamento
       localStorage.setItem("accessToken", accessToken)
       localStorage.setItem("refreshToken", refreshToken)
-
+      localStorage.setItem("user", JSON.stringify(user)) // Armazena os dados
+      toast.dismiss() // Limpa a notificação de carregamento
+      toast.remove() // Remove a notificação de carregamento
+      // Exibe uma notificação de sucesso
       toast.success("Login realizado com sucesso!") 
       setTimeout(() => {
         window.location.href = "/dashboard"
