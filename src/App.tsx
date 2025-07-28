@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import LoginPage from './pages/auth/LoginPage';
 import PrivateRoute from './components/PrivateRoute';
 import DashboardPage from './pages/dashboard/DashboardPage';
+import ApplicationsPage from './pages/dashboard/ApplicationsPage';
+import NotFoundPage from './pages/dashboard/404';
 
 export default function App() {
   return (
@@ -16,7 +18,8 @@ export default function App() {
             </PrivateRoute>
           }
         />
-        <Route path="*" element={<div>404 - Página não encontrada</div>} />
+        <Route path="/applications" element={<ApplicationsPage /> } />
+        <Route path="*" element={<NotFoundPage /> } />
       </Routes>
     </BrowserRouter>
   );
