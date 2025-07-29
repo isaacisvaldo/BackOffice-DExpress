@@ -29,6 +29,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { logout } from "@/services/auth/authService"
+import { useNavigate } from "react-router-dom"  
 
 export function NavUser({
   user,
@@ -40,6 +41,7 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+  const navigate = useNavigate() 
 
   return (
     <SidebarMenu>
@@ -82,16 +84,16 @@ export function NavUser({
             <DropdownMenuSeparator />
 
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <UserCircle />
+              <DropdownMenuItem onClick={() => navigate("/profile")}>
+                <UserCircle className="mr-2 h-4 w-4" />
                 Meu Perfil
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <ClipboardList />
+              <DropdownMenuItem onClick={() => navigate("/contracts")}>
+                <ClipboardList className="mr-2 h-4 w-4" />
                 Minhas Contratações
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Settings />
+              <DropdownMenuItem onClick={() => navigate("/settings")}>
+                <Settings className="mr-2 h-4 w-4" />
                 Configurações
               </DropdownMenuItem>
             </DropdownMenuGroup>

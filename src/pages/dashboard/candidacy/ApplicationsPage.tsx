@@ -78,7 +78,9 @@ export default function ApplicationsPage() {
           <h1 className="text-2xl font-bold mb-4">Lista de Candidaturas</h1>
           <div className="container mx-auto py-10">
             {loading ? (
-              <p>Carregando...</p>
+              <div className="flex justify-center items-center py-10">
+                <span className="text-blue-500 text-lg">🌀 Carregando...</span>
+              </div>
             ) : (
  <DataTable
   columns={columns}
