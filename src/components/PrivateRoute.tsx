@@ -48,9 +48,13 @@ export default function PrivateRoute({ children }: { children: JSX.Element }) {
     }
   }
 
-  function handleCancel() {
-    window.location.href = "/";
-  }
+ function handleCancel() {
+  localStorage.clear();   
+  setShowReauthModal(false);
+  setAuth(false);
+  // Redireciona para a página inicial ou de login
+  window.location.href = "/";
+}
 
   if (loading) {
     return (
