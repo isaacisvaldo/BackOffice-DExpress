@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Camera, Calendar, Mail, MapPin } from "lucide-react";
+import { Camera, Calendar, Mail, MapPin, CheckCircle } from "lucide-react";
 
 interface UserProfile {
   id: string;
@@ -48,7 +48,13 @@ export default function ProfileHeader({ user }: ProfileHeaderProps) {
           <div className="flex-1 space-y-2">
             <div className="flex flex-col gap-2 md:flex-row md:items-center">
               <h1 className="text-2xl font-bold">{user.name}</h1>
-              <Badge variant="secondary">Pro Member</Badge>
+              <Badge
+                variant="secondary"
+                className="flex items-center gap-1 border border-blue-500 bg-blue-50 text-blue-600"
+              >
+                <CheckCircle className="h-4 w-4 text-blue-500" />
+
+              </Badge>
             </div>
             <p className="text-muted-foreground"> {user.role}</p>
             <div className="text-muted-foreground flex flex-wrap gap-4 text-sm">
@@ -66,7 +72,7 @@ export default function ProfileHeader({ user }: ProfileHeaderProps) {
               </div>
             </div>
           </div>
-          
+
         </div>
       </CardContent>
     </Card>

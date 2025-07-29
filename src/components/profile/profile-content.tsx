@@ -9,6 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../ui/select";
 
 interface UserProfile {
   id: string;
@@ -127,16 +128,24 @@ export default function ProfileContent({ user }: { user: UserProfile }) {
               </div>
               <div>
                 <Label htmlFor="gender" className="mb-2 block">Gênero</Label>
-                <select
-                  id="gender"
-                  className="w-full border rounded-md px-2 py-2 bg-white"
-                  value={profile.gender}
-                  onChange={(e) => setProfile({ ...profile, gender: e.target.value as "MALE" | "FEMALE" | "OTHER" })}
-                >
-                  <option value="MALE">Masculino</option>
-                  <option value="FEMALE">Feminino</option>
-                  <option value="OTHER">Outro</option>
-                </select>
+               <Select
+  value={profile.gender}
+  onValueChange={(value) =>
+    setProfile({ ...profile, gender: value as "MALE" | "FEMALE" | "OTHER" })
+  }
+>
+  <SelectTrigger className="w-full border rounded-md px-2 py-2 bg-white">
+    <SelectValue placeholder="Selecione o gênero" />
+  </SelectTrigger>
+  <SelectContent>
+    <SelectGroup>
+      <SelectLabel>Gênero</SelectLabel>
+      <SelectItem value="MALE">Masculino</SelectItem>
+      <SelectItem value="FEMALE">Feminino</SelectItem>
+      <SelectItem value="OTHER">Outro</SelectItem>
+    </SelectGroup>
+  </SelectContent>
+</Select>
               </div>
               <div>
                 <Label htmlFor="role" className="mb-2 block">Função</Label>

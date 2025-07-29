@@ -6,7 +6,7 @@ export default function PrivateRoute({ children }: { children: JSX.Element }) {
   const [auth, setAuth] = useState<boolean | null>(null);
   const [showReauthModal, setShowReauthModal] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [refreshTried, setRefreshTried] = useState(false); // Evita múltiplos refresh
+  const [refreshTried, setRefreshTried] = useState(false); 
 
   useEffect(() => {
     async function check() {
