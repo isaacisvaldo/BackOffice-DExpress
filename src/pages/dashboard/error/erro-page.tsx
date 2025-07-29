@@ -1,9 +1,9 @@
 import { AppSidebar } from "@/components/app-sidebar";
-import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from "@/components/ui/breadcrumb";
-import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
-import { Separator } from "@radix-ui/react-separator";
+
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/page-header";
 
 interface ErrorPageProps {
   title?: string;
@@ -16,7 +16,7 @@ interface ErrorPageProps {
 export default function ErrorPage({
   title = "Algo deu errado",
   message = "Não conseguimos carregar as informações. Tente novamente mais tarde.",
-  breadcrumb = "Erro",
+
   onRetry,
   backTo,
 }: ErrorPageProps) {
@@ -24,23 +24,10 @@ export default function ErrorPage({
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2">
-          <div className="flex items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1" />
-            <Separator orientation="vertical" className="mr-2 h-4" />
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">{breadcrumb}</BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Página de Erro</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
-          </div>
-        </header>
+        <PageHeader
+         onSearch={(val) => console.log("Pesquisando:", val)}
+
+        />
 
         {/* Conteúdo central */}
         <div className="flex flex-col items-center justify-center h-[calc(100vh-4rem)] text-center space-y-4">

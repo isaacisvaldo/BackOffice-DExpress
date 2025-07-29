@@ -1,4 +1,6 @@
 "use client"
+import { Calendar } from "@/components/ui/calendar"  // o componente correto
+import { ChevronDownIcon } from "lucide-react"       // ícone separado
 
 import {
   type ColumnDef,
@@ -37,14 +39,21 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-// Configuração dinâmica dos filtros
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+
+// Agora com suporte para "date" e reset individual
 interface FilterConfig {
-  type: "input" | "select"
+  type: "input" | "select" | "date"
   column?: string
   placeholder?: string
   options?: { label: string; value: string }[]
   value: string
   onChange: (value: string) => void
+  reset?: () => void
 }
 
 interface DataTableProps<TData, TValue> {
@@ -55,7 +64,9 @@ interface DataTableProps<TData, TValue> {
   totalPages: number
   limit: number
   setLimit: (limit: number) => void
-  filters?: FilterConfig[] // NOVO: Filtros dinâmicos
+  filters?: FilterConfig[]
+  className?: string
+  
 }
 
 export function DataTable<TData, TValue>({
@@ -66,7 +77,9 @@ export function DataTable<TData, TValue>({
   totalPages,
   limit,
   setLimit,
-  filters = [], // padrão: sem filtros
+  filters = [],
+  className = "",
+
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
@@ -91,11 +104,19 @@ export function DataTable<TData, TValue>({
     },
   })
 
+  const handleResetFilters = () => {
+    filters.forEach((f) => {
+      f.onChange("")
+      if (f.reset) f.reset()
+      if (f.column) table.getColumn(f.column)?.setFilterValue("")
+    })
+  }
+
   return (
-    <div>
-      {/* Filtros Dinâmicos */}
+    <div className={`flex flex-col h-full ${className}`}>
+      {/* Filtros */}
       <div className="flex flex-wrap gap-4 items-center py-4">
-        {/* Select para definir quantidade por página */}
+        {/* Itens por página */}
         <Select
           value={String(limit)}
           onValueChange={(value) => {
@@ -113,7 +134,7 @@ export function DataTable<TData, TValue>({
           </SelectContent>
         </Select>
 
-        {/* Renderiza filtros passados via props */}
+        {/* Renderizar filtros dinamicamente */}
         {filters.map((filter, idx) => {
           if (filter.type === "input") {
             return (
@@ -136,7 +157,12 @@ export function DataTable<TData, TValue>({
               <Select
                 key={idx}
                 value={filter.value}
-                onValueChange={(val) => filter.onChange(val)}
+                onValueChange={(val) => {
+                  filter.onChange(val)
+                  if (filter.column) {
+                    table.getColumn(filter.column)?.setFilterValue(val)
+                  }
+                }}
               >
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder={filter.placeholder || "Selecione"} />
@@ -151,10 +177,54 @@ export function DataTable<TData, TValue>({
               </Select>
             )
           }
+        if (filter.type === "date") {
+    return (
+      <div key={idx} className="flex flex-col">
+        
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className="w-48 justify-between font-normal"
+            >
+              {filter.value ? new Date(filter.value).toLocaleDateString("pt-PT") : "Selecionar data"}
+              <ChevronDownIcon className="ml-2 h-4 w-4" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={filter.value ? new Date(filter.value) : undefined}
+              captionLayout="dropdown"
+              onSelect={(date) => {
+                const selected = date ? date.toISOString().split("T")[0] : ""
+                filter.onChange(selected)
+                if (filter.column) {
+                  table.getColumn(filter.column)?.setFilterValue(selected)
+                }
+              }}
+            />
+          </PopoverContent>
+        </Popover>
+      </div>
+    )
+  }
           return null
         })}
 
-        {/* Dropdown para exibir/ocultar colunas */}
+        {/* Botão para limpar filtros */}
+        {filters.length > 0 && (
+
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={handleResetFilters}
+          >
+            Limpar Filtros
+          </Button>
+        )}
+
+        {/* Mostrar/ocultar colunas */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
@@ -180,8 +250,8 @@ export function DataTable<TData, TValue>({
       </div>
 
       {/* Tabela */}
-      <div className="overflow-hidden rounded-md border">
-        <Table>
+      <div className="flex-1 overflow-auto rounded-md border">
+        <Table className="min-w-full">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -221,8 +291,22 @@ export function DataTable<TData, TValue>({
       <div className="flex items-center justify-between py-4">
         <span>Página {page} de {totalPages}</span>
         <div className="flex space-x-2">
-          <Button variant="outline" size="sm" onClick={() => setPage(page - 1)} disabled={page <= 1}>Anterior</Button>
-          <Button variant="outline" size="sm" onClick={() => setPage(page + 1)} disabled={page >= totalPages}>Próxima</Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage(page - 1)}
+            disabled={page <= 1}
+          >
+            Anterior
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage(page + 1)}
+            disabled={page >= totalPages}
+          >
+            Próxima
+          </Button>
         </div>
       </div>
     </div>

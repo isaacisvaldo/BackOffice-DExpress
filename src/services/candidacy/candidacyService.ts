@@ -15,7 +15,7 @@ export async function getApplications({
   page = 1,
   limit = 10,
   status = "",
-}: { page?: number; limit?: number; status?: string }): Promise<ApplicationResponse> {
+}: { page?: number; limit?: number; status?: string,createdAt?:string}): Promise<ApplicationResponse> {
   const params = new URLSearchParams({ page: String(page), limit: String(limit) })
   if (status) params.append("status", status)
 

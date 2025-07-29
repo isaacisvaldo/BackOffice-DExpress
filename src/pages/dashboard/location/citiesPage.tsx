@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react"
 import { AppSidebar } from "@/components/app-sidebar";
 import { DataTable } from "@/components/data-table";
-import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from "@/components/ui/breadcrumb";
-import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
-import { Separator } from "@radix-ui/react-separator";
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+
 import { cityColumns, type City } from "@/components/location/citiesColunn";
 import getCities from "@/services/location/cities";
+import { PageHeader } from "@/components/page-header";
 
 
 export default function CitiesPage() {
@@ -52,23 +52,10 @@ export default function CitiesPage() {
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        <header className="flex h-16 items-center gap-2">
-          <div className="flex items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1" />
-            <Separator orientation="vertical" className="mr-2 h-4" />
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">Cidades</BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Listar</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
-          </div>
-        </header>
+      <PageHeader
+             onSearch={(val) => console.log("Pesquisando:", val)}
+    
+            />
         <div className="flex flex-1 flex-col p-6">
           <h1 className="text-2xl font-bold mb-4">Lista de Cidades</h1>
           <div className="container mx-auto py-10">

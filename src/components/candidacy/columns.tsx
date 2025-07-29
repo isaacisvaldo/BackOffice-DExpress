@@ -1,5 +1,4 @@
 import type { ColumnDef } from "@tanstack/react-table"
-import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -10,17 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { ArrowUpDown, MoreHorizontal } from "lucide-react"
 import { Checkbox } from "@radix-ui/react-checkbox"
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-import toast from "react-hot-toast"
+
 
 export type Application = {
   id: string
@@ -120,23 +109,7 @@ export const columns: ColumnDef<Application>[] = [
     id: "actions",
     cell: ({ row }) => {
       const app = row.original
-      const [openApprove, setOpenApprove] = useState(false)
-      const [openReject, setOpenReject] = useState(false)
-
-      const handleApprove = async () => {
-        console.log(`Aprovando ${app.candidateName}...`)
-        await new Promise((r) => setTimeout(r, 1000)) // simula API
-       
-        toast.success("Aprovado com sucesso!") 
-        setOpenApprove(false)
-      }
-
-      const handleReject = async () => {
-        console.log(`Rejeitando ${app.candidateName}...`)
-        await new Promise((r) => setTimeout(r, 1000))
-       toast.error("Rejeitado !")
-        setOpenReject(false)
-      }
+     
 
       return (
         <>
@@ -152,46 +125,11 @@ export const columns: ColumnDef<Application>[] = [
               <DropdownMenuItem onClick={() => console.log(`Ver detalhes de ${app.candidateName}`)}>
                 Ver Detalhes
               </DropdownMenuItem>
-              <DropdownMenuItem className="text-green-600" onClick={() => setOpenApprove(true)}>
-                Aprovar
-              </DropdownMenuItem>
-              <DropdownMenuItem className="text-red-600" onClick={() => setOpenReject(true)}>
-                Rejeitar
-              </DropdownMenuItem>
+          
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Dialog Aprovar */}
-          <AlertDialog open={openApprove} onOpenChange={setOpenApprove}>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Aprovar Candidatura</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Tens certeza que queres aprovar <strong>{app.candidateName}</strong>?
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel onClick={() => setOpenApprove(false)}>Cancelar</AlertDialogCancel>
-                <AlertDialogAction onClick={handleApprove}>Confirmar</AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-
-          {/* Dialog Rejeitar */}
-          <AlertDialog open={openReject} onOpenChange={setOpenReject}>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Rejeitar Candidatura</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Tens certeza que queres rejeitar <strong>{app.candidateName}</strong>?
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel onClick={() => setOpenReject(false)}>Cancelar</AlertDialogCancel>
-                <AlertDialogAction onClick={handleReject}>Confirmar</AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+      
         </>
       )
     },
