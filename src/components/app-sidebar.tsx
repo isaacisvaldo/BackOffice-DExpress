@@ -36,11 +36,13 @@ const data = {
     email: storedUser.email || '',
     avatar: "/avatars/admin.jpg",
   },
-    dashboard: {
+    dashboard: [
+      {
     name: "Dashboard",
     url: "/dashboard",
     icon: PieChart,
-  },
+  }
+    ],
   navMain: [
     
     {
