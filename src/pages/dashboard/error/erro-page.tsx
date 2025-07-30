@@ -1,9 +1,6 @@
-import { AppSidebar } from "@/components/app-sidebar";
 
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { PageHeader } from "@/components/page-header";
 
 interface ErrorPageProps {
   title?: string;
@@ -20,16 +17,13 @@ export default function ErrorPage({
   onRetry,
   backTo,
 }: ErrorPageProps) {
-  return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset>
-        <PageHeader
-         onSearch={(val) => console.log("Pesquisando:", val)}
 
-        />
 
-        {/* Conteúdo central */}
+   return (
+     <div className="flex flex-1 flex-col">
+          <div className="@container/main flex flex-1 flex-col gap-2">
+            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+               {/* Conteúdo principal */}
         <div className="flex flex-col items-center justify-center h-[calc(100vh-4rem)] text-center space-y-4">
           <AlertTriangle className="w-16 h-16 text-red-500 animate-pulse" />
           <h1 className="text-2xl font-bold">{title}</h1>
@@ -48,7 +42,9 @@ export default function ErrorPage({
             )}
           </div>
         </div>
-      </SidebarInset>
-    </SidebarProvider>
+            </div>
+          </div>
+        </div>
+   
   );
 }

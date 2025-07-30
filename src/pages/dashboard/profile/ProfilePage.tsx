@@ -3,11 +3,6 @@ import { getCurrentUser } from "@/services/user/userService";
 import ProfileHeader from "@/components/profile/profile-header";
 import ProfileContent from "@/components/profile/profile-content";
 import ErrorPage from "../error/erro-page";
-import { AppSidebar } from "@/components/app-sidebar";
-
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
-
-import { PageHeader } from "@/components/page-header";
 
 interface AdminUser {
   id: string;
@@ -15,7 +10,7 @@ interface AdminUser {
   numberphone: string;
   isActive: boolean;
   identityNumber: string;
-  gender: string; 
+  gender: string;
   birthDate: string | Date;
   email: string;
   avatar?: string | null;
@@ -71,30 +66,19 @@ export default function ProfilePage() {
     );
   }
 
-  // Normaliza o gender para o formato esperado pelo ProfileHeader
   const normalizedUser = {
     ...user,
     gender: (user.gender?.toUpperCase() as Gender) || "OTHER",
   };
 
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset>
-       <PageHeader
-              onSearch={(val) => console.log("Pesquisando:", val)}
-     
-             />
-
-        <div className="flex flex-1 flex-col">
-          <div className="@container/main flex flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-              <ProfileHeader user={normalizedUser} />
-              <ProfileContent user={normalizedUser} />
-            </div>
-          </div>
+    <div className="flex flex-1 flex-col">
+      <div className="@container/main flex flex-1 flex-col gap-2">
+        <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+          <ProfileHeader user={normalizedUser} />
+          <ProfileContent user={normalizedUser} />
         </div>
-      </SidebarInset>
-    </SidebarProvider>
+      </div>
+    </div>
   );
 }

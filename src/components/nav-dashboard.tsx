@@ -1,16 +1,16 @@
 "use client"
 
-import { MoreHorizontal } from "lucide-react"
+
 import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,
-  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
 import type { LucideIcon } from "lucide-react"
+import { Link } from "react-router-dom"
 
 export function NavDashboard({
   dashboard,
@@ -19,27 +19,26 @@ export function NavDashboard({
     name: string
     url: string
     icon: LucideIcon
-  }
+  }[]
 }) {
   useSidebar()
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>Principal</SidebarGroupLabel>
-      <SidebarMenu>
-        <SidebarMenuItem>
-          <SidebarMenuButton asChild>
-            <a href={dashboard.url}>
-              <dashboard.icon />
-              <span>{dashboard.name}</span>
-            </a>
-          </SidebarMenuButton>
-          <SidebarMenuAction showOnHover>
-            <MoreHorizontal />
-            <span className="sr-only">Mais ações</span>
-          </SidebarMenuAction>
-        </SidebarMenuItem>
-      </SidebarMenu>
+     <SidebarMenu>
+  {dashboard.map((item) => (
+    <SidebarMenuItem key={item.name}>
+      <SidebarMenuButton asChild>
+        <Link to={item.url}>
+          <item.icon />
+          <span>{item.name}</span>
+        </Link>
+      </SidebarMenuButton>
+
+    </SidebarMenuItem>
+  ))}
+</SidebarMenu>
     </SidebarGroup>
   )
 }

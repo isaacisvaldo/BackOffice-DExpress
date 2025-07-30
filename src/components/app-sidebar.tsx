@@ -23,6 +23,7 @@ import { NavMain } from "./nav-main"
 import { NavProjects } from "./nav-projects"
 import { NavUser } from "./nav-user"
 import { NavDashboard } from "./nav-dashboard"
+import { Link } from "react-router-dom"
 
 // Pega a URL do logo do .env ou usa uma imagem padrão
 const logoUrl = import.meta.env.VITE_LOGO_URL || "/logo.png"
@@ -35,11 +36,13 @@ const data = {
     email: storedUser.email || '',
     avatar: "/avatars/admin.jpg",
   },
-    dashboard: {
+    dashboard: [
+      {
     name: "Dashboard",
     url: "/dashboard",
     icon: PieChart,
-  },
+  }
+    ],
   navMain: [
     
     {
@@ -128,13 +131,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     <Sidebar collapsible="icon" {...props}>
       {/* Header com o Logo */}
   <SidebarHeader className="flex justify-start items-center px-4 py-4">
-  <a href="/dashboard" className="flex items-center">
-    <img
-      src={logoUrl}
-      alt="DExpress Logo"
-      className="h-10 w-auto"
-    />
-  </a>
+ <Link to="/dashboard" className="flex items-center">
+  <img
+    src={logoUrl}
+    alt="DExpress Logo"
+    className="h-10 w-auto"
+  />
+</Link>
 </SidebarHeader>
 
       <SidebarContent>
