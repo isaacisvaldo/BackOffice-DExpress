@@ -5,11 +5,13 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { login } from "@/services/auth/authService"
 import toast from "react-hot-toast"
+import { useNavigate } from "react-router-dom"
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"form">) {
+   const navigate = useNavigate()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
@@ -36,7 +38,8 @@ export function LoginForm({
       // Exibe uma notificação de sucesso
       toast.success("Login realizado com sucesso!") 
       setTimeout(() => {
-        window.location.href = "/dashboard"
+        navigate("/dashboard") 
+      
       }, 1200)
     } catch (err: any) {
       toast.error(err.message || "Erro ao autenticar") 
