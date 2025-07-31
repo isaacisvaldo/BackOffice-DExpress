@@ -27,4 +27,36 @@ export async function getApplications({
   if (!response.ok) throw new Error("Erro ao buscar candidaturas")
   return response.json()
 }
+const fakeApplications: Application[] = [
+  {
+    id: "79ad7f44-fa39-4cd2-a8f3-0c1877473e11",
+    candidateName: "João Silva",
+    email: "joao@example.com",
+    phone: "912345678",
+    location: "Luanda - Belas",
+    position: "Desenvolvedor Frontend",
+    status: "PENDING",
+    appliedAt: "2025-07-20"
+  },
+  {
+    id: "2",
+    candidateName: "Maria Santos",
+    email: "maria@example.com",
+    phone: "923456789",
+    location: "Benguela - Lobito",
+    position: "UI/UX Designer",
+    status: "ACCEPTED",
+    appliedAt: "2025-07-25"
+  },
+  // Adicione mais objetos se necessário
+]
+
+export async function getApplicationById(id: string): Promise<Application | null> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const found = fakeApplications.find((app) => app.id === id)
+      resolve(found || null)
+    }, 500) // Simula um delay de requisição
+  })
+}
 
