@@ -1,11 +1,13 @@
 const API_URL = import.meta.env.VITE_API_URL
 
+// ✅ LOGIN (tokens virão via cookies, não no corpo)
 export async function login(email: string, password: string) {
   const response = await fetch(`${API_URL}/admin/auth/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include", // ESSENCIAL para enviar e receber cookies
     body: JSON.stringify({ email, password }),
   })
 
@@ -14,61 +16,44 @@ export async function login(email: string, password: string) {
     throw new Error(error.message || "Erro ao autenticar")
   }
 
+  // Tokens estão no cookie HTTP-only, só retorna o user
   return response.json()
 }
+
+// ✅ LOGOUT (limpa os cookies no backend)
 export async function logout() {
-  localStorage.removeItem("accessToken")
-  localStorage.removeItem("refreshToken")
-  window.location.href = "/"
-}
-export async function isAuthenticated() {
-  const accessToken = localStorage.getItem("accessToken")
-  if (!accessToken) return false
-  const response = await fetch(`${API_URL}/admin/auth/validate`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
-    },
+  await fetch(`${API_URL}/admin/auth/logout`, {
+    method: "POST",
+    credentials: "include",
   })
 
-  return response.ok
+  window.location.href = "/"
 }
 
+// ✅ CHECA SE O USUÁRIO ESTÁ AUTENTICADO
+export async function isAuthenticated() {
+  const response = await fetch(`${API_URL}/admin/auth/validate`, {
+    method: "GET",
+    credentials: "include",
+  });
+
+  if (!response.ok) return null;
+
+  return response.json(); // ← Aqui retorna { valid: true, user: {...} }
+}
+
+// ✅ REFRESH TOKEN usando cookie
 export async function refreshAccessToken() {
-  const refreshToken = localStorage.getItem("refreshToken");
-  if (!refreshToken) throw new Error("Refresh token não encontrado");
   const response = await fetch(`${API_URL}/admin/auth/refresh`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ refreshToken }),
-  });
+    credentials: "include",
+  })
+
   if (!response.ok) {
-    throw new Error("Erro ao atualizar o token de acesso");
+    throw new Error("Erro ao atualizar o token de acesso")
   }
-  return response.json();
+
+  return response.json() // geralmente { accessToken: novoToken }
 }
 
-export function isTokenExpired(): boolean {
-  const token = localStorage.getItem("accessToken");
-  if (!token) return true;
 
-  try {
-    // JWT tem 3 partes: header.payload.signature
-    const payloadBase64 = token.split(".")[1];
-    if (!payloadBase64) return true;
-
-    const decodedPayload = JSON.parse(atob(payloadBase64));
-    const exp = decodedPayload.exp; // geralmente vem em segundos
-
-    if (!exp) return true;
-
-    const now = Math.floor(Date.now() / 1000); // segundos atuais
-    return now >= exp; // se o tempo atual passou do exp, o token expirou
-  } catch (e) {
-    console.error("Erro ao verificar expiração do token", e);
-    return true;
-  }
-}

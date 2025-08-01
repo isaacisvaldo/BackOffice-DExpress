@@ -1,6 +1,7 @@
 // src/App.tsx
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import { ThemeProvider } from "./components/theme-provider"
+import { AuthProvider } from "./contexts/AuthContext" // 👈 IMPORTADO AQUI
 
 import LoginPage from "./pages/auth/LoginPage"
 import NotFoundPage from "./pages/dashboard/error/404"
@@ -15,34 +16,34 @@ import ApplicationDetailPage from "./pages/dashboard/candidacy/ApplicationDetail
 export default function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <BrowserRouter>
-        <Routes>
-          {/* Rotas públicas */}
-          <Route path="/" element={<LoginPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          {/* Rotas protegidas com layout */}
-          <Route
-            path="/"
-            element={
-              <PrivateRoute>
-              <LayoutDashboard />
-              </PrivateRoute>
-            }
-          >
-            {/* Redirecionamento padrão */}
-           
-            <Route path="dashboard" element={<DashboardPage />} />
-            <Route path="locations/cities" element={<CitiesPage />} />
-            <Route path="applications" element={<ApplicationsPage />} />
-            <Route path="/applications/:id" element={<ApplicationDetailPage />} />
-            <Route path="profile" element={<ProfilePage />} />
-             {/* Página 404 */}
-          <Route path="*" element={<NotFoundPage />} />
-          </Route>
+      <AuthProvider> {/* 👈 ENVOLVENDO TUDO COM AuthProvider */}
+        <BrowserRouter>
+          <Routes>
+            {/* Rotas públicas */}
+            <Route path="/" element={<LoginPage />} />
+            <Route path="/login" element={<LoginPage />} />
 
-         
-        </Routes>
-      </BrowserRouter>
+            {/* Rotas protegidas com layout */}
+            <Route
+              path="/"
+              element={
+                <PrivateRoute>
+                  <LayoutDashboard />
+                </PrivateRoute>
+              }
+            >
+              <Route path="dashboard" element={<DashboardPage />} />
+              <Route path="locations/cities" element={<CitiesPage />} />
+              <Route path="applications" element={<ApplicationsPage />} />
+              <Route path="/applications/:id" element={<ApplicationDetailPage />} />
+              <Route path="profile" element={<ProfilePage />} />
+
+              {/* Página 404 */}
+              <Route path="*" element={<NotFoundPage />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
     </ThemeProvider>
   )
 }

@@ -17,35 +17,29 @@ export function LoginForm({
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    toast.dismiss()
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setLoading(true);
+  toast.dismiss();
 
-    try {
-      toast.loading("Entrando...")
+  try {
+    toast.loading("Entrando...");
 
-      const { accessToken, refreshToken, user } = await login(email, password)
+    const { user } = await login(email, password); // cookies já salvos automaticamente
 
-      if (!accessToken) throw new Error("Token de acesso não recebido.")
+    if (!user) throw new Error("Usuário não retornado");
 
-      // Salva no localStorage
-      localStorage.setItem("accessToken", accessToken)
-      localStorage.setItem("refreshToken", refreshToken)
-      localStorage.setItem("user", JSON.stringify(user))
+    toast.dismiss();
+    toast.success("Login realizado com sucesso!");
 
-      toast.dismiss()
-      toast.success("Login realizado com sucesso!")
-
-      setTimeout(() => navigate("/dashboard"), 1000)
-    } catch (err: any) {
-      toast.dismiss()
-      toast.error(err.message || "Erro ao autenticar")
-    } finally {
-      setLoading(false)
-    }
+    setTimeout(() => navigate("/dashboard"), 1000);
+  } catch (err: any) {
+    toast.dismiss();
+    toast.error(err.message || "Erro ao autenticar");
+  } finally {
+    setLoading(false);
   }
-
+};
   return (
     <form
       onSubmit={handleSubmit}

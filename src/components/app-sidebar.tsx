@@ -24,16 +24,19 @@ import { NavProjects } from "./nav-projects"
 import { NavUser } from "./nav-user"
 import { NavDashboard } from "./nav-dashboard"
 import { Link } from "react-router-dom"
+import { useAuth } from "@/contexts/AuthContext"
 
-// Pega a URL do logo do .env ou usa uma imagem padrão
+
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  // Pega a URL do logo do .env ou usa uma imagem padrão
 const logoUrl = import.meta.env.VITE_LOGO_URL || "/logo.png"
 
 // Dados reais do DExpress (menus e atalhos)
-const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+const { user } = useAuth()
 const data = {
   user: {
-    name: storedUser.name || 'Usuário',
-    email: storedUser.email || '',
+    name: user?.name || 'Usuário',
+    email: user?.email || '',
     avatar: "/avatars/admin.jpg",
   },
     dashboard: [
@@ -126,7 +129,6 @@ const data = {
   ],
 }
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       {/* Header com o Logo */}

@@ -15,18 +15,28 @@ export async function getApplications({
   page = 1,
   limit = 10,
   status = "",
-}: { page?: number; limit?: number; status?: string,createdAt?:string}): Promise<ApplicationResponse> {
-  const params = new URLSearchParams({ page: String(page), limit: String(limit) })
-  if (status) params.append("status", status)
+  createdAt = "",
+}: { page?: number; limit?: number; status?: string; createdAt?: string }): Promise<ApplicationResponse> {
+  const params = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+  });
+
+  if (status) params.append("status", status);
+  if (createdAt) params.append("createdAt", createdAt);
 
   const response = await fetch(`${API_URL}/job-application?${params.toString()}`, {
     method: "GET",
-    headers: { "Content-Type": "application/json" },
-  })
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include", // 👈 importante para usar cookies
+  });
 
-  if (!response.ok) throw new Error("Erro ao buscar candidaturas")
-  return response.json()
+  if (!response.ok) throw new Error("Erro ao buscar candidaturas");
+  return response.json();
 }
+
 const fakeApplications: Application[] = [
   {
     id: "79ad7f44-fa39-4cd2-a8f3-0c1877473e11",
