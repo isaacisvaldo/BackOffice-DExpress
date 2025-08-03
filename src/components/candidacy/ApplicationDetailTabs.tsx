@@ -24,12 +24,14 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import EmailEditor from "../EmailEditor"
+import ProfessionalForm from "../profissional/profissionalForm"
 
 
 interface ApplicationDetailTabsProps {
     application: any
     status: string // VEM DA API
     onStatusChange: (status: string) => void
+    hasProfile: boolean // novo prop para verificar se o candidato tem perfil
 }
 
 const statusOptions = [
@@ -44,11 +46,11 @@ export function ApplicationDetailTabs({
     application,
     status,
     onStatusChange,
+    hasProfile, // novo prop para verificar se o candidato tem perfil
 }: ApplicationDetailTabsProps) {
    
  
-    application.hasProfile = true // Mock para simular se o perfil já existe
-
+ 
 
 
     return (
@@ -96,21 +98,38 @@ export function ApplicationDetailTabs({
                                     disabled
                                 />
                             </div>
-                            <div>
-                                <Label>Status</Label>
-                                <Select value={status} onValueChange={onStatusChange}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Selecione o status" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {statusOptions.map((opt) => (
-                                            <SelectItem key={opt.value} value={opt.value}>
-                                                {opt.label}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
+                        <div>
+  <Label>Status</Label>
+  <Select value={status} onValueChange={onStatusChange}>
+    <SelectTrigger>
+      <SelectValue placeholder="Selecione o status" />
+    </SelectTrigger>
+    <SelectContent>
+      {statusOptions
+        .filter((opt) => {
+          const availableTransitions: Record<string, string[]> = {
+            PENDING: ["IN_REVIEW", "REJECTED"],
+            IN_REVIEW: ["INTERVIEW", "REJECTED"],
+            INTERVIEW: ["ACCEPTED", "REJECTED"],
+            ACCEPTED: [],
+            REJECTED: [],
+          }
+
+          // Permitir reexibir o status atual como selecionado
+          return (
+            status === opt.value ||
+            availableTransitions[status]?.includes(opt.value)
+          )
+        })
+        .map((opt) => (
+          <SelectItem key={opt.value} value={opt.value}>
+            {opt.label}
+          </SelectItem>
+        ))}
+    </SelectContent>
+  </Select>
+</div>
+
                         </div>
                         <div>
                             <Label>Cargo Desejado</Label>
@@ -139,45 +158,30 @@ export function ApplicationDetailTabs({
             {/* Perfil do Colaborador (só aparece se status = ACCEPTED) */}
             <TabsContent value="profile">
                 <Card>
-                    <CardHeader>
-                        <CardTitle>Perfil do Colaborador</CardTitle>
-                        <CardDescription>
-                            {application.hasProfile
-                                ? "Este candidato já possui um perfil de colaborador."
-                                : "Preencha os dados adicionais do colaborador aprovado."}
-                        </CardDescription>
-                    </CardHeader>
+                   <CardHeader>
+  <CardTitle>Perfil do Colaborador</CardTitle>
+  <CardDescription>
+    {hasProfile
+      ? "Este candidato já possui um perfil de colaborador."
+      : "Preencha os dados adicionais do colaborador aprovado."}
+  </CardDescription>
+</CardHeader>
 
-                    <CardContent className="space-y-4">
-                        {application.hasProfile ? (
-                            <Button
-                                onClick={() => console.log("Redirecionar para perfil")}
-                                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 rounded-xl shadow-md transition-all duration-200"
-                            >
-                                <User2 className="w-5 h-5" />
-                                Ver Perfil do Colaborador
-                            </Button>
-                        ) : (
-                            <>
-                                {/* Pegar alguns dados da candidatura para poder criar perfil */}
-                                <div>
-                                    <Label>Departamento</Label>
-                                    <Input placeholder="Departamento do colaborador" />
-                                </div>
-                                <div>
-                                    <Label>Data de Início</Label>
-                                    <Input type="date" />
-                                </div>
-                                <div>
-                                    <Label>Responsável Direto</Label>
-                                    <Input placeholder="Nome do supervisor" />
-                                </div>
-                                <Button onClick={() => console.log("Perfil do colaborador salvo")}>
-                                    Salvar Perfil
-                                </Button>
-                            </>
-                        )}
-                    </CardContent>
+<CardContent>
+  {application.hasProfile ? (
+    <Button
+      onClick={() => console.log("Redirecionar para perfil")}
+      className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 rounded-xl shadow-md transition-all duration-200"
+    >
+      <User2 className="w-5 h-5" />
+      Ver Perfil do Colaborador
+    </Button>
+  ) : (
+    <ProfessionalForm application={application} />
+  )}
+</CardContent>
+
+
                 </Card>
             </TabsContent>
 

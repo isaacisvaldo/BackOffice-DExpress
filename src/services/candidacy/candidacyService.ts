@@ -37,36 +37,70 @@ export async function getApplications({
   return response.json();
 }
 
-const fakeApplications: Application[] = [
-  {
-    id: "79ad7f44-fa39-4cd2-a8f3-0c1877473e11",
-    candidateName: "João Silva",
-    email: "joao@example.com",
-    phone: "912345678",
-    location: "Luanda - Belas",
-    position: "Desenvolvedor Frontend",
-    status: "PENDING",
-    appliedAt: "2025-07-20"
-  },
-  {
-    id: "2",
-    candidateName: "Maria Santos",
-    email: "maria@example.com",
-    phone: "923456789",
-    location: "Benguela - Lobito",
-    position: "UI/UX Designer",
-    status: "ACCEPTED",
-    appliedAt: "2025-07-25"
-  },
-  // Adicione mais objetos se necessário
-]
-
 export async function getApplicationById(id: string): Promise<Application | null> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const found = fakeApplications.find((app) => app.id === id)
-      resolve(found || null)
-    }, 500) // Simula um delay de requisição
-  })
+  if (!id) return null; 
+    const response = await fetch(`${API_URL}/job-application/${id}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include", // 👈 importante para usar cookies
+  });
+
+  if (!response.ok) throw new Error("Erro ao buscar candidaturas");
+  return response.json();
+}
+export async function updateApplicationStatus(id: string, status: string): Promise<Application> {
+  const response = await fetch(`${API_URL}/job-application/${id}/status`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify({ status }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Erro ao atualizar status da candidatura");
+  }
+
+  return response.json();
+}
+export async function deleteApplication(id: string): Promise<void> {
+  const response = await fetch(`${API_URL}/job-application/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    throw new Error("Erro ao excluir candidatura");
+  }
 }
 
+// services/api.ts
+
+export async function checkCandidateHasProfile(applicationId: string): Promise<boolean> {
+  const response = await fetch(`${API_URL}/job-application/${applicationId}/has-profile`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    throw new Error("Erro ao verificar perfil do candidato");
+  }
+
+  const data = await response.json();
+  //  a resposta  { hasProfile: true }
+  return data.hasProfile; 
+}
+export async function createCandidateProfile(): Promise<void> {
+ 
+
+ 
+}
