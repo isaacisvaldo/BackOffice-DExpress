@@ -33,31 +33,34 @@ const logoUrl = import.meta.env.VITE_LOGO_URL || "/logo.png"
 
 // Dados reais do DExpress (menus e atalhos)
 const { user } = useAuth()
+console.log("USER:",user);
+
 const data = {
   user: {
     name: user?.name || 'Usuário',
     email: user?.email || '',
     avatar: "/avatars/admin.jpg",
   },
-    dashboard: [
-      {
-    name: "Dashboard",
-    url: "/dashboard",
-    icon: PieChart,
-  }
-    ],
-  navMain: [
-    
+  dashboard: [
     {
-      title: "Clientes",
+      name: "Dashboard",
+      url: "/dashboard",
+      icon: PieChart,
+    }
+  ],
+  navMain: [
+    // CRM – Relacionamento com clientes
+    {
+      title: "CRM - Gestão de Clientes",
       url: "/clients",
       icon: Users,
-      isActive: true,
       items: [
-        { title: "Clientes (PF)", url: "/clients/individual" },
-        { title: "Empresas (PJ)", url: "/clients/company" },
+        { title: "Clientes (Pessoa Física)", url: "/clients/individual" },
+        { title: "Clientes (Empresas)", url: "/clients/company" },
       ],
     },
+
+    // Gestão de Profissionais
     {
       title: "Profissionais",
       url: "/professionals",
@@ -68,15 +71,20 @@ const data = {
         { title: "Disponibilidades", url: "/professionals/availability" },
       ],
     },
+
+    // Processo de Contratação
     {
-      title: "Candidaturas & Vagas",
-      url: "/applications",
+      title: "Contratações",
+      url: "/hires",
       icon: ClipboardList,
       items: [
-        { title: "Candidaturas", url: "/applications" },
-        { title: "Vagas", url: "/jobs" },
+        { title: "Solicitações de Contratação", url: "/hires/requests" },
+        { title: "Candidaturas", url: "/hires/applications" },
+        { title: "Vagas", url: "/hires/jobs" },
       ],
     },
+
+    // Localização geográfica
     {
       title: "Localizações",
       url: "/locations",
@@ -86,6 +94,8 @@ const data = {
         { title: "Distritos", url: "/locations/districts" },
       ],
     },
+
+    // Administração interna da plataforma
     {
       title: "Administração",
       url: "/admin",
@@ -95,16 +105,20 @@ const data = {
         { title: "Perfis e Permissões", url: "/admin/roles" },
       ],
     },
+
+    // Relatórios
     {
       title: "Relatórios",
       url: "/reports",
       icon: FileText,
       items: [
-        { title: "Relatório de Clientes", url: "/reports/clients" },
-        { title: "Relatório de Profissionais", url: "/reports/professionals" },
-        { title: "Relatório Financeiro", url: "/reports/finance" },
+        { title: "Clientes", url: "/reports/clients" },
+        { title: "Profissionais", url: "/reports/professionals" },
+        { title: "Financeiro", url: "/reports/finance" },
       ],
     },
+
+    // Configurações gerais
     {
       title: "Configurações",
       url: "/settings",
@@ -115,6 +129,8 @@ const data = {
       ],
     },
   ],
+
+  // Projetos ou dashboards específicos
   projects: [
     {
       name: "Operações Ativas",
@@ -128,6 +144,7 @@ const data = {
     },
   ],
 }
+
 
   return (
     <Sidebar collapsible="icon" {...props}>

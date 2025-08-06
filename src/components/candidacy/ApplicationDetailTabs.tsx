@@ -56,8 +56,8 @@ export function ApplicationDetailTabs({
     return (
         <Tabs defaultValue="info" className="w-full space-y-6">
             <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="info">Informações</TabsTrigger>
-                <TabsTrigger value="notes">Notas</TabsTrigger>
+                <TabsTrigger value="info" >Informações</TabsTrigger>
+                <TabsTrigger value="notes" disabled={hasProfile}>Notas</TabsTrigger>
                 <TabsTrigger value="profile" disabled={status !== "ACCEPTED"}>
                     Perfil do Colaborador
                 </TabsTrigger>
@@ -168,7 +168,7 @@ export function ApplicationDetailTabs({
 </CardHeader>
 
 <CardContent>
-  {application.hasProfile ? (
+  {hasProfile ? (
     <Button
       onClick={() => console.log("Redirecionar para perfil")}
       className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 rounded-xl shadow-md transition-all duration-200"

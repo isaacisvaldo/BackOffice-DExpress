@@ -1,12 +1,11 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import toast from "react-hot-toast"
-
 import { cn } from "@/lib/utils"
-import { login } from "@/services/auth/authService"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useAuth } from "@/contexts/AuthContext"
 
 export function LoginForm({
   className,
@@ -17,6 +16,8 @@ export function LoginForm({
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
 
+  const { login } = useAuth() 
+
 const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
   setLoading(true);
@@ -24,14 +25,9 @@ const handleSubmit = async (e: React.FormEvent) => {
 
   try {
     toast.loading("Entrando...");
-
-    const { user } = await login(email, password); // cookies já salvos automaticamente
-
-    if (!user) throw new Error("Usuário não retornado");
-
+     await login(email, password);
     toast.dismiss();
     toast.success("Login realizado com sucesso!");
-
     setTimeout(() => navigate("/dashboard"), 1000);
   } catch (err: any) {
     toast.dismiss();

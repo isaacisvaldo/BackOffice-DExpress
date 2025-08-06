@@ -12,6 +12,7 @@ import ProfilePage from "./pages/dashboard/profile/ProfilePage"
 import PrivateRoute from "./components/PrivateRoute"
 import LayoutDashboard from "./pages/dashboard/LayoutDashboard"
 import ApplicationDetailPage from "./pages/dashboard/candidacy/ApplicationDetailPage"
+import ProfessionalsList from "./pages/dashboard/profissional/profissionalList"
 
 export default function App() {
   return (
@@ -34,8 +35,10 @@ export default function App() {
             >
               <Route path="dashboard" element={<DashboardPage />} />
               <Route path="locations/cities" element={<CitiesPage />} />
-              <Route path="applications" element={<ApplicationsPage />} />
-              <Route path="/applications/:id" element={<ApplicationDetailPage />} />
+              <Route path="/hires/applications" element={<ApplicationsPage />} />
+              <Route path="/hires/applications/:id" element={<ApplicationDetailPage />} />
+              <Route path="/professionals" element={<ProfessionalsList />} />
+
               <Route path="profile" element={<ProfilePage />} />
 
               {/* Página 404 */}

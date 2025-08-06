@@ -122,7 +122,7 @@ export const columns: ColumnDef<Application>[] = [
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Ações</DropdownMenuLabel>
           <DropdownMenuItem asChild>
-            <Link to={`/applications/${app.id}`}>
+            <Link to={`/hires/applications/${app.id}`}>
               Ver Detalhes
             </Link>
           </DropdownMenuItem>
