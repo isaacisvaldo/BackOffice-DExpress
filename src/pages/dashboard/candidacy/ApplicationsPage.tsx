@@ -51,11 +51,11 @@ export default function ApplicationsPage() {
 
   return (
     <div className="flex flex-col gap-4 p-6">
-      <h1 className="text-2xl font-bold mb-4">Lista de Candidaturas</h1>
+      <h1 className="text-2xl font-bold mb-4">Candidaturas</h1>
       <div className="container mx-auto py-6">
         {loading ? (
           <div className="flex justify-center items-center py-10">
-            <span className="text-blue-500 text-lg">🌀 Carregando...</span>
+            <span className="text-blue-500 text-lg">Carregando...</span>
           </div>
         ) : (
           <DataTable
