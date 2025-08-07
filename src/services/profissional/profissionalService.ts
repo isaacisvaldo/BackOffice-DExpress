@@ -34,7 +34,7 @@ interface FilterProfessionalDto {
   experienceLevel?: string;
   desiredPosition?: string;
   email?: string;
-  specialtyIds?: string[];
+  specialtyId?: string;
   page?: number;
   limit?: number;
 }
@@ -66,8 +66,8 @@ export async function listAll(filters: FilterProfessionalDto): Promise<any> {
       queryParams.append('experienceLevel', filters.experienceLevel);
     }
 
-    if (filters.specialtyIds && filters.specialtyIds.length > 0) {
-      filters.specialtyIds.forEach(id => queryParams.append('specialtyIds', id));
+     if (filters.specialtyId && filters.specialtyId !== 'all') {
+      queryParams.append('specialtyId', filters.specialtyId);
     }
 
     if (filters.page) {

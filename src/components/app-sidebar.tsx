@@ -10,6 +10,7 @@ import {
   Shield,
   FileText,
   PieChart,
+  List,
 } from "lucide-react"
 
 import {
@@ -92,6 +93,23 @@ const data = {
       items: [
         { title: "Cidades", url: "/locations/cities" },
         { title: "Distritos", url: "/locations/districts" },
+      ],
+    },
+
+    // NOVO BLOCO: Gerenciamento de Dados Compartilhados
+    {
+      title: "Gerenciamento de Dados",
+      url: "/shared-data",
+      icon: List, // Usando List para representar lista de dados
+      items: [
+        { title: "Cargos e Posições", url: "/shared-data/positions" },
+        { title: "Idiomas", url: "/shared-data/languages" },
+        { title: "Habilidades", url: "/shared-data/skills" },
+        { title: "Cursos e Certificados", url: "/shared-data/courses" },
+        { title: "Grau Acadêmico", url: "/shared-data/highest-degrees" },
+        { title: "Estados Civis", url: "/shared-data/marital-status" },
+        { title: "Gêneros", url: "/shared-data/genders" },
+        { title: "Setores", url: "/shared-data/sectors" }
       ],
     },
 

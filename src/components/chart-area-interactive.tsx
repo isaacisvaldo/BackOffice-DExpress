@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
-
 import {
   Card,
   CardContent,
@@ -28,116 +27,150 @@ import {
 
 export const description = "An interactive area chart"
 
-const chartData = [
-  { date: "2024-04-01", desktop: 222, mobile: 150 },
-  { date: "2024-04-02", desktop: 97, mobile: 180 },
-  { date: "2024-04-03", desktop: 167, mobile: 120 },
-  { date: "2024-04-04", desktop: 242, mobile: 260 },
-  { date: "2024-04-05", desktop: 373, mobile: 290 },
-  { date: "2024-04-06", desktop: 301, mobile: 340 },
-  { date: "2024-04-07", desktop: 245, mobile: 180 },
-  { date: "2024-04-08", desktop: 409, mobile: 320 },
-  { date: "2024-04-09", desktop: 59, mobile: 110 },
-  { date: "2024-04-10", desktop: 261, mobile: 190 },
-  { date: "2024-04-11", desktop: 327, mobile: 350 },
-  { date: "2024-04-12", desktop: 292, mobile: 210 },
-  { date: "2024-04-13", desktop: 342, mobile: 380 },
-  { date: "2024-04-14", desktop: 137, mobile: 220 },
-  { date: "2024-04-15", desktop: 120, mobile: 170 },
-  { date: "2024-04-16", desktop: 138, mobile: 190 },
-  { date: "2024-04-17", desktop: 446, mobile: 360 },
-  { date: "2024-04-18", desktop: 364, mobile: 410 },
-  { date: "2024-04-19", desktop: 243, mobile: 180 },
-  { date: "2024-04-20", desktop: 89, mobile: 150 },
-  { date: "2024-04-21", desktop: 137, mobile: 200 },
-  { date: "2024-04-22", desktop: 224, mobile: 170 },
-  { date: "2024-04-23", desktop: 138, mobile: 230 },
-  { date: "2024-04-24", desktop: 387, mobile: 290 },
-  { date: "2024-04-25", desktop: 215, mobile: 250 },
-  { date: "2024-04-26", desktop: 75, mobile: 130 },
-  { date: "2024-04-27", desktop: 383, mobile: 420 },
-  { date: "2024-04-28", desktop: 122, mobile: 180 },
-  { date: "2024-04-29", desktop: 315, mobile: 240 },
-  { date: "2024-04-30", desktop: 454, mobile: 380 },
-  { date: "2024-05-01", desktop: 165, mobile: 220 },
-  { date: "2024-05-02", desktop: 293, mobile: 310 },
-  { date: "2024-05-03", desktop: 247, mobile: 190 },
-  { date: "2024-05-04", desktop: 385, mobile: 420 },
-  { date: "2024-05-05", desktop: 481, mobile: 390 },
-  { date: "2024-05-06", desktop: 498, mobile: 520 },
-  { date: "2024-05-07", desktop: 388, mobile: 300 },
-  { date: "2024-05-08", desktop: 149, mobile: 210 },
-  { date: "2024-05-09", desktop: 227, mobile: 180 },
-  { date: "2024-05-10", desktop: 293, mobile: 330 },
-  { date: "2024-05-11", desktop: 335, mobile: 270 },
-  { date: "2024-05-12", desktop: 197, mobile: 240 },
-  { date: "2024-05-13", desktop: 197, mobile: 160 },
-  { date: "2024-05-14", desktop: 448, mobile: 490 },
-  { date: "2024-05-15", desktop: 473, mobile: 380 },
-  { date: "2024-05-16", desktop: 338, mobile: 400 },
-  { date: "2024-05-17", desktop: 499, mobile: 420 },
-  { date: "2024-05-18", desktop: 315, mobile: 350 },
-  { date: "2024-05-19", desktop: 235, mobile: 180 },
-  { date: "2024-05-20", desktop: 177, mobile: 230 },
-  { date: "2024-05-21", desktop: 82, mobile: 140 },
-  { date: "2024-05-22", desktop: 81, mobile: 120 },
-  { date: "2024-05-23", desktop: 252, mobile: 290 },
-  { date: "2024-05-24", desktop: 294, mobile: 220 },
-  { date: "2024-05-25", desktop: 201, mobile: 250 },
-  { date: "2024-05-26", desktop: 213, mobile: 170 },
-  { date: "2024-05-27", desktop: 420, mobile: 460 },
-  { date: "2024-05-28", desktop: 233, mobile: 190 },
-  { date: "2024-05-29", desktop: 78, mobile: 130 },
-  { date: "2024-05-30", desktop: 340, mobile: 280 },
-  { date: "2024-05-31", desktop: 178, mobile: 230 },
-  { date: "2024-06-01", desktop: 178, mobile: 200 },
-  { date: "2024-06-02", desktop: 470, mobile: 410 },
-  { date: "2024-06-03", desktop: 103, mobile: 160 },
-  { date: "2024-06-04", desktop: 439, mobile: 380 },
-  { date: "2024-06-05", desktop: 88, mobile: 140 },
-  { date: "2024-06-06", desktop: 294, mobile: 250 },
-  { date: "2024-06-07", desktop: 323, mobile: 370 },
-  { date: "2024-06-08", desktop: 385, mobile: 320 },
-  { date: "2024-06-09", desktop: 438, mobile: 480 },
-  { date: "2024-06-10", desktop: 155, mobile: 200 },
-  { date: "2024-06-11", desktop: 92, mobile: 150 },
-  { date: "2024-06-12", desktop: 492, mobile: 420 },
-  { date: "2024-06-13", desktop: 81, mobile: 130 },
-  { date: "2024-06-14", desktop: 426, mobile: 380 },
-  { date: "2024-06-15", desktop: 307, mobile: 350 },
-  { date: "2024-06-16", desktop: 371, mobile: 310 },
-  { date: "2024-06-17", desktop: 475, mobile: 520 },
-  { date: "2024-06-18", desktop: 107, mobile: 170 },
-  { date: "2024-06-19", desktop: 341, mobile: 290 },
-  { date: "2024-06-20", desktop: 408, mobile: 450 },
-  { date: "2024-06-21", desktop: 169, mobile: 210 },
-  { date: "2024-06-22", desktop: 317, mobile: 270 },
-  { date: "2024-06-23", desktop: 480, mobile: 530 },
-  { date: "2024-06-24", desktop: 132, mobile: 180 },
-  { date: "2024-06-25", desktop: 141, mobile: 190 },
-  { date: "2024-06-26", desktop: 434, mobile: 380 },
-  { date: "2024-06-27", desktop: 448, mobile: 490 },
-  { date: "2024-06-28", desktop: 149, mobile: 200 },
-  { date: "2024-06-29", desktop: 103, mobile: 160 },
-  { date: "2024-06-30", desktop: 446, mobile: 400 },
-]
+// Dados estáticos de exemplo.
+// Eles serão usados para renderizar o gráfico até que a API esteja pronta.
+const chartDataStatic = [
+  { date: "2024-04-01", profissionais: 5, clientes: 3 },
+  { date: "2024-04-02", profissionais: 8, clientes: 6 },
+  { date: "2024-04-03", profissionais: 12, clientes: 9 },
+  { date: "2024-04-04", profissionais: 10, clientes: 7 },
+  { date: "2024-04-05", profissionais: 15, clientes: 11 },
+  { date: "2024-04-06", profissionais: 13, clientes: 8 },
+  { date: "2024-04-07", profissionais: 18, clientes: 14 },
+  { date: "2024-04-08", profissionais: 22, clientes: 16 },
+  { date: "2024-04-09", profissionais: 9, clientes: 5 },
+  { date: "2024-04-10", profissionais: 14, clientes: 10 },
+  { date: "2024-04-11", profissionais: 17, clientes: 13 },
+  { date: "2024-04-12", profissionais: 20, clientes: 15 },
+  { date: "2024-04-13", profissionais: 25, clientes: 18 },
+  { date: "2024-04-14", profissionais: 11, clientes: 7 },
+  { date: "2024-04-15", profissionais: 16, clientes: 12 },
+  { date: "2024-04-16", profissionais: 19, clientes: 14 },
+  { date: "2024-04-17", profissionais: 28, clientes: 20 },
+  { date: "2024-04-18", profissionais: 30, clientes: 22 },
+  { date: "2024-04-19", profissionais: 23, clientes: 17 },
+  { date: "2024-04-20", profissionais: 12, clientes: 9 },
+  { date: "2024-04-21", profissionais: 15, clientes: 11 },
+  { date: "2024-04-22", profissionais: 21, clientes: 16 },
+  { date: "2024-04-23", profissionais: 17, clientes: 13 },
+  { date: "2024-04-24", profissionais: 24, clientes: 19 },
+  { date: "2024-04-25", profissionais: 26, clientes: 21 },
+  { date: "2024-04-26", profissionais: 10, clientes: 8 },
+  { date: "2024-04-27", profissionais: 35, clientes: 28 },
+  { date: "2024-04-28", profissionais: 18, clientes: 13 },
+  { date: "2024-04-29", profissionais: 29, clientes: 22 },
+  { date: "2024-04-30", profissionais: 38, clientes: 30 },
+  { date: "2024-05-01", profissionais: 20, clientes: 15 },
+  { date: "2024-05-02", profissionais: 28, clientes: 21 },
+  { date: "2024-05-03", profissionais: 22, clientes: 16 },
+  { date: "2024-05-04", profissionais: 33, clientes: 25 },
+  { date: "2024-05-05", profissionais: 40, clientes: 32 },
+  { date: "2024-05-06", profissionais: 42, clientes: 34 },
+  { date: "2024-05-07", profissionais: 36, clientes: 29 },
+  { date: "2024-05-08", profissionais: 18, clientes: 14 },
+  { date: "2024-05-09", profissionais: 25, clientes: 19 },
+  { date: "2024-05-10", profissionais: 30, clientes: 23 },
+  { date: "2024-05-11", profissionais: 32, clientes: 26 },
+  { date: "2024-05-12", profissionais: 21, clientes: 17 },
+  { date: "2024-05-13", profissionais: 23, clientes: 18 },
+  { date: "2024-05-14", profissionais: 45, clientes: 35 },
+  { date: "2024-05-15", profissionais: 48, clientes: 38 },
+  { date: "2024-05-16", profissionais: 35, clientes: 27 },
+  { date: "2024-05-17", profissionais: 50, clientes: 40 },
+  { date: "2024-05-18", profissionais: 32, clientes: 25 },
+  { date: "2024-05-19", profissionais: 25, clientes: 19 },
+  { date: "2024-05-20", profissionais: 19, clientes: 15 },
+  { date: "2024-05-21", profissionais: 11, clientes: 8 },
+  { date: "2024-05-22", profissionais: 10, clientes: 7 },
+  { date: "2024-05-23", profissionais: 28, clientes: 21 },
+  { date: "2024-05-24", profissionais: 31, clientes: 24 },
+  { date: "2024-05-25", profissionais: 22, clientes: 17 },
+  { date: "2024-05-26", profissionais: 24, clientes: 18 },
+  { date: "2024-05-27", profissionais: 45, clientes: 36 },
+  { date: "2024-05-28", profissionais: 26, clientes: 20 },
+  { date: "2024-05-29", profissionais: 10, clientes: 8 },
+  { date: "2024-05-30", profissionais: 34, clientes: 27 },
+  { date: "2024-05-31", profissionais: 20, clientes: 16 },
+  { date: "2024-06-01", profissionais: 20, clientes: 15 },
+  { date: "2024-06-02", profissionais: 48, clientes: 39 },
+  { date: "2024-06-03", profissionais: 12, clientes: 9 },
+  { date: "2024-06-04", profissionais: 44, clientes: 35 },
+  { date: "2024-06-05", profissionais: 11, clientes: 8 },
+  { date: "2024-06-06", profissionais: 30, clientes: 23 },
+  { date: "2024-06-07", profissionais: 35, clientes: 28 },
+  { date: "2024-06-08", profissionais: 39, clientes: 31 },
+  { date: "2024-06-09", profissionais: 44, clientes: 36 },
+  { date: "2024-06-10", profissionais: 18, clientes: 14 },
+  { date: "2024-06-11", profissionais: 12, clientes: 9 },
+  { date: "2024-06-12", profissionais: 50, clientes: 41 },
+  { date: "2024-06-13", profissionais: 10, clientes: 7 },
+  { date: "2024-06-14", profissionais: 43, clientes: 34 },
+  { date: "2024-06-15", profissionais: 31, clientes: 25 },
+  { date: "2024-06-16", profissionais: 38, clientes: 30 },
+  { date: "2024-06-17", profissionais: 48, clientes: 39 },
+  { date: "2024-06-18", profissionais: 13, clientes: 10 },
+  { date: "2024-06-19", profissionais: 34, clientes: 27 },
+  { date: "2024-06-20", profissionais: 41, clientes: 32 },
+  { date: "2024-06-21", profissionais: 18, clientes: 14 },
+  { date: "2024-06-22", profissionais: 32, clientes: 25 },
+  { date: "2024-06-23", profissionais: 48, clientes: 38 },
+  { date: "2024-06-24", profissionais: 14, clientes: 11 },
+  { date: "2024-06-25", profissionais: 15, clientes: 12 },
+  { date: "2024-06-26", profissionais: 44, clientes: 35 },
+  { date: "2024-06-27", profissionais: 45, clientes: 36 },
+  { date: "2024-06-28", profissionais: 16, clientes: 13 },
+  { date: "2024-06-29", profissionais: 12, clientes: 9 },
+  { date: "2024-06-30", profissionais: 45, clientes: 37 },
+];
 
 const chartConfig = {
-  visitors: {
-    label: "Visitors",
+  cadastros: {
+    label: "Cadastros",
   },
-  desktop: {
-    label: "Desktop",
+  profissionais: {
+    label: "Profissionais",
     color: "var(--chart-1)",
   },
-  mobile: {
-    label: "Mobile",
+  clientes: {
+    label: "Clientes",
     color: "var(--chart-2)",
   },
 } satisfies ChartConfig
 
 export function ChartAreaInteractive() {
   const [timeRange, setTimeRange] = React.useState("90d")
+  const [chartData, setChartData] = React.useState(chartDataStatic) // Inicia com os dados estáticos
+  const [loading, setLoading] = React.useState(false)
+
+  // Comentei a chamada à API para que o código funcione com os dados estáticos
+  // até você ter a rota do backend pronta.
+  /*
+  React.useEffect(() => {
+    async function fetchChartData() {
+      try {
+        setLoading(true)
+        
+        // ✨ Descomente e ajuste esta URL para a sua rota de API real
+        // const response = await fetch(`/api/dashboard/registrations?range=${timeRange}`)
+        
+        // if (!response.ok) {
+        //   throw new Error('Falha ao buscar dados do gráfico.')
+        // }
+        //
+        // const data = await response.json()
+        // setChartData(data)
+
+      } catch (error) {
+        console.error("Erro ao buscar dados do gráfico:", error)
+        setChartData([])
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchChartData()
+  }, [timeRange])
+  */
 
   const filteredData = chartData.filter((item) => {
     const date = new Date(item.date)
@@ -157,9 +190,9 @@ export function ChartAreaInteractive() {
     <Card className="pt-0">
       <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
         <div className="grid flex-1 gap-1">
-          <CardTitle>Area Chart - Interactive</CardTitle>
+          <CardTitle>Novos Cadastros</CardTitle>
           <CardDescription>
-            Mostra a evolução de visitantes por dispositivo ao longo do tempo.
+            Evolução diária de novos profissionais e clientes.
           </CardDescription>
         </div>
         <Select value={timeRange} onValueChange={setTimeRange}>
@@ -167,17 +200,17 @@ export function ChartAreaInteractive() {
             className="hidden w-[160px] rounded-lg sm:ml-auto sm:flex"
             aria-label="Select a value"
           >
-            <SelectValue placeholder="Last 3 months" />
+            <SelectValue placeholder="Últimos 3 meses" />
           </SelectTrigger>
           <SelectContent className="rounded-xl">
             <SelectItem value="90d" className="rounded-lg">
-              Last 3 months
+              Últimos 3 meses
             </SelectItem>
             <SelectItem value="30d" className="rounded-lg">
-              Last 30 days
+              Últimos 30 dias
             </SelectItem>
             <SelectItem value="7d" className="rounded-lg">
-              Last 7 days
+              Últimos 7 dias
             </SelectItem>
           </SelectContent>
         </Select>
@@ -189,27 +222,27 @@ export function ChartAreaInteractive() {
         >
           <AreaChart data={filteredData}>
             <defs>
-              <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id="fillProfissionais" x1="0" y1="0" x2="0" y2="1">
                 <stop
                   offset="5%"
-                  stopColor="var(--color-desktop)"
+                  stopColor="var(--color-profissionais)"
                   stopOpacity={0.8}
                 />
                 <stop
                   offset="95%"
-                  stopColor="var(--color-desktop)"
+                  stopColor="var(--color-profissionais)"
                   stopOpacity={0.1}
                 />
               </linearGradient>
-              <linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id="fillClientes" x1="0" y1="0" x2="0" y2="1">
                 <stop
                   offset="5%"
-                  stopColor="var(--color-mobile)"
+                  stopColor="var(--color-clientes)"
                   stopOpacity={0.8}
                 />
                 <stop
                   offset="95%"
-                  stopColor="var(--color-mobile)"
+                  stopColor="var(--color-clientes)"
                   stopOpacity={0.1}
                 />
               </linearGradient>
@@ -223,7 +256,7 @@ export function ChartAreaInteractive() {
               minTickGap={32}
               tickFormatter={(value) => {
                 const date = new Date(value)
-                return date.toLocaleDateString("en-US", {
+                return date.toLocaleDateString("pt-BR", {
                   month: "short",
                   day: "numeric",
                 })
@@ -234,7 +267,7 @@ export function ChartAreaInteractive() {
               content={
                 <ChartTooltipContent
                   labelFormatter={(value) => {
-                    return new Date(value).toLocaleDateString("en-US", {
+                    return new Date(value).toLocaleDateString("pt-BR", {
                       month: "short",
                       day: "numeric",
                     })
@@ -244,17 +277,17 @@ export function ChartAreaInteractive() {
               }
             />
             <Area
-              dataKey="mobile"
+              dataKey="clientes"
               type="natural"
-              fill="url(#fillMobile)"
-              stroke="var(--color-mobile)"
+              fill="url(#fillClientes)"
+              stroke="var(--color-clientes)"
               stackId="a"
             />
             <Area
-              dataKey="desktop"
+              dataKey="profissionais"
               type="natural"
-              fill="url(#fillDesktop)"
-              stroke="var(--color-desktop)"
+              fill="url(#fillProfissionais)"
+              stroke="var(--color-profissionais)"
               stackId="a"
             />
             <ChartLegend content={<ChartLegendContent />} />
