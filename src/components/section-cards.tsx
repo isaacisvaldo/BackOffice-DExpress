@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useState, useEffect } from 'react'; // Importa os hooks necessários
+import { getDashboardSummary } from "@/services/dasboard/dasboardService";
 
 // Adicione um componente de placeholder para o estado de carregamento
 function CardPlaceholder() {
@@ -39,18 +40,7 @@ export function SectionCards() {
     async function fetchDashboardData() {
       try {
         setLoading(true);
-        // ✨ Simulação de chamada de API. Substitua pelo seu endpoint real.
-        // const response = await fetch('/api/dashboard/summary');
-        // const data = await response.json();
-        
-        // Dados de exemplo para simular a resposta da API
-        const data = {
-          totalProfessionals: 1,
-          totalClients: 3,
-          activeServices: 0,
-          canceledRequests: 0,
-        };
-
+        const data = await getDashboardSummary();
         setDashboardData({
           professionals: data.totalProfessionals,
           clients: data.totalClients,
