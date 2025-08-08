@@ -109,7 +109,9 @@ const data = {
         { title: "Grau Acadêmico", url: "/shared-data/highest-degrees" },
         { title: "Estados Civis", url: "/shared-data/marital-status" },
         { title: "Gêneros", url: "/shared-data/genders" },
-        { title: "Setores", url: "/shared-data/sectors" }
+        { title: "Disponibilidade", url: "/shared-data/disponibilidae" },
+        { title: "Nivel de Experiencia", url: "/shared-data/nivel-experiencia" },
+        { title: "Setores-empresa", url: "/shared-data/sectors" }
       ],
     },
 
