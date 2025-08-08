@@ -1,50 +1,42 @@
 import { useEffect, useState } from "react"
 import { DataTable } from "@/components/data-table"
-import { cityColumns, type City } from "@/components/location/citiesColunn"
-import { getCities } from "@/services/location/cities.service"
+import { getDistricts } from "@/services/location/districts.service"
+import type { DistrictWithCity } from "@/services/location/districts.service"
+import { districtColumns } from "@/components/location/districtsColunn"
 
-export default function CitiesList() {
-  const [data, setData] = useState<City[]>([])
+export default function DistrictList() {
+  const [data, setData] = useState<DistrictWithCity[]>([]) // ✅ Usando o novo tipo
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
   const [totalPages, setTotalPages] = useState(1)
 
-  // ✅ Estado para o valor do input (atualiza em tempo real)
   const [nameFilter, setNameFilter] = useState<string>("")
-  
-  // ✅ Novo estado para o valor debounced (usado na chamada da API)
   const [debouncedNameFilter, setDebouncedNameFilter] = useState<string>("")
 
-  // ✅ 1. useEffect para o Debounce
-  // Ele aguarda 500ms após a última digitação antes de atualizar o estado `debouncedNameFilter`.
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedNameFilter(nameFilter)
-    }, 500) // ✅ Atraso de 500ms
+    }, 500)
 
-    // A função de limpeza (cleanup) é crucial para evitar chamadas duplicadas.
-    // Ela cancela o timer anterior se o usuário digitar novamente antes que o tempo se esgote.
     return () => {
       clearTimeout(timer)
     }
-  }, [nameFilter]) // ✅ Este useEffect só é executado quando `nameFilter` muda.
+  }, [nameFilter])
 
-  // ✅ 2. useEffect para a Chamada da API
-  // Ele agora depende do `debouncedNameFilter`, não do `nameFilter` em tempo real.
   useEffect(() => {
     async function fetchData() {
       setLoading(true)
       try {
-        const result = await getCities({
+        const result = await getDistricts({
           page,
           limit: limit === 0 ? undefined : limit,
-          search: debouncedNameFilter || undefined, // ✅ Usa o estado debounced
+          search: debouncedNameFilter || undefined,
         })
 
-        const mappedData: City[] = result.data.map((item: any) => ({
-          id: item.id,
-          name: item.name,
+        // ✅ O mapeamento agora inclui o objeto da cidade
+        const mappedData: DistrictWithCity[] = result.data.map((item) => ({
+          ...item,
           createdAt: new Date(item.createdAt).toLocaleDateString("pt-PT"),
           updatedAt: new Date(item.updatedAt).toLocaleDateString("pt-PT"),
         }))
@@ -52,24 +44,24 @@ export default function CitiesList() {
         setData(mappedData)
         setTotalPages(result.totalPages || 1)
       } catch (error) {
-        console.error("Erro ao carregar cidades", error)
+        console.error("Erro ao carregar distritos", error)
       } finally {
         setLoading(false)
       }
     }
-    
-    fetchData()
-  }, [page, limit, debouncedNameFilter]) // ✅ Este useEffect é executado apenas quando `page`, `limit` ou `debouncedNameFilter` muda.
 
+    fetchData()
+  }, [page, limit, debouncedNameFilter])
+  
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-bold mb-4">Lista de Cidades</h1>
+      <h1 className="text-2xl font-bold mb-4">Lista de Distritos</h1>
       <div className="container mx-auto py-6">
         {loading ? (
           <p>Carregando...</p>
         ) : (
           <DataTable
-            columns={cityColumns}
+            columns={districtColumns}
             data={data}
             page={page}
             setPage={setPage}
@@ -81,7 +73,7 @@ export default function CitiesList() {
                 type: "input",
                 column: "name",
                 placeholder: "Filtrar por nome...",
-                value: nameFilter, // ✅ O input continua usando o estado em tempo real
+                value: nameFilter,
                 onChange: setNameFilter,
               },
             ]}
