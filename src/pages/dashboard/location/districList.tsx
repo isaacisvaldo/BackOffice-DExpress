@@ -5,7 +5,7 @@ import type { DistrictWithCity } from "@/services/location/districts.service"
 import { districtColumns } from "@/components/location/districtsColunn"
 
 export default function DistrictList() {
-  const [data, setData] = useState<DistrictWithCity[]>([]) // ✅ Usando o novo tipo
+  const [data, setData] = useState<DistrictWithCity[]>([]) 
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(5)

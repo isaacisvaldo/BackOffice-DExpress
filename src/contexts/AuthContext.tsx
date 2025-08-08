@@ -1,65 +1,66 @@
-// src/contexts/AuthContext.tsx
-import { createContext, useContext, useEffect, useState } from "react"
-import { isAuthenticated, login as loginAPI, logout as logoutAPI } from "@/services/auth/authService"
+import { createContext, useContext, useEffect, useState } from "react";
+import { isAuthenticated, login as loginAPI, logout as logoutAPI } from "@/services/auth/authService";
 
 interface User {
-  id: string
-  name: string
-  email: string
-  role: string
-  permissions: string[]
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  permissions: string[];
 }
 
 interface AuthContextType {
-  user: User | null
-  login: (email: string, password: string) => Promise<void>
-  logout: () => Promise<void>
-  loading: boolean
-  isLoggedIn: boolean
+  user: User | null;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
+  isLoading: boolean;
+  isLoggedIn: boolean;
 }
 
-const AuthContext = createContext<AuthContextType | null>(null)
+const AuthContext = createContext<AuthContextType | null>(null);
 
 export const useAuth = () => {
-  const context = useContext(AuthContext)
-  if (!context) throw new Error("useAuth must be used within AuthProvider")
-  return context
-}
+  const context = useContext(AuthContext);
+  if (!context) throw new Error("useAuth must be used within AuthProvider");
+  return context;
+};
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setisLoading] = useState(true);
 
-useEffect(() => {
-  async function checkAuth() {
-    try {
-      const res = await isAuthenticated();
-      if (res && res.user) setUser(res.user);
-    } catch {
-      setUser(null);
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    async function checkAuth() {
+      try {
+        const res = await isAuthenticated();
+        if (res && res.user) setUser(res.user);
+      } catch (error) {
+        // Em caso de erro, garantimos que o utilizador é nulo.
+        setUser(null);
+      } finally {
+        // Este bloco é executado sempre, garantindo que o loading seja false.
+        setisLoading(false);
+      }
     }
-  }
 
-  checkAuth();
-}, []);
+    checkAuth();
+  }, []);
 
   async function login(email: string, password: string) {
-    const data = await loginAPI(email, password)
-    setUser(data.user)
+    const data = await loginAPI(email, password);
+    setUser(data.user);
   }
 
   async function logout() {
-    await logoutAPI()
-    setUser(null)
+    await logoutAPI();
+    setUser(null);
   }
 
   return (
     <AuthContext.Provider
-      value={{ user, login, logout, loading, isLoggedIn: !!user }}
+      value={{ user, login, logout, isLoading, isLoggedIn: !!user }}
     >
       {children}
     </AuthContext.Provider>
-  )
+  );
 }
