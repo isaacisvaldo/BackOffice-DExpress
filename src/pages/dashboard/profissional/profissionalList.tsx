@@ -1,6 +1,7 @@
 import { DataTable } from "@/components/data-table";
 import { columns, type Professional } from "@/components/profissional/professionals-columns";
-import { getEspecialities } from "@/services/especialities/especialityService";
+import { getSpecialtiesList } from "@/services/especialities/especiality.service";
+
 import { listAll } from "@/services/profissional/profissionalService";
 
 import { useState, useEffect } from "react";
@@ -48,7 +49,7 @@ export default function ProfessionalsList() {
         const result = await listAll(filters);
         setProfessionals(result.data);
         setTotalPages(result.totalPages);
-        const esp = await getEspecialities();
+        const esp = await getSpecialtiesList();
         setSpecialties(esp);
       } catch (error) {
         console.error("Erro ao carregar profissionais:", error);

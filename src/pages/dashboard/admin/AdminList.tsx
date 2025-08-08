@@ -1,7 +1,9 @@
+// src/pages/dashboard/admin/AdminList.tsx
+
 import { useEffect, useState } from "react";
 import { DataTable } from "@/components/data-table";
-import { adminUserColumns } from "@/components/admin/adminUserColumns";
-import { getAdminUsers, type AdminUser } from "@/services/admin/admin.service";
+import { adminUserColumns } from '@/components/admin/adminUserColumns'; 
+import { getAdminUsers, type AdminUser, createAdminUser, deleteAdminUser } from "@/services/admin/admin.service";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import {
@@ -32,14 +34,10 @@ import {
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
-import { Checkbox } from "@/components/ui/checkbox";
+import { toast } from "sonner"; // Verifique se 'sonner' está configurado ou use 'use-toast' do shadcn
+import { getGendersList } from "@/services/gender/gender.service";
+import { getProfilesList, type Profile } from "@/services/profile/profile.service";
 
-const INTERNAL_ROLES = [
-  "GENERAL_ADMIN",
-  "OPERATIONS_MANAGER",
-  "SUPPORT_AGENT"
-];
 
 const formSchema = z.object({
   name: z.string().min(3, { message: "O nome deve ter pelo menos 3 caracteres." }),
@@ -49,8 +47,7 @@ const formSchema = z.object({
   birthDate: z.string().refine(val => !isNaN(new Date(val).getTime()), { message: "Data de nascimento inválida." }),
   email: z.string().email({ message: "Email inválido." }),
   password: z.string().min(6, { message: "A senha deve ter pelo menos 6 caracteres." }).optional().or(z.literal("")),
-  role: z.enum(INTERNAL_ROLES as [string, ...string[]], { message: "Selecione um cargo válido." }),
-  permissions: z.array(z.string()).optional(),
+  profileId: z.string().min(1, { message: "Selecione um perfil." }),
 });
 
 export default function AdminList() {
@@ -62,7 +59,11 @@ export default function AdminList() {
   const [nameFilter, setNameFilter] = useState<string>("");
   const [debouncedNameFilter, setDebouncedNameFilter] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [availablePermissions, setAvailablePermissions] = useState<Array<{ id: string; name: string }>>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false); // Estado para controlar o carregamento da exclusão
+
+  const [availableProfiles, setAvailableProfiles] = useState<Profile[]>([]);
+  const [availableGenders, setAvailableGenders] = useState<Array<{ id: string; name: string ,label:string}>>([]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -74,58 +75,11 @@ export default function AdminList() {
       birthDate: "",
       email: "",
       password: "",
-      role: INTERNAL_ROLES[0],
-      permissions: [],
+      profileId: "", 
     },
   });
 
-  const handleSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      console.log("Valores do formulário:", values);
-      // Aqui você chamaria o seu serviço de API para criar o admin
-      // await createAdminUser(values); 
-
-      toast.success("Sucesso!", {
-        description: "Administrador criado com sucesso.",
-      });
-
-      setIsModalOpen(false);
-      form.reset();
-      fetchData();
-    } catch (error) {
-      console.error("Erro ao criar admin:", error);
-      toast.error("Erro", {
-        description: "Falha ao criar o administrador. Tente novamente.",
-      });
-    }
-  };
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedNameFilter(nameFilter);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [nameFilter]);
-
-  useEffect(() => {
-    const fetchPermissions = async () => {
-      const permissionsFromApi = [
-        { id: "perm_1", name: "CREATE_USER" },
-        { id: "perm_2", name: "VIEW_REPORTS" },
-        { id: "perm_3", name: "EDIT_REPORTS" },
-        { id: "perm_4", name: "DELETE_REPORTS" },
-        { id: "perm_5", name: "MANAGE_SETTINGS" },
-        { id: "perm_6", name: "MANAGE_ADMINS" },
-        { id: "perm_7", name: "VIEW_LOGS" },
-        { id: "perm_8", name: "ACCESS_AUDIT" },
-        { id: "perm_9", name: "DOWNLOAD_DATA" },
-        { id: "perm_10", name: "MANAGE_FINANCE" },
-      ];
-      setAvailablePermissions(permissionsFromApi);
-    };
-    fetchPermissions();
-  }, []);
-
+  // Função para buscar os dados dos administradores
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -138,24 +92,100 @@ export default function AdminList() {
       setTotalPages(result.totalPages || 1);
     } catch (error) {
       console.error("Erro ao carregar administradores", error);
+      toast.error("Erro", {
+        description: "Falha ao carregar a lista de administradores.",
+      });
     } finally {
       setLoading(false);
     }
   };
 
+  // Função para lidar com a exclusão de um administrador
+  const handleDelete = async (adminId: string) => {
+    setIsDeleting(true); // Ativa o estado de carregamento da exclusão
+    try {
+      await deleteAdminUser(adminId);
+      toast.success("Sucesso", {
+        description: "Administrador excluído com sucesso!",
+      });
+      fetchData(); // Recarrega os dados da tabela para refletir a exclusão
+    } catch (error) {
+      console.error("Erro ao excluir admin:", error);
+      toast.error("Erro", {
+        description: "Falha ao excluir o administrador. Tente novamente.",
+      });
+    } finally {
+      setIsDeleting(false); // Desativa o estado de carregamento
+    }
+  };
+
+  // Função para lidar com a submissão do formulário de criação
+  const handleSubmit = async (values: z.infer<typeof formSchema>) => {
+    setIsSubmitting(true);
+    try {
+      await createAdminUser(values);
+      toast.success("Sucesso", {
+        description: "Administrador criado com sucesso!",
+      });
+      setIsModalOpen(false); // Fecha o modal após o sucesso
+      form.reset(); // Limpa o formulário
+      fetchData(); // Recarrega os dados da tabela
+    } catch (error) {
+      console.error("Erro ao criar admin:", error);
+      toast.error("Erro", {
+        description: "Falha ao criar o administrador. Tente novamente.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Efeito para debounce do filtro de nome
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedNameFilter(nameFilter);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [nameFilter]);
+
+  // Efeito para buscar dados quando a página, limite ou filtro de nome muda
   useEffect(() => {
     fetchData();
   }, [page, limit, debouncedNameFilter]);
 
-  const genders = [
-    { id: "uuid-genero-1", name: "Masculino" },
-    { id: "uuid-genero-2", name: "Feminino" },
-  ];
+  // Efeito para buscar a lista de perfis disponíveis
+  useEffect(() => {
+    const fetchProfiles = async () => {
+      try {
+        const profilesFromApi = await getProfilesList();
+        setAvailableProfiles(profilesFromApi);
+      } catch (error) {
+        console.error("Erro ao buscar perfis:", error);
+      }
+    };
+    fetchProfiles();
+  }, []);
+  
+  // Efeito para buscar a lista de gêneros disponíveis
+  useEffect(() => {
+    const fetchGenders = async () => {
+      try {
+        const gendersFromApi = await getGendersList();
+        setAvailableGenders(gendersFromApi);
+      } catch (error) {
+        console.error("Erro ao buscar gêneros:", error);
+      }
+    };
+    fetchGenders();
+  }, []);
+
+  // Instancia as colunas, passando a função handleDelete e o estado isDeleting
+  const columns = adminUserColumns(handleDelete, isDeleting);
 
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold">Administradores</h1>
+        <h1 className="text-2xl font-bold">Utilizadores</h1>
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogTrigger asChild>
             <Button>
@@ -163,7 +193,6 @@ export default function AdminList() {
               Adicionar Novo Admin
             </Button>
           </DialogTrigger>
-          {/* ✅ Modal com largura aumentada para telas pequenas e grandes */}
           <DialogContent className="sm:max-w-[700px]">
             <DialogHeader>
               <DialogTitle>Adicionar Novo Administrador</DialogTitle>
@@ -173,6 +202,7 @@ export default function AdminList() {
             </DialogHeader>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(handleSubmit)} className="grid gap-4 py-4">
+                {/* Campos do formulário para Nome Completo, Email, Perfil, Gênero, Telefone, Nº de Identidade, Data de Nascimento, Senha */}
                 <FormField
                   control={form.control}
                   name="name"
@@ -204,23 +234,28 @@ export default function AdminList() {
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
-                    name="role"
+                    name="profileId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Cargo</FormLabel>
+                        <FormLabel>Perfil</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Selecione um cargo" />
+                              <SelectValue placeholder="Selecione um perfil" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {INTERNAL_ROLES.map(role => (
-                              <SelectItem key={role} value={role}>{role}</SelectItem>
+                            {availableProfiles.map(profile => (
+                              <SelectItem key={profile.id} value={profile.id}>
+                                {profile.label}
+                              </SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
                         <FormMessage />
+                        <FormDescription>
+                          O perfil define o conjunto de permissões do administrador.
+                        </FormDescription>
                       </FormItem>
                     )}
                   />
@@ -238,8 +273,8 @@ export default function AdminList() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {genders.map(gender => (
-                              <SelectItem key={gender.id} value={gender.id}>{gender.name}</SelectItem>
+                            {availableGenders.map(gender => (
+                              <SelectItem key={gender.id} value={gender.id}>{gender.label}</SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
@@ -309,60 +344,8 @@ export default function AdminList() {
                   />
                 </div>
 
-                <FormField
-                  control={form.control}
-                  name="permissions"
-                  render={() => (
-                    <FormItem>
-                      <div className="mb-4">
-                        <FormLabel>Permissões</FormLabel>
-                        <FormDescription>
-                          Selecione as permissões que este administrador terá.
-                        </FormDescription>
-                      </div>
-                      {/* ✅ Container com rolagem para a lista de permissões */}
-                      <div className="max-h-[200px] overflow-y-auto rounded-md border p-4">
-                        {availablePermissions.map((permission) => (
-                          <FormField
-                            key={permission.id}
-                            control={form.control}
-                            name="permissions"
-                            render={({ field }) => {
-                              return (
-                                <FormItem
-                                  key={permission.id}
-                                  className="flex flex-row items-start space-x-3 space-y-0"
-                                >
-                                  <FormControl>
-                                    <Checkbox
-                                      checked={field.value?.includes(permission.id)}
-                                      onCheckedChange={(checked) => {
-                                        return checked
-                                          ? field.onChange([...(field.value || []), permission.id])
-                                          : field.onChange(
-                                              field.value?.filter(
-                                                (value) => value !== permission.id
-                                              )
-                                            );
-                                      }}
-                                    />
-                                  </FormControl>
-                                  <FormLabel className="font-normal">
-                                    {permission.name}
-                                  </FormLabel>
-                                </FormItem>
-                              );
-                            }}
-                          />
-                        ))}
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <Button type="submit" className="mt-4">
-                  Criar Administrador
+                <Button type="submit" className="mt-4" disabled={isSubmitting}>
+                  {isSubmitting ? "Criando..." : "Criar Administrador"}
                 </Button>
               </form>
             </Form>
@@ -375,7 +358,7 @@ export default function AdminList() {
           <p>Carregando...</p>
         ) : (
           <DataTable
-            columns={adminUserColumns}
+            columns={columns} 
             data={data}
             page={page}
             setPage={setPage}

@@ -122,7 +122,8 @@ const data = {
       icon: Shield,
       items: [
         { title: "Usuários Internos", url: "/admin/users" },
-        { title: "Perfis e Permissões", url: "/admin/roles" },
+        { title: "Perfis ", url: "/admin/roles" },
+        { title: "Permissões", url: "/admin/permissions" },
       ],
     },
 

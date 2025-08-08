@@ -147,7 +147,7 @@ export function ApplicationDetailTabs({
       <CardDescription>Escreva uma nota com formatação avançada.</CardDescription>
     </CardHeader>
     <CardContent>
-<EmailEditor recipient="idaliana.ngombo@gmail.com" />
+<EmailEditor recipient={application.email} />
 
 
 
