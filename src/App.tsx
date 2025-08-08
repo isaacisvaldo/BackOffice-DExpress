@@ -15,6 +15,7 @@ import ApplicationDetailPage from "./pages/dashboard/candidacy/ApplicationDetail
 import ProfessionalsList from "./pages/dashboard/profissional/profissionalList"
 import DistrictList from "./pages/dashboard/location/districList"
 import AdminList from "./pages/dashboard/admin/AdminList"
+import RoleList from "./pages/dashboard/role/RoleList"
 
 
 export default function App() {
@@ -42,6 +43,9 @@ export default function App() {
               <Route path="/hires/applications" element={<ApplicationsPage />} />
               <Route path="/hires/applications/:id" element={<ApplicationDetailPage />} />
               <Route path="/professionals" element={<ProfessionalsList />} />
+              <Route path="/admin/roles-permissions" element={<RoleList />} />
+
+             
 
               <Route path="profile" element={<ProfilePage />} />
 

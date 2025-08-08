@@ -1,16 +1,11 @@
 // src/services/api-client.ts
 
-// NOTA: Certifique-se de que a biblioteca de toast
-// que você está usando (como 'react-hot-toast') esteja instalada em seu projeto.
 import toast from 'react-hot-toast';
 
 const API_URL = import.meta.env.VITE_API_URL || "";
 
 /**
  * Interface genérica para parâmetros de consulta, incluindo paginação.
- * @param page O número da página (opcional, padrão 1).
- * @param limit O limite de itens por página (opcional, padrão 10).
- * @param key Qualquer outro parâmetro de filtro.
  */
 export interface FilterParams {
   page?: number;
@@ -23,14 +18,19 @@ export interface FilterParams {
  * Exibe um toast de sucesso ou de erro e lança um erro, se necessário.
  * @param response A resposta do fetch.
  * @param successMessage A mensagem a ser exibida em caso de sucesso (opcional).
+ * @param method O método HTTP da requisição (opcional).
+ * @param showSuccessToastForGet Força a exibição do toast de sucesso para requisições GET.
  * @returns A resposta se for bem-sucedida.
  */
-async function handleResponse(response: Response, successMessage?: string, method?: string): Promise<Response> {
+async function handleResponse(
+  response: Response,
+  successMessage?: string,
+  method?: string,
+  showSuccessToastForGet: boolean = false
+): Promise<Response> {
   if (response.ok) {
-    // ✅ VERIFICA SE A REQUISIÇÃO NÃO É UM GET
-    // Se a requisição foi bem-sucedida e não é um GET, exibe o toast.
-    // O status 204 também é considerado uma operação bem-sucedida.
-    if (method !== 'GET') {
+    // Apenas exibe o toast se o método não for GET ou se a flag showSuccessToastForGet for true.
+    if (method !== 'GET' || showSuccessToastForGet) {
       toast.success(successMessage || 'Operação concluída com sucesso!');
     }
   } else {
@@ -53,11 +53,13 @@ async function handleResponse(response: Response, successMessage?: string, metho
  * Perfeito para listagens paginadas e com pesquisa.
  * @param endpoint O caminho do endpoint da API (ex: '/cities', '/districts').
  * @param params Um objeto de parâmetros de filtro.
+ * @param showSuccessToast Define se deve mostrar um toast de sucesso.
  * @returns Os dados JSON da resposta da API.
  */
 export async function fetchDataWithFilter<T extends FilterParams>(
   endpoint: string,
   params: T = {} as T,
+  showSuccessToast: boolean = false,
 ) {
   const query = new URLSearchParams();
 
@@ -78,7 +80,7 @@ export async function fetchDataWithFilter<T extends FilterParams>(
     credentials: 'include'
   });
 
-  await handleResponse(response);
+  await handleResponse(response, "Dados listados com sucesso!", "GET", showSuccessToast);
   return response.json();
 }
 
@@ -86,16 +88,17 @@ export async function fetchDataWithFilter<T extends FilterParams>(
  * Função genérica para buscar dados de um endpoint sem filtros ou paginação (GET).
  * Ideal para buscar listas completas para dropdowns.
  * @param endpoint O caminho do endpoint da API (ex: '/cities/list').
+ * @param showSuccessToast Define se deve mostrar um toast de sucesso.
  * @returns Os dados JSON da resposta da API.
  */
-export async function fetchData(endpoint: string) {
+export async function fetchData(endpoint: string, showSuccessToast: boolean = false) {
   const response = await fetch(`${API_URL}${endpoint}`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
     credentials: 'include'
   });
 
-  await handleResponse(response);
+  await handleResponse(response, "Dados carregados com sucesso!", "GET", showSuccessToast);
   return response.json();
 }
 
@@ -114,7 +117,7 @@ export async function sendData<T>(endpoint: string, method: "POST" | "PUT" | "PA
     credentials: 'include'
   });
 
-  await handleResponse(response, "Dados enviados com sucesso!");
+  await handleResponse(response, "Dados enviados com sucesso!", method);
   return response.json();
 }
 
@@ -131,7 +134,7 @@ export async function deleteData(endpoint: string) {
     credentials: 'include'
   });
 
-  await handleResponse(response, "Recurso removido com sucesso!");
+  await handleResponse(response, "Recurso removido com sucesso!", "DELETE");
 
   // A resposta de um DELETE pode ser um 204 No Content, então é importante verificar
   // se há um corpo de resposta antes de tentar fazer o parse.

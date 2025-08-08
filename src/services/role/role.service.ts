@@ -11,6 +11,7 @@ import {
 export interface Permission {
   id: string;
   name: string;
+  label:string;
   createdAt: string;
   updatedAt: string;
 }
@@ -49,7 +50,7 @@ export interface PaginatedProfilesResponse {
 export async function getProfiles(
   params: GetProfilesParams = {},
 ): Promise<PaginatedProfilesResponse> {
-  return fetchDataWithFilter('/profiles', params);
+  return fetchDataWithFilter('/roles', params);
 }
 
 /**
@@ -58,7 +59,7 @@ export async function getProfiles(
  * @returns Um array com todos os objetos de perfil.
  */
 export async function getProfilesList(): Promise<Profile[]> {
-  return fetchData('/profiles/all');
+  return fetchData('/roles/all');
 }
 
 // Define o DTO para a criação de um novo perfil
@@ -76,7 +77,7 @@ export interface CreateProfileDto {
  * @returns O objeto de perfil criado.
  */
 export async function createProfile(data: CreateProfileDto): Promise<Profile> {
-  return sendData('/profiles', 'POST', data);
+  return sendData('/roles', 'POST', data);
 }
 
 /**
@@ -86,7 +87,7 @@ export async function createProfile(data: CreateProfileDto): Promise<Profile> {
  * @returns O objeto de perfil encontrado.
  */
 export async function getProfileById(id: string): Promise<Profile> {
-  return fetchData(`/profiles/${id}`);
+  return fetchData(`/roles/${id}`);
 }
 
 // Define o DTO para a atualização de um perfil
@@ -108,7 +109,7 @@ export async function updateProfile(
   id: string,
   data: UpdateProfileDto,
 ): Promise<Profile> {
-  return sendData(`/profiles/${id}`, 'PATCH', data);
+  return sendData(`/roles/${id}`, 'PATCH', data);
 }
 
 /**
@@ -118,5 +119,5 @@ export async function updateProfile(
  * @returns O objeto de perfil removido.
  */
 export async function deleteProfile(id: string): Promise<Profile> {
-  return deleteData(`/profiles/${id}`);
+  return deleteData(`/roles/${id}`);
 }

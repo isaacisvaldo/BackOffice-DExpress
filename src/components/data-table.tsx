@@ -1,7 +1,6 @@
 "use client"
-import { Calendar } from "@/components/ui/calendar"  // o componente correto
-import { ChevronDownIcon } from "lucide-react"       // ícone separado
-
+import { Calendar } from "@/components/ui/calendar"
+import { ChevronDownIcon } from "lucide-react"
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -38,7 +37,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-
 import {
   Popover,
   PopoverContent,
@@ -56,6 +54,7 @@ interface FilterConfig {
   reset?: () => void
 }
 
+// ✅ Interface atualizada para aceitar a prop 'meta'
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
@@ -66,7 +65,8 @@ interface DataTableProps<TData, TValue> {
   setLimit: (limit: number) => void
   filters?: FilterConfig[]
   className?: string
-  
+  // ✅ Adição da prop 'meta' para passar funções e dados para as colunas
+  meta?: { onViewDetails: (data: TData) => void };
 }
 
 export function DataTable<TData, TValue>({
@@ -79,7 +79,7 @@ export function DataTable<TData, TValue>({
   setLimit,
   filters = [],
   className = "",
-
+  meta, // ✅ Adição da prop 'meta' na desestruturação
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
@@ -96,6 +96,8 @@ export function DataTable<TData, TValue>({
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
+    // ✅ Passando a prop 'meta' para a configuração da tabela
+    meta, 
     state: {
       sorting,
       columnFilters,

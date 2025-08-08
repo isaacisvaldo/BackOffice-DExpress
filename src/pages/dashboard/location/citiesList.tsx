@@ -7,7 +7,7 @@ export default function CitiesList() {
   const [data, setData] = useState<City[]>([])
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
-  const [limit, setLimit] = useState(10)
+  const [limit, setLimit] = useState(5)
   const [totalPages, setTotalPages] = useState(1)
 
   // ✅ Estado para o valor do input (atualiza em tempo real)

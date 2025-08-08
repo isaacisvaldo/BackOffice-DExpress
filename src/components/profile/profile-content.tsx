@@ -169,7 +169,7 @@ export default function ProfileContent({ user }: { user: AdminUser }) {
         <Card>
           <CardHeader>
             <CardTitle>Permissões</CardTitle>
-            <CardDescription>Gerencie as permissões do usuário.</CardDescription>
+            <CardDescription>Permissões do usuário.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             {/* ✅ Novo container com scroll para não estragar a UI */}
@@ -184,9 +184,10 @@ export default function ProfileContent({ user }: { user: AdminUser }) {
                 <p className="text-sm text-muted-foreground">Nenhuma permissão atribuída</p>
               )}
             </div>
-            <Button onClick={handleAccountSubmit}>Salvar Alterações</Button>
+          
           </CardContent>
         </Card>
+        <br />
 
         {/* Zona de Perigo */}
         <Card className="border-destructive/50">
