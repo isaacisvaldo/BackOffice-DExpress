@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Key, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,27 +10,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../ui/select";
+import { type AdminUser, type Permission } from "@/services/admin/admin.service";
+import { getGendersList, type Gender } from "@/services/gender/gender.service";
 
-interface UserProfile {
-  id: string;
-  name: string;
-  numberphone: string;
-  isActive: boolean;
-  identityNumber: string;
-  gender: "MALE" | "FEMALE" | "OTHER";
-  birthDate: Date | string;
-  email: string;
-  avatar?: string | null;
-  role: string;
-  createdAt: Date | string;
-  updatedAt: Date | string;
-  permissions: string[];
-  accountSettings: any[];
-  notificationSettings: any[];
-  securitySettings: any[];
-}
-
-export default function ProfileContent({ user }: { user: UserProfile }) {
+export default function ProfileContent({ user }: { user: AdminUser }) {
   const formatDate = (date: Date | string): string => {
     const d = typeof date === "string" ? new Date(date) : date;
     return d.toISOString().split("T")[0];
@@ -41,46 +24,58 @@ export default function ProfileContent({ user }: { user: UserProfile }) {
     email: user.email,
     phone: user.numberphone,
     identityNumber: user.identityNumber,
-    gender: user.gender,
+    // ✅ Inicializa o estado com o ID do gênero, que é a chave única
+    genderId: user.gender.id,
     birthDate: formatDate(user.birthDate),
-    role: user.role,
+    profileLabel: user.profile.label,
     bio: "",
     location: "",
   });
 
-  const [permissions, setPermissions] = useState<string[]>(user.permissions || []);
-  const [newPermission, setNewPermission] = useState<string>("");
+  const [permissions] = useState<Permission[]>(user.profile.permissions || []);
 
   const [securitySettings, setSecuritySettings] = useState({
-    loginNotifications: user.securitySettings?.[0]?.loginNotifications ?? false,
+    loginNotifications: user.securitySettings?.loginNotifications ?? false,
   });
 
   const [notifications, setNotifications] = useState({
-    email: user.notificationSettings?.[0]?.email ?? true,
-    push: user.notificationSettings?.[0]?.push ?? false,
-    marketing: user.notificationSettings?.[0]?.marketing ?? false,
-    weekly: user.notificationSettings?.[0]?.weekly ?? false,
+    email: user.notificationSettings?.email ?? true,
+    push: user.notificationSettings?.push ?? false,
+    marketing: user.notificationSettings?.marketing ?? false,
+    weekly: user.notificationSettings?.weekly ?? false,
   });
+
+  // ✅ Estado para armazenar a lista de gêneros da API
+  const [availableGenders, setAvailableGenders] = useState<Gender[]>([]);
+
+  // ✅ Efeito para buscar a lista de gêneros da API
+  useEffect(() => {
+    const fetchGenders = async () => {
+      try {
+        const gendersFromApi = await getGendersList();
+        setAvailableGenders(gendersFromApi);
+      } catch (error) {
+        console.error("Erro ao buscar gêneros:", error);
+      }
+    };
+    fetchGenders();
+  }, []);
 
   // Funções de salvamento
   const handleProfileSubmit = () => {
     console.log("Salvar perfil", profile);
-    
   };
 
   const handleAccountSubmit = () => {
     console.log("Salvar permissões", permissions);
-   
   };
 
   const handleSecuritySubmit = () => {
     console.log("Salvar segurança", securitySettings);
-  
   };
 
   const handleNotificationsSubmit = () => {
     console.log("Salvar notificações", notifications);
-  
   };
 
   return (
@@ -128,28 +123,28 @@ export default function ProfileContent({ user }: { user: UserProfile }) {
               </div>
               <div>
                 <Label htmlFor="gender" className="mb-2 block">Gênero</Label>
-               <Select
-  value={profile.gender}
-  onValueChange={(value) =>
-    setProfile({ ...profile, gender: value as "MALE" | "FEMALE" | "OTHER" })
-  }
->
-  <SelectTrigger className="w-full border rounded-md px-2 py-2 bg-white">
-    <SelectValue placeholder="Selecione o gênero" />
-  </SelectTrigger>
-  <SelectContent>
-    <SelectGroup>
-      <SelectLabel>Gênero</SelectLabel>
-      <SelectItem value="MALE">Masculino</SelectItem>
-      <SelectItem value="FEMALE">Feminino</SelectItem>
-      <SelectItem value="OTHER">Outro</SelectItem>
-    </SelectGroup>
-  </SelectContent>
-</Select>
+                <Select
+                  value={profile.genderId}
+                  onValueChange={(value) => setProfile({ ...profile, genderId: value })}
+                >
+                  <SelectTrigger className="w-full border rounded-md px-2 py-2 bg-white">
+                    <SelectValue placeholder="Selecione o gênero" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Gênero</SelectLabel>
+                      {availableGenders.map((gender) => (
+                        <SelectItem key={gender.id} value={gender.id}>
+                          {gender.label}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <Label htmlFor="role" className="mb-2 block">Função</Label>
-                <Input id="role" value={profile.role} disabled />
+                <Input id="role" value={profile.profileLabel} disabled />
               </div>
             </div>
             <div>
@@ -174,52 +169,25 @@ export default function ProfileContent({ user }: { user: UserProfile }) {
         <Card>
           <CardHeader>
             <CardTitle>Permissões</CardTitle>
-            <CardDescription>Gerencie as permissões do usuário.</CardDescription>
+            <CardDescription>Permissões do usuário.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="flex flex-wrap gap-2">
+            {/* ✅ Novo container com scroll para não estragar a UI */}
+            <div className="max-h-48 overflow-y-auto flex flex-wrap gap-2 rounded-md border p-4">
               {permissions.length > 0 ? (
                 permissions.map((perm, index) => (
-                  <Badge
-                    key={index}
-                    variant="secondary"
-                    className="flex items-center gap-2 py-1 px-2"
-                  >
-                    {perm}
-                    <button
-                      onClick={() => setPermissions((prev) => prev.filter((_, i) => i !== index))}
-                      className="text-red-500 hover:text-red-700"
-                    >
-                      ✕
-                    </button>
+                  <Badge key={index} variant="secondary">
+                    {perm.label}
                   </Badge>
                 ))
               ) : (
                 <p className="text-sm text-muted-foreground">Nenhuma permissão atribuída</p>
               )}
             </div>
-
-            {/* Adicionar nova permissão */}
-            <div className="flex gap-2 mt-3">
-              <Input
-                placeholder="Nova permissão (ex.: EDIT_USERS)"
-                value={newPermission}
-                onChange={(e) => setNewPermission(e.target.value)}
-              />
-              <Button
-                onClick={() => {
-                  if (!newPermission.trim()) return;
-                  setPermissions((prev) => [...prev, newPermission.trim()]);
-                  setNewPermission("");
-                }}
-              >
-                Adicionar
-              </Button>
-            </div>
-
-            <Button onClick={handleAccountSubmit}>Salvar Alterações</Button>
+          
           </CardContent>
         </Card>
+        <br />
 
         {/* Zona de Perigo */}
         <Card className="border-destructive/50">

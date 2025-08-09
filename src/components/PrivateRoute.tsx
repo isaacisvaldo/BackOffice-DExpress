@@ -1,6 +1,6 @@
 import { useEffect, useState, type JSX } from "react";
 import { Navigate } from "react-router-dom";
-import { isAuthenticated, isTokenExpired, refreshAccessToken, login } from "@/services/auth/authService";
+import { isAuthenticated, refreshAccessToken, login } from "@/services/auth/authService";
 
 export default function PrivateRoute({ children }: { children: JSX.Element }) {
   const [auth, setAuth] = useState<boolean | null>(null);
@@ -10,27 +10,27 @@ export default function PrivateRoute({ children }: { children: JSX.Element }) {
 
   useEffect(() => {
     async function check() {
-      const expired = isTokenExpired();
-
-      if (expired && !refreshTried) {
-        setRefreshTried(true); // Marca que já tentamos atualizar
-        try {
-          const { accessToken } = await refreshAccessToken();
-          localStorage.setItem("accessToken", accessToken);
-          setAuth(true);
-        } catch {
-          // Se o refresh falhar, mostramos a modal
-          setShowReauthModal(true);
+      try {
+        const isValid = await isAuthenticated();
+        setAuth(isValid);
+        setLoading(false);
+      } catch {
+        if (!refreshTried) {
+          setRefreshTried(true);
+          try {
+            await refreshAccessToken();
+            const isValid = await isAuthenticated();
+            setAuth(isValid);
+          } catch {
+            setShowReauthModal(true);
+            setAuth(false);
+          } finally {
+            setLoading(false);
+          }
+        } else {
           setAuth(false);
-        } finally {
           setLoading(false);
         }
-      } else if (!expired) {
-        const valid = await isAuthenticated();
-        setAuth(valid);
-        setLoading(false);
-      } else {
-        setLoading(false);
       }
     }
     check();
@@ -38,9 +38,7 @@ export default function PrivateRoute({ children }: { children: JSX.Element }) {
 
   async function handleReauth(email: string, password: string) {
     try {
-      const { accessToken, refreshToken } = await login(email, password);
-      localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("refreshToken", refreshToken);
+      await login(email, password); // Tokens já vão como cookie
       setAuth(true);
       setShowReauthModal(false);
     } catch (e) {
@@ -48,13 +46,11 @@ export default function PrivateRoute({ children }: { children: JSX.Element }) {
     }
   }
 
- function handleCancel() {
-  localStorage.clear();   
-  setShowReauthModal(false);
-  setAuth(false);
-  // Redireciona para a página inicial ou de login
-  window.location.href = "/";
-}
+  function handleCancel() {
+    setAuth(false);
+    setShowReauthModal(false);
+    window.location.href = "/";
+  }
 
   if (loading) {
     return (
@@ -71,7 +67,7 @@ export default function PrivateRoute({ children }: { children: JSX.Element }) {
   return (
     <>
       {showReauthModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50">
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
           <div className="bg-white rounded-lg p-6 w-96 space-y-4">
             <h2 className="text-lg font-bold">Sessão Expirada</h2>
             <p className="text-sm text-gray-600">

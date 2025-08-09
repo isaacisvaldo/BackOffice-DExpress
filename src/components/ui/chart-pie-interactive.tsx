@@ -26,75 +26,127 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-export const description = "An interactive pie chart"
+export const description = "An interactive pie chart for company sectors"
 
-const desktopData = [
-  { month: "january", desktop: 186, fill: "var(--color-january)" },
-  { month: "february", desktop: 305, fill: "var(--color-february)" },
-  { month: "march", desktop: 237, fill: "var(--color-march)" },
-  { month: "april", desktop: 173, fill: "var(--color-april)" },
-  { month: "may", desktop: 209, fill: "var(--color-may)" },
+// Dados estáticos de exemplo que serão usados até que a API esteja pronta.
+const chartDataStatic = [
+  { sector: "Tecnologia", companies: 350, fill: "var(--chart-1)" },
+  { sector: "Construção", companies: 280, fill: "var(--chart-2)" },
+  { sector: "Saúde", companies: 150, fill: "var(--chart-3)" },
+  { sector: "Varejo", companies: 420, fill: "var(--chart-4)" },
+  { sector: "Serviços", companies: 200, fill: "var(--chart-5)" },
 ]
 
 const chartConfig = {
-  visitors: {
-    label: "Visitors",
+  companies: {
+    label: "Empresas",
   },
-  desktop: {
-    label: "Desktop",
-  },
-  mobile: {
-    label: "Mobile",
-  },
-  january: {
-    label: "January",
+  Tecnologia: {
+    label: "Tecnologia",
     color: "var(--chart-1)",
   },
-  february: {
-    label: "February",
+  Construção: {
+    label: "Construção",
     color: "var(--chart-2)",
   },
-  march: {
-    label: "March",
+  Saúde: {
+    label: "Saúde",
     color: "var(--chart-3)",
   },
-  april: {
-    label: "April",
+  Varejo: {
+    label: "Varejo",
     color: "var(--chart-4)",
   },
-  may: {
-    label: "May",
+  Serviços: {
+    label: "Serviços",
     color: "var(--chart-5)",
   },
 } satisfies ChartConfig
 
-export function ChartPieInteractive() {
-  const id = "pie-interactive"
-  const [activeMonth, setActiveMonth] = React.useState(desktopData[0].month)
+// Componente para exibir um placeholder de carregamento
+function ChartPlaceholder() {
+  return (
+    <Card className="animate-pulse pt-0">
+      <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
+        <div className="grid flex-1 gap-1">
+          <div className="h-6 w-48 bg-gray-200 dark:bg-gray-700 rounded-md"></div>
+          <div className="h-4 w-72 bg-gray-200 dark:bg-gray-700 rounded-md"></div>
+        </div>
+        <div className="hidden w-[160px] h-10 bg-gray-200 dark:bg-gray-700 rounded-lg sm:ml-auto sm:flex"></div>
+      </CardHeader>
+      <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
+        <div className="h-[250px] w-full bg-gray-200 dark:bg-gray-700 rounded-md"></div>
+      </CardContent>
+    </Card>
+  );
+}
 
+export function ChartPieInteractive() {
+  const id = "pie-interactive-companies"
+  const [chartData, setChartData] = React.useState(chartDataStatic);
+  const [loading, setLoading] = React.useState(false);
+  const [activeSector, setActiveSector] = React.useState(chartDataStatic[0].sector);
+  
+  // Comentário: Quando sua rota de API estiver pronta, você pode descomentar
+  // o código abaixo para carregar os dados dinamicamente.
+  /*
+  React.useEffect(() => {
+    async function fetchChartData() {
+      try {
+        setLoading(true);
+        // ✨ Descomente e ajuste esta URL para a sua rota de API real
+        // const response = await fetch(`/api/dashboard/companies-by-sector`);
+        
+        // if (!response.ok) {
+        //   throw new Error('Falha ao buscar dados do gráfico.');
+        // }
+        //
+        // const data = await response.json();
+        // setChartData(data);
+        // // Opcional: define o primeiro item como ativo por padrão
+        // if (data.length > 0) {
+        //   setActiveSector(data[0].sector);
+        // }
+      } catch (error) {
+        console.error("Erro ao buscar dados do gráfico:", error);
+        setChartData([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchChartData();
+  }, []);
+  */
+  
   const activeIndex = React.useMemo(
-    () => desktopData.findIndex((item) => item.month === activeMonth),
-    [activeMonth]
+    () => chartData.findIndex((item) => item.sector === activeSector),
+    [activeSector, chartData]
   )
-  const months = React.useMemo(() => desktopData.map((item) => item.month), [])
+  const sectors = React.useMemo(() => chartData.map((item) => item.sector), [chartData])
+
+  if (loading) {
+    return <ChartPlaceholder />;
+  }
 
   return (
     <Card data-chart={id} className="flex flex-col">
       <ChartStyle id={id} config={chartConfig} />
       <CardHeader className="flex-row items-start space-y-0 pb-0">
         <div className="grid gap-1">
-          <CardTitle>Pie Chart - Interactive</CardTitle>
-          <CardDescription>January - June 2024</CardDescription>
+          <CardTitle>Empresas por Setor</CardTitle>
+          <CardDescription>
+            Distribuição de empresas que adquiriram nossos serviços.
+          </CardDescription>
         </div>
-        <Select value={activeMonth} onValueChange={setActiveMonth}>
+        <Select value={activeSector} onValueChange={setActiveSector}>
           <SelectTrigger
-            className="ml-auto h-7 w-[130px] rounded-lg pl-2.5"
+            className="ml-auto h-7 w-[160px] rounded-lg pl-2.5"
             aria-label="Select a value"
           >
-            <SelectValue placeholder="Select month" />
+            <SelectValue placeholder="Selecione um setor" />
           </SelectTrigger>
           <SelectContent align="end" className="rounded-xl">
-            {months.map((key) => {
+            {sectors.map((key) => {
               const config = chartConfig[key as keyof typeof chartConfig]
 
               if (!config) {
@@ -111,7 +163,7 @@ export function ChartPieInteractive() {
                     <span
                       className="flex h-3 w-3 shrink-0 rounded-xs"
                       style={{
-                        backgroundColor: `var(--color-${key})`,
+                        backgroundColor: `var(--color-${key.replace(/\s+/g, '')})`,
                       }}
                     />
                     {config?.label}
@@ -134,9 +186,9 @@ export function ChartPieInteractive() {
               content={<ChartTooltipContent hideLabel />}
             />
             <Pie
-              data={desktopData}
-              dataKey="desktop"
-              nameKey="month"
+              data={chartData}
+              dataKey="companies"
+              nameKey="sector"
               innerRadius={60}
               strokeWidth={5}
               activeIndex={activeIndex}
@@ -169,14 +221,14 @@ export function ChartPieInteractive() {
                           y={viewBox.cy}
                           className="fill-foreground text-3xl font-bold"
                         >
-                          {desktopData[activeIndex].desktop.toLocaleString()}
+                          {chartData[activeIndex].companies.toLocaleString()}
                         </tspan>
                         <tspan
                           x={viewBox.cx}
                           y={(viewBox.cy || 0) + 24}
                           className="fill-muted-foreground"
                         >
-                          Visitors
+                          Empresas
                         </tspan>
                       </text>
                     )

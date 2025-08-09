@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { ArrowUpDown, MoreHorizontal } from "lucide-react"
 import { Checkbox } from "@radix-ui/react-checkbox"
+import { Link } from "react-router-dom"
 
 
 export type Application = {
@@ -105,34 +106,31 @@ export const columns: ColumnDef<Application>[] = [
     },
   },
   { accessorKey: "appliedAt", header: "Data" },
-  {
-    id: "actions",
-    cell: ({ row }) => {
-      const app = row.original
-     
+{
+  id: "actions",
+  cell: ({ row }) => {
+    const app = row.original
 
-      return (
-        <>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Abrir menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Ações</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => console.log(`Ver detalhes de ${app.candidateName}`)}>
-                Ver Detalhes
-              </DropdownMenuItem>
-          
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-      
-        </>
-      )
-    },
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="h-8 w-8 p-0">
+            <span className="sr-only">Abrir menu</span>
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel>Ações</DropdownMenuLabel>
+          <DropdownMenuItem asChild>
+            <Link to={`/hires/applications/${app.id}`}>
+              Ver Detalhes
+            </Link>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    )
   },
+}
+
 ]
             
