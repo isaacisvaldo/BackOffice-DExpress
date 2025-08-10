@@ -5,7 +5,7 @@ import {
   fetchData,
   sendData,
   deleteData,
-} from '../api-client';
+} from '../../api-client';
 
 // Define a interface para o objeto de permissão
 export interface Permission {

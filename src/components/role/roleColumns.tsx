@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import {  MoreHorizontal } from "lucide-react"
 import { Checkbox } from "@radix-ui/react-checkbox"
-import type { Profile } from "@/services/role/role.service"
+import type { Profile } from "@/services/shared/role/role.service"
 
 
 // Definição das colunas da tabela de perfis.

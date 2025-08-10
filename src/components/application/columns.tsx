@@ -10,19 +10,18 @@ import {
 import { ArrowUpDown, MoreHorizontal } from "lucide-react"
 import { Checkbox } from "@radix-ui/react-checkbox"
 import { Link } from "react-router-dom"
+import type { JobApplicationStatus } from "@/types/types"
 
-
-export type Application = {
-  id: string
-  candidateName: string
-  email: string
-  phone: string
-  location: string
-  position: string
-  status: "PENDING" | "IN_REVIEW" | "INTERVIEW" | "ACCEPTED" | "REJECTED"
-  appliedAt: string
+export interface MappedJobApplication {
+  id: string;
+  candidateName: string;
+  email: string;
+  phone: string;
+  location: string;
+  position: string;
+  status: JobApplicationStatus;
+  appliedAt: string;
 }
-
 const statusStyles: Record<string, { label: string; className: string }> = {
   PENDING: {
     label: "Pendente",
@@ -46,7 +45,7 @@ const statusStyles: Record<string, { label: string; className: string }> = {
   },
 }
 
-export const columns: ColumnDef<Application>[] = [
+export const columns: ColumnDef<MappedJobApplication>[] = [
   {
     id: "select",
     header: ({ table }) => (

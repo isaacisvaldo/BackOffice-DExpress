@@ -72,7 +72,8 @@ export default function ApplicationHeader({
               </Badge>
             </div>
             <p className="text-muted-foreground">
-              {application.desiredPosition}
+              
+              {application.desiredPosition?.label || "N/A"}
             </p>
 
             <div className="text-muted-foreground flex flex-wrap gap-4 text-sm">

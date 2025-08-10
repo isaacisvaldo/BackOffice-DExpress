@@ -1,7 +1,7 @@
 // src/services/gender/gender.service.ts
 
 // Assume a importação de tipos comuns da sua camada de cliente de API
-import { type FilterParams, fetchDataWithFilter, fetchData, sendData, deleteData } from "../api-client";
+import { type FilterParams, fetchDataWithFilter, fetchData, sendData, deleteData } from "../../api-client";
 
 // Define a interface para o objeto de gênero, correspondendo ao modelo da sua API
 export interface Gender {
@@ -84,7 +84,7 @@ export interface UpdateGenderDto {
  * @returns O objeto de gênero atualizado.
  */
 export async function updateGender(id: string, data: UpdateGenderDto): Promise<Gender> {
-  return sendData("/genders", "PATCH", data);
+  return sendData(`/genders/${id}`, "PATCH", data);
 }
 
 /**

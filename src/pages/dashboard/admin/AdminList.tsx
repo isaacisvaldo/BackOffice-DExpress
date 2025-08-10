@@ -35,8 +35,8 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner"; // Verifique se 'sonner' está configurado ou use 'use-toast' do shadcn
-import { getGendersList } from "@/services/gender/gender.service";
-import { getProfilesList, type Profile } from "@/services/role/role.service";
+import { getGendersList } from "@/services/shared/gender/gender.service";
+import { getProfilesList, type Profile } from "@/services/shared/role/role.service";
 
 
 const formSchema = z.object({

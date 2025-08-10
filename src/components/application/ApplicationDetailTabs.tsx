@@ -31,7 +31,8 @@ interface ApplicationDetailTabsProps {
     application: any
     status: string // VEM DA API
     onStatusChange: (status: string) => void
-    hasProfile: boolean // novo prop para verificar se o candidato tem perfil
+    hasProfile: boolean 
+   onProfessionalCreated?: (professionalId: string) => void; 
 }
 
 const statusOptions = [
@@ -47,6 +48,7 @@ export function ApplicationDetailTabs({
     status,
     onStatusChange,
     hasProfile, // novo prop para verificar se o candidato tem perfil
+    onProfessionalCreated, 
 }: ApplicationDetailTabsProps) {
    
  
@@ -133,7 +135,7 @@ export function ApplicationDetailTabs({
                         </div>
                         <div>
                             <Label>Cargo Desejado</Label>
-                            <Input value={application.desiredPosition} disabled />
+                           <Input value={application.desiredPosition?.label || "N/A"} disabled />
                         </div>
                     </CardContent>
                 </Card>
@@ -177,7 +179,8 @@ export function ApplicationDetailTabs({
       Ver Perfil do Colaborador
     </Button>
   ) : (
-    <ProfessionalForm application={application} />
+       <ProfessionalForm application={application} onProfessionalCreated={onProfessionalCreated} />
+                        
   )}
 </CardContent>
 
