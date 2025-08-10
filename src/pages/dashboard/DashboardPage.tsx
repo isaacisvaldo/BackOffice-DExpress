@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react"
-import { columns, type Application } from "@/components/candidacy/columns"
-import { getApplications } from "@/services/candidacy/candidacyService"
+import { columns, type MappedJobApplication } from "@/components/application/columns"
+import { getApplications } from "@/services/application/application.service"
 import { SectionCards } from "@/components/section-cards"
 import { ChartAreaInteractive } from "@/components/chart-area-interactive"
 import { ChartPieInteractive } from "@/components/ui/chart-pie-interactive"
 import { DataTable } from "@/components/data-table"
+import type { JobApplication } from "@/types/types"
 
 export default function DashboardPage() {
-  const [data, setData] = useState<Application[]>([])
+  const [data, setData] = useState<MappedJobApplication[]>([])
   const [, setLoading] = useState(true)
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
@@ -26,18 +27,19 @@ export default function DashboardPage() {
           limit: limit === 0 ? undefined : limit,
           status: statusFilter,
         })
-
-        const mappedData: Application[] = result.data.map((item: any) => ({
-          id: item.id,
-          candidateName: item.fullName,
-          email: item.email,
-          phone: item.phoneNumber || "-",
-          location: `${item.location?.city?.name ?? ""} - ${item.location?.district?.name ?? ""}`,
-          position: item.desiredPosition,
-          status: item.status,
-          appliedAt: new Date(item.createdAt).toLocaleDateString("pt-PT"),
-        }))
-
+const mappedData: MappedJobApplication[] = result.data.map(
+  (item: JobApplication) => ({
+    id: item.id,
+    candidateName: item.fullName,
+    email: item.email,
+    phone: item.phoneNumber || "-",
+    location:`${item.location?.city?.name ?? ""} - ${item.location?.district?.name ?? ""}`,
+    position: item.desiredPosition?.label ?? "N/A",
+    status: item.status,
+    appliedAt: new Date(item.createdAt).toLocaleDateString("pt-PT"),
+  })
+);
+   
         setData(mappedData)
         setTotalPages(result.totalPages || 1)
       } catch (error) {

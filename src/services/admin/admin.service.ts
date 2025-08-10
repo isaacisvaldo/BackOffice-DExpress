@@ -5,7 +5,7 @@ import {
   sendData,
   deleteData,
 } from "../api-client";
-import type { Gender } from "../gender/gender.service";
+import type { Gender } from "../shared/gender/gender.service";
 
 // ✅ Interfaces para as novas configurações
 export interface SecuritySettings {

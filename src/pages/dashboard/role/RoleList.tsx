@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { DataTable } from "@/components/data-table";
-import { getProfiles, type Profile } from "@/services/role/role.service";
+import { getProfiles, type Profile } from "@/services/shared/role/role.service";
 import { roleColumns } from "@/components/role/roleColumns";
 import ProfileDetailsModal from "@/components/role/roleDetailModal";
 

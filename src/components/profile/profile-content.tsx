@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "../ui/select";
 import { type AdminUser, type Permission } from "@/services/admin/admin.service";
-import { getGendersList, type Gender } from "@/services/gender/gender.service";
+import { getGendersList, type Gender } from "@/services/shared/gender/gender.service";
 
 export default function ProfileContent({ user }: { user: AdminUser }) {
   const formatDate = (date: Date | string): string => {
@@ -66,9 +66,7 @@ export default function ProfileContent({ user }: { user: AdminUser }) {
     console.log("Salvar perfil", profile);
   };
 
-  const handleAccountSubmit = () => {
-    console.log("Salvar permissões", permissions);
-  };
+
 
   const handleSecuritySubmit = () => {
     console.log("Salvar segurança", securitySettings);

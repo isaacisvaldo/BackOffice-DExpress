@@ -1,103 +1,156 @@
 import { DataTable } from "@/components/data-table";
-import { columns, type Professional } from "@/components/profissional/professionals-columns";
-import { getSpecialtiesList } from "@/services/especialities/especiality.service";
-
-import { listAll } from "@/services/profissional/profissionalService";
-
-import { useState, useEffect } from "react";
-
+import { professionalColumns, type MappedProfessional } from "@/components/profissional/professionals-columns";
+import { deleteProfessional, getProfessionals, updateProfessionalAvailability, type Professional } from "@/services/profissional/profissional.service";
+import { getDesiredPositionsList } from "@/services/shared/desired-positions/desired-positions.service";
+import { getExperienceLevelsList } from "@/services/shared/experience-levels/experience-levels.service";
+import { getGeneralAvailabilitiesList } from "@/services/shared/general-availabilities/general-availability.service";
+import type { DesiredPosition, GeneralAvailability, ExperienceLevel } from "@/types/types";
+import { useState, useEffect, useCallback } from "react";
+import { toast } from "sonner";
 
 export default function ProfessionalsList() {
   const [loading, setLoading] = useState(true);
-  const [professionals, setProfessionals] = useState<Professional[]>([]);
-  const [specialties, setSpecialties] = useState<{ id: string; name: string }[]>([]);
+  const [professionals, setProfessionals] = useState<MappedProfessional[]>([]);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  // Estados de Paginação
+  const [desiredPositions, setDesiredPositions] = useState<DesiredPosition[]>([]);
+  const [availabilities, setAvailabilities] = useState<GeneralAvailability[]>([]);
+  const [experienceLevels, setExperienceLevels] = useState<ExperienceLevel[]>([]);
+
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [totalPages, setTotalPages] = useState(1);
 
-  // Estados de Filtro
   const [nameFilter, setNameFilter] = useState("");
-  const [availabilityTypeFilter, setAvailabilityTypeFilter] = useState("all");
-  const [experienceLevelFilter, setExperienceLevelFilter] = useState("all");
-  const [specialtyIdFilter, setSpecialtyIdFilter] = useState("all");
-  
-  // NOVO ESTADO para o filtro de Cargo/Posição
-  const [desiredPositionFilter, setDesiredPositionFilter] = useState("all");
-
-
- 
-
+  const [availabilityTypeIdFilter, setAvailabilityTypeIdFilter] = useState("all");
+  const [experienceLevelIdFilter, setExperienceLevelIdFilter] = useState("all");
+  const [desiredPositionIdFilter, setDesiredPositionIdFilter] = useState("all");
 
   useEffect(() => {
-    async function fetchProfessionals() {
-      setLoading(true);
+    async function fetchFilterOptions() {
       try {
-        const filters = {
-          name: nameFilter,
-          availabilityType: availabilityTypeFilter !== "all" ? availabilityTypeFilter : undefined,
-          experienceLevel: experienceLevelFilter !== "all" ? experienceLevelFilter : undefined,
-          specialtyId: specialtyIdFilter !== "all" ? specialtyIdFilter : undefined,
-          
-          // NOVO FILTRO adicionado ao objeto
-          desiredPosition: desiredPositionFilter !== "all" ? desiredPositionFilter : undefined,
-
-          page,
-          limit,
-        };
-        const result = await listAll(filters);
-        setProfessionals(result.data);
-        setTotalPages(result.totalPages);
-        const esp = await getSpecialtiesList();
-        setSpecialties(esp);
+        const [positionsResult, availabilitiesResult, experienceLevelsResult] = await Promise.all([
+          getDesiredPositionsList(),
+          getGeneralAvailabilitiesList(),
+          getExperienceLevelsList(),
+        ]);
+        setDesiredPositions(positionsResult);
+        setAvailabilities(availabilitiesResult);
+        setExperienceLevels(experienceLevelsResult);
       } catch (error) {
-        console.error("Erro ao carregar profissionais:", error);
-      } finally {
-        setLoading(false);
+        console.error("Erro ao carregar opções de filtro:", error);
+        toast.error("Erro", { description: "Não foi possível carregar as opções de filtro." });
       }
     }
+    fetchFilterOptions();
+  }, []);
 
+  const fetchProfessionals = useCallback(async () => {
+    setLoading(true);
+    try {
+      const filters = {
+        name: nameFilter,
+        availabilityTypeId: availabilityTypeIdFilter !== "all" ? availabilityTypeIdFilter : undefined,
+        experienceLevelId: experienceLevelIdFilter !== "all" ? experienceLevelIdFilter : undefined,
+        desiredPositionId: desiredPositionIdFilter !== "all" ? desiredPositionIdFilter : undefined,
+        page,
+        limit,
+      };
+      const result = await getProfessionals(filters);
+
+      const mappedData: MappedProfessional[] = result.data.map((item: Professional) => ({
+        id: item.id,
+        fullName: item.fullName,
+        email: item.email,
+        phoneNumber: item.phoneNumber,
+        isAvailable: item.isAvailable,
+        availabilityType: availabilities.find(a => a.id === item.availabilityTypeId)?.label || "N/A",
+        experienceLevel: experienceLevels.find(e => e.id === item.experienceLevelId)?.label || "N/A",
+        desiredPosition: desiredPositions.find(p => p.id === item.desiredPositionId)?.label || "N/A",
+        location: `${item.location?.city?.name ?? ""} - ${item.location?.district?.name ?? ""}`,
+      }));
+      setProfessionals(mappedData);
+      setTotalPages(result.totalPages);
+    } catch (error) {
+      console.error("Erro ao carregar profissionais:", error);
+      toast.error("Erro", { description: "Não foi possível carregar a lista de profissionais." });
+    } finally {
+      setLoading(false);
+    }
+  }, [
+    nameFilter,
+    availabilityTypeIdFilter,
+    experienceLevelIdFilter,
+    desiredPositionIdFilter,
+    page,
+    limit,
+    availabilities,
+    desiredPositions,
+    experienceLevels,
+  ]);
+
+  useEffect(() => {
     const debounceTimeout = setTimeout(() => {
       fetchProfessionals();
     }, 500);
 
     return () => clearTimeout(debounceTimeout);
-  }, [
-    nameFilter, 
-    availabilityTypeFilter, 
-    experienceLevelFilter, 
-    specialtyIdFilter, 
-    desiredPositionFilter, // NOVO: Adicionado ao array de dependências
-    page, 
-    limit
-  ]);
+  }, [fetchProfessionals]);
 
-  const specialtyOptions = [
-    { label: "Todas", value: "all" },
-    ...specialties.map(specialty => ({
-      label: specialty.name,
-      value: specialty.id,
-    }))
-  ];
+  const handleDelete = async (id: string) => {
+    setIsDeleting(true);
+    try {
+      await deleteProfessional(id);
+      toast.success("Sucesso", { description: "Profissional excluído com sucesso!" });
+      fetchProfessionals();
+    } catch (error) {
+      console.error("Erro ao excluir profissional:", error);
+      toast.error("Erro", { description: "Falha ao excluir o profissional. Tente novamente." });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
-  // Opções para o novo filtro de Cargo/Posição
+  const handleAvailabilityChange = async (id: string, newAvailability: boolean) => {
+    try {
+      setProfessionals(prevProfessionals =>
+        prevProfessionals.map(prof =>
+          prof.id === id ? { ...prof, isAvailable: newAvailability } : prof
+        )
+      );
+      await updateProfessionalAvailability(id, newAvailability);
+      toast.success("Sucesso", {
+        description: "Disponibilidade do profissional atualizada com sucesso.",
+      });
+
+    } catch (error) {
+      console.error("Erro ao atualizar disponibilidade:", error);
+      toast.error("Erro", {
+        description: "Não foi possível atualizar a disponibilidade. Tente novamente.",
+      });
+      setProfessionals(prevProfessionals =>
+        prevProfessionals.map(prof =>
+          prof.id === id ? { ...prof, isAvailable: !newAvailability } : prof
+        )
+      );
+    }
+  };
   const desiredPositionOptions = [
     { label: "Todas", value: "all" },
-    { label: "Babá", value: "BABYSITTER" },
-    { label: "Diarista / Empregada doméstica", value: "HOUSEKEEPER" },
-    { label: "Cozinheira", value: "COOK" },
-    { label: "Cuidadora de idosos ou pessoas especiais", value: "CAREGIVER" },
-    { label: "Jardineiro", value: "GARDENER" },
-    { label: "Passadeira", value: "IRONING" },
-    { label: "Auxiliar de limpeza", value: "CLEANING_ASSISTANT" },
-    { label: "Outro", value: "OTHER" },
+    ...desiredPositions.map(p => ({ label: p.label || 'N/A', value: p.id })),
   ];
-
+  const availabilityOptions = [
+    { label: "Todas", value: "all" },
+    ...availabilities.map(a => ({ label: a.label || 'N/A', value: a.id })),
+  ];
+  const experienceLevelOptions = [
+    { label: "Todos", value: "all" },
+    ...experienceLevels.map(e => ({ label: e.label || 'N/A', value: e.id })),
+  ];
 
   return (
     <div className="flex flex-col gap-4 p-6">
-      <h1 className="text-2xl font-bold mb-4">Profissionais </h1>
+      <h1 className="text-2xl font-bold mb-4">Profissionais</h1>
       <div className="container mx-auto py-6">
         {loading ? (
           <div className="flex justify-center items-center py-10">
@@ -105,7 +158,7 @@ export default function ProfessionalsList() {
           </div>
         ) : (
           <DataTable
-            columns={columns}
+            columns={professionalColumns(handleDelete, isDeleting, handleAvailabilityChange)}
             data={professionals}
             page={page}
             setPage={setPage}
@@ -113,56 +166,10 @@ export default function ProfessionalsList() {
             limit={limit}
             setLimit={setLimit}
             filters={[
-              {
-                type: "input",
-                column: "fullName", 
-                placeholder: "Filtrar por nome...",
-                value: nameFilter,
-                onChange: setNameFilter,
-              },
-
-              {
-                type: "select",
-                placeholder: "Filtrar por disponibilidade",
-                value: availabilityTypeFilter,
-                onChange: (val) => setAvailabilityTypeFilter(val),
-                options: [
-                  { label: "Todas", value: "all" },
-                  { label: "Tempo integral", value: "FULL_TIME" },
-                  { label: "Tempo parcial", value: "PART_TIME" },
-                  { label: "Diário", value: "DAILY" },
-                  { label: "Fins de Semana", value: "WEEKENDS" },
-                ],
-              },
-              {
-                type: "select",
-                placeholder: "Filtrar por experiência",
-                value: experienceLevelFilter,
-                onChange: (val) => setExperienceLevelFilter(val),
-                options: [
-                  { label: "Todos", value: "all" },
-                  { label: "Menos de 1 ano", value: "LESS_THAN_1" },
-                  { label: "1-3 anos", value: "ONE_TO_THREE" },
-                  { label: "3 - 5 anos", value: "THREE_TO_FIVE" },
-                  { label: "Mais de 5 anos", value: "MORE_THAN_FIVE" },
-                ],
-              },
-              {
-                type: "select",
-                placeholder: "Filtrar por Especialidade",
-                value: specialtyIdFilter,
-                onChange: (val) => setSpecialtyIdFilter(val),
-                options: specialtyOptions,
-              },
-              
-              // NOVO FILTRO: Adicionado na lista de filtros da DataTable
-              {
-                type: "select",
-                placeholder: "Filtrar por Posição",
-                value: desiredPositionFilter,
-                onChange: (val) => setDesiredPositionFilter(val),
-                options: desiredPositionOptions,
-              },
+              { type: "input", column: "fullName", placeholder: "Filtrar por nome...", value: nameFilter, onChange: setNameFilter },
+              { type: "select", placeholder: "Filtrar por disponibilidade", value: availabilityTypeIdFilter, onChange: setAvailabilityTypeIdFilter, options: availabilityOptions },
+              { type: "select", placeholder: "Filtrar por experiência", value: experienceLevelIdFilter, onChange: setExperienceLevelIdFilter, options: experienceLevelOptions },
+              { type: "select", placeholder: "Filtrar por Posição", value: desiredPositionIdFilter, onChange: setDesiredPositionIdFilter, options: desiredPositionOptions },
             ]}
           />
         )}
