@@ -5,7 +5,8 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog"
-import type { Profile, Permission } from "@/services/role/role.service"
+import type { Permission, Profile } from "@/services/shared/role/role.service"
+
 
 interface ProfileDetailsModalProps {
   isOpen: boolean
