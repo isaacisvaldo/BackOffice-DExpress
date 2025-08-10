@@ -35,10 +35,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const res = await isAuthenticated();
         if (res && res.user) setUser(res.user);
       } catch (error) {
-        // Em caso de erro, garantimos que o utilizador é nulo.
+       
         setUser(null);
       } finally {
-        // Este bloco é executado sempre, garantindo que o loading seja false.
+  
         setisLoading(false);
       }
     }

@@ -31,16 +31,12 @@ import { useAuth } from "@/contexts/AuthContext"
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   // Pega a URL do logo do .env ou usa uma imagem padrão
   const logoUrl = import.meta.env.VITE_LOGO_URL || "/logo.png"
-
-  // Dados reais do DExpress (menus e atalhos)
   const { user } = useAuth()
-  console.log("USER:", user);
-
   const data = {
     user: {
       name: user?.name || 'Usuário',
       email: user?.email || '',
-      avatar: "/avatars/admin.jpg",
+      avatar: "/user.png",
     },
     dashboard: [
       {
