@@ -1,19 +1,19 @@
-// ApplicationDetailPage.tsx
+
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import toast from "react-hot-toast"
-
 import ApplicationHeader from "@/components/application/ApplicationHeader"
 import { ApplicationDetailTabs } from "@/components/application/ApplicationDetailTabs"
 import { checkCandidateHasProfile, getApplicationById, updateApplicationStatus } from "@/services/application/application.service"
 import type { JobApplication } from "@/types/types"
 import ImageUploadStage from "@/components/ImageUploadStage"
+import type { Professional } from "@/services/profissional/profissional.service"
 
 
 export default function ApplicationDetailPage() {
   const { id } = useParams<{ id: string }>()
   const [application, setApplication] = useState<JobApplication | null>(null)
-  const [hasProfile, setHasProfile] = useState<boolean>(false)
+  const [hasProfile, setHasProfile] = useState<Professional| null>(null)
   const [status, setStatus] = useState("PENDING") 
   // Novo estado para controlar o estágio de upload de imagem
   const [showImageUpload, setShowImageUpload] = useState<boolean>(false);
@@ -97,7 +97,7 @@ export default function ApplicationDetailPage() {
           status={status}
           onStatusChange={handleStatusChange}
           hasProfile={hasProfile}
-          // Passa a função para ProfessionalForm (via ApplicationDetailTabs)
+          
           onProfessionalCreated={handleOpenImageUpload} 
         />
       )}

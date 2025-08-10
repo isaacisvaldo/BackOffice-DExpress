@@ -21,7 +21,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { ArrowUpDown, MoreHorizontal, Trash2 } from "lucide-react";
+import { ArrowUpDown, MoreHorizontal, Trash2,InfoIcon } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Link } from "react-router-dom";
 import { Switch } from "@/components/ui/switch";
@@ -152,7 +152,9 @@ export const professionalColumns = (onDelete: (id: string) => void, isDeleting: 
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Ações</DropdownMenuLabel>
             <DropdownMenuItem asChild>
-              <Link to={`/professionals/${professional.id}`}>Ver Perfil</Link>
+              <Link to={`/professional/${professional.id}/details`}>
+               <InfoIcon className="mr-2 h-4 w-4" />
+              <span>Detalhes</span></Link>
             </DropdownMenuItem>
             <AlertDialog>
               <AlertDialogTrigger asChild>

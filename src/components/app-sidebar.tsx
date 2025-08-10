@@ -32,13 +32,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   // Pega a URL do logo do .env ou usa uma imagem padrão
   const logoUrl = import.meta.env.VITE_LOGO_URL || "/logo.png"
   const { user } = useAuth()
- 
-
   const data = {
     user: {
       name: user?.name || 'Usuário',
       email: user?.email || '',
-      avatar: "/avatars/admin.jpg",
+      avatar: "/user.png",
     },
     dashboard: [
       {

@@ -8,6 +8,7 @@ import {
   deleteData,
     type FilterParams,
 } from "../api-client";
+import type { Professional } from "../profissional/profissional.service";
 
 
 // A tipagem 'ApplicationResponse' pode ser um tipo genérico 'PaginatedResponse<Application>'
@@ -47,10 +48,10 @@ export async function deleteApplication(id: string): Promise<void> {
   return deleteData(`/job-application/${id}`);
 }
 
-export async function checkCandidateHasProfile(applicationId: string): Promise<boolean> {
+export async function checkCandidateHasProfile(applicationId: string): Promise<Professional> {
   
   const data = await fetchData(`/job-application/${applicationId}/has-profile`);
-  return data.hasProfile;
+  return data.Profile;
 }
 
 

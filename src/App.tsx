@@ -15,6 +15,7 @@ import ProfessionalsList from "./pages/dashboard/profissional/profissionalList"
 import DistrictList from "./pages/dashboard/location/districList"
 import AdminList from "./pages/dashboard/admin/AdminList"
 import RoleList from "./pages/dashboard/role/RoleList"
+import ProfessionaDetails from "./pages/dashboard/profissional/profissionalDetails"
 
 // 🔹 Rota protegida
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
@@ -70,6 +71,7 @@ export default function App() {
               <Route path="hires/applications" element={<ApplicationsPage />} />
               <Route path="hires/applications/:id" element={<ApplicationDetailPage />} />
               <Route path="professionals" element={<ProfessionalsList />} />
+              <Route path="professional/:id/details" element={<ProfessionaDetails />} />
               <Route path="admin/roles-permissions" element={<RoleList />} />
               <Route path="profile" element={<ProfilePage />} />
               <Route path="admin/users" element={<AdminList />} />

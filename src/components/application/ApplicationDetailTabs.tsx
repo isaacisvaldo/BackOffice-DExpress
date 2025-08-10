@@ -25,13 +25,15 @@ import {
 } from "@/components/ui/select"
 import EmailEditor from "../EmailEditor"
 import ProfessionalForm from "../profissional/profissionalForm"
+import type { Professional } from "@/services/profissional/profissional.service"
+import { Link } from "react-router-dom"
 
 
 interface ApplicationDetailTabsProps {
     application: any
-    status: string // VEM DA API
+    status: string 
     onStatusChange: (status: string) => void
-    hasProfile: boolean 
+    hasProfile: Professional | null;
    onProfessionalCreated?: (professionalId: string) => void; 
 }
 
@@ -59,7 +61,7 @@ export function ApplicationDetailTabs({
         <Tabs defaultValue="info" className="w-full space-y-6">
             <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="info" >Informações</TabsTrigger>
-                <TabsTrigger value="notes" disabled={hasProfile}>Notas</TabsTrigger>
+                    <TabsTrigger value="notes" disabled={!!hasProfile}>Notas</TabsTrigger>
                 <TabsTrigger value="profile" disabled={status !== "ACCEPTED"}>
                     Perfil do Colaborador
                 </TabsTrigger>
@@ -171,13 +173,18 @@ export function ApplicationDetailTabs({
 
 <CardContent>
   {hasProfile ? (
-    <Button
-      onClick={() => console.log("Redirecionar para perfil")}
-      className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 rounded-xl shadow-md transition-all duration-200"
+   <Link 
+      to={`/professional/${hasProfile.id}/details`} 
+     
     >
-      <User2 className="w-5 h-5" />
-      Ver Perfil do Colaborador
-    </Button>
+      <Button
+        // Remova o onClick, pois o Link já fará o redirecionamento
+        className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 rounded-xl shadow-md transition-all duration-200"
+      >
+        <User2 className="w-5 h-5" />
+        Ver Perfil do Colaborador
+      </Button>
+    </Link>
   ) : (
        <ProfessionalForm application={application} onProfessionalCreated={onProfessionalCreated} />
                         

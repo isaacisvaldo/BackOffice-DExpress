@@ -83,8 +83,8 @@ function ChartPlaceholder() {
 
 export function ChartPieInteractive() {
   const id = "pie-interactive-companies"
-  const [chartData, setChartData] = React.useState(chartDataStatic);
-  const [loading, setLoading] = React.useState(false);
+  const [chartData, ] = React.useState(chartDataStatic);
+  const [loading, ] = React.useState(false);
   const [activeSector, setActiveSector] = React.useState(chartDataStatic[0].sector);
   
   // Comentário: Quando sua rota de API estiver pronta, você pode descomentar

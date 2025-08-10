@@ -66,9 +66,7 @@ export default function ProfileContent({ user }: { user: AdminUser }) {
     console.log("Salvar perfil", profile);
   };
 
-  const handleAccountSubmit = () => {
-    console.log("Salvar permissões", permissions);
-  };
+
 
   const handleSecuritySubmit = () => {
     console.log("Salvar segurança", securitySettings);
