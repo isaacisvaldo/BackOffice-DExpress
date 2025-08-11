@@ -5,7 +5,7 @@ import { getDesiredPositionsList } from "@/services/shared/desired-positions/des
 import { getExperienceLevelsList } from "@/services/shared/experience-levels/experience-levels.service";
 import { getGeneralAvailabilitiesList } from "@/services/shared/general-availabilities/general-availability.service";
 import type { DesiredPosition, GeneralAvailability, ExperienceLevel } from "@/types/types";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react"; // Removido o 'useCallback'
 import { toast } from "sonner";
 
 export default function ProfessionalsList() {
@@ -27,8 +27,10 @@ export default function ProfessionalsList() {
   const [desiredPositionIdFilter, setDesiredPositionIdFilter] = useState("all");
 
   useEffect(() => {
-    async function fetchFilterOptions() {
+    const fetchAllData = async () => {
+      setLoading(true);
       try {
+        // 1. Carrega todas as opções de filtro
         const [positionsResult, availabilitiesResult, experienceLevelsResult] = await Promise.all([
           getDesiredPositionsList(),
           getGeneralAvailabilitiesList(),
@@ -37,17 +39,62 @@ export default function ProfessionalsList() {
         setDesiredPositions(positionsResult);
         setAvailabilities(availabilitiesResult);
         setExperienceLevels(experienceLevelsResult);
-      } catch (error) {
-        console.error("Erro ao carregar opções de filtro:", error);
-        toast.error("Erro", { description: "Não foi possível carregar as opções de filtro." });
-      }
-    }
-    fetchFilterOptions();
-  }, []);
 
-  const fetchProfessionals = useCallback(async () => {
-    setLoading(true);
+        // 2. Com os dados dos filtros em mãos, faz a requisição da lista de profissionais
+        const filters = {
+          name: nameFilter,
+          availabilityTypeId: availabilityTypeIdFilter !== "all" ? availabilityTypeIdFilter : undefined,
+          experienceLevelId: experienceLevelIdFilter !== "all" ? experienceLevelIdFilter : undefined,
+          desiredPositionId: desiredPositionIdFilter !== "all" ? desiredPositionIdFilter : undefined,
+          page,
+          limit,
+        };
+        const result = await getProfessionals(filters);
+
+        // Mapeia os dados usando as listas de filtro recém-carregadas
+        const mappedData: MappedProfessional[] = result.data.map((item: Professional) => ({
+          id: item.id,
+          fullName: item.fullName,
+          email: item.email,
+          phoneNumber: item.phoneNumber,
+          isAvailable: item.isAvailable,
+          availabilityType: availabilitiesResult.find(a => a.id === item.availabilityTypeId)?.label || "N/A",
+          experienceLevel: experienceLevelsResult.find(e => e.id === item.experienceLevelId)?.label || "N/A",
+          desiredPosition: positionsResult.find(p => p.id === item.desiredPositionId)?.label || "N/A",
+          location: `${item.location?.city?.name ?? ""} - ${item.location?.district?.name ?? ""}`,
+        }));
+        setProfessionals(mappedData);
+        setTotalPages(result.totalPages);
+      } catch (error) {
+        console.error("Erro ao carregar dados iniciais:", error);
+        toast.error("Erro", { description: "Não foi possível carregar a página." });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // Aplica um debounce para evitar múltiplas requisições ao digitar
+    const debounceTimeout = setTimeout(() => {
+      fetchAllData();
+    }, 500);
+
+    return () => clearTimeout(debounceTimeout);
+  }, [
+    nameFilter,
+    availabilityTypeIdFilter,
+    experienceLevelIdFilter,
+    desiredPositionIdFilter,
+    page,
+    limit,
+  ]);
+
+  const handleDelete = async (id: string) => {
+    setIsDeleting(true);
     try {
+      await deleteProfessional(id);
+      toast.success("Sucesso", { description: "Profissional excluído com sucesso!" });
+      // Após deletar, recarrega a lista
+      setLoading(true);
       const filters = {
         name: nameFilter,
         availabilityTypeId: availabilityTypeIdFilter !== "all" ? availabilityTypeIdFilter : undefined,
@@ -57,7 +104,6 @@ export default function ProfessionalsList() {
         limit,
       };
       const result = await getProfessionals(filters);
-
       const mappedData: MappedProfessional[] = result.data.map((item: Professional) => ({
         id: item.id,
         fullName: item.fullName,
@@ -72,41 +118,10 @@ export default function ProfessionalsList() {
       setProfessionals(mappedData);
       setTotalPages(result.totalPages);
     } catch (error) {
-      console.error("Erro ao carregar profissionais:", error);
-      toast.error("Erro", { description: "Não foi possível carregar a lista de profissionais." });
-    } finally {
-      setLoading(false);
-    }
-  }, [
-    nameFilter,
-    availabilityTypeIdFilter,
-    experienceLevelIdFilter,
-    desiredPositionIdFilter,
-    page,
-    limit,
-    availabilities,
-    desiredPositions,
-    experienceLevels,
-  ]);
-
-  useEffect(() => {
-    const debounceTimeout = setTimeout(() => {
-      fetchProfessionals();
-    }, 500);
-
-    return () => clearTimeout(debounceTimeout);
-  }, [fetchProfessionals]);
-
-  const handleDelete = async (id: string) => {
-    setIsDeleting(true);
-    try {
-      await deleteProfessional(id);
-      toast.success("Sucesso", { description: "Profissional excluído com sucesso!" });
-      fetchProfessionals();
-    } catch (error) {
       console.error("Erro ao excluir profissional:", error);
       toast.error("Erro", { description: "Falha ao excluir o profissional. Tente novamente." });
     } finally {
+      setLoading(false);
       setIsDeleting(false);
     }
   };
