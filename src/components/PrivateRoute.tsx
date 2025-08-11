@@ -1,6 +1,7 @@
 import { useEffect, useState, type JSX } from "react";
 import { Navigate } from "react-router-dom";
 import { isAuthenticated, refreshAccessToken, login } from "@/services/auth/authService";
+import SwirlingEffectSpinner from "./customized/spinner/spinner-06";
 
 export default function PrivateRoute({ children }: { children: JSX.Element }) {
   const [auth, setAuth] = useState<boolean | null>(null);
@@ -54,9 +55,9 @@ export default function PrivateRoute({ children }: { children: JSX.Element }) {
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center">
-        <p className="text-lg">Carregando...</p>
-      </div>
+     <div className="flex justify-center items-center py-10">
+           <SwirlingEffectSpinner></SwirlingEffectSpinner>
+          </div>
     );
   }
 

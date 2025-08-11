@@ -49,6 +49,7 @@ export async function getGendersList(): Promise<Gender[]> {
 // Define o DTO para a criação de um novo gênero
 export interface CreateGenderDto {
   name: string;
+  label:string;
 }
 
 /**

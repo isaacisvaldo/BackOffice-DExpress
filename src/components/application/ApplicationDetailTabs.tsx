@@ -174,7 +174,7 @@ export function ApplicationDetailTabs({
 <CardContent>
   {hasProfile ? (
    <Link 
-      to={`/professional/${hasProfile.id}/details`} 
+      to={`/rh/professional/${hasProfile.id}/details`} 
      
     >
       <Button

@@ -1,5 +1,5 @@
 
-import { type FilterParams, fetchDataWithFilter, fetchData, sendData } from "../api-client";
+import { type FilterParams, fetchDataWithFilter, fetchData, sendData, deleteData } from "../api-client";
 
 // Ela estende FilterParams para incluir 'page' e 'limit' automaticamente.
 interface GetCitiesParams extends FilterParams {
@@ -49,3 +49,7 @@ export interface CreateCityDto {
 export async function createCity(data: CreateCityDto): Promise<City> {
   return sendData("/cities", "POST", data);
 }
+export async function deleteCity(id: string): Promise<City> {
+  return deleteData(`/cities/${id}`);
+}
+

@@ -8,6 +8,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "../ui/alert-dialog"
 
 // ✅ O tipo de distrito precisa incluir o objeto da cidade para que possamos mostrar o nome
 export type DistrictWithCity = {
@@ -23,7 +24,10 @@ export type DistrictWithCity = {
 }
 
 // ✅ O array de colunas usa o novo tipo "DistrictWithCity"
-export const districtColumns: ColumnDef<DistrictWithCity>[] = [
+export const districtColumns= (
+  onDelete: (id: string) => void,
+  isDeleting: boolean
+):ColumnDef<DistrictWithCity>[] => [
   {
     accessorKey: "name",
     header: ({ column }) => (
@@ -83,15 +87,39 @@ export const districtColumns: ColumnDef<DistrictWithCity>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Ações</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => alert(`Ver detalhes de ${district.name}`)}>
-              Ver Detalhes
-            </DropdownMenuItem>
+           
             <DropdownMenuItem onClick={() => alert(`Editar ${district.name}`)}>
               Editar
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => alert(`Excluir ${district.name}`)}>
-              Excluir
-            </DropdownMenuItem>
+            {/* Início do AlertDialog para exclusão */}
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  {/* onSelect para prevenir o fechamento imediato do DropdownMenu */}
+                  <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                    Excluir
+                  </DropdownMenuItem>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Essa ação não pode ser desfeita. Isso excluirá permanentemente o distrito{" "}
+                      **{district.name}** e removerá seus dados de nossos servidores.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    {/* Chama a função onDelete passada como prop e desabilita enquanto estiver excluindo */}
+                    <AlertDialogAction
+                      className="bg-red-500 hover:bg-red-600 text-white"
+                      onClick={() => onDelete(district.id)}
+                      disabled={isDeleting}
+                    >
+                      {isDeleting ? "Excluindo..." : "Confirmar Exclusão"}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
           </DropdownMenuContent>
         </DropdownMenu>
       )

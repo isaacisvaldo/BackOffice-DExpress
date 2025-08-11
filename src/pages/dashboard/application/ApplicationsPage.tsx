@@ -3,6 +3,7 @@ import { columns, type MappedJobApplication } from "@/components/application/col
 import { DataTable } from "@/components/data-table"
 import { getApplications } from "@/services/application/application.service"
 import type { JobApplication } from "@/types/types"
+import SwirlingEffectSpinner from "@/components/customized/spinner/spinner-06"
 
 
 
@@ -59,8 +60,8 @@ const mappedData: MappedJobApplication[] = result.data.map(
       <h1 className="text-2xl font-bold mb-4">Candidaturas</h1>
       <div className="container mx-auto py-6">
         {loading ? (
-          <div className="flex justify-center items-center py-10">
-            <span className="text-blue-500 text-lg">Carregando...</span>
+         <div className="flex justify-center items-center py-10">
+           <SwirlingEffectSpinner></SwirlingEffectSpinner>
           </div>
         ) : (
           <DataTable

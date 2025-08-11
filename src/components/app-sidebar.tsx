@@ -1,16 +1,16 @@
-// src/components/app-sidebar.tsx
-
 import * as React from "react"
 import {
   Users,
-  Briefcase,
   MapPin,
-  ClipboardList,
   Settings2,
   Shield,
   FileText,
   PieChart,
   List,
+  BriefcaseBusiness,
+  Landmark,
+  Briefcase,
+
 } from "lucide-react"
 
 import {
@@ -24,12 +24,16 @@ import { NavMain } from "./nav-main"
 import { NavProjects } from "./nav-projects"
 import { NavUser } from "./nav-user"
 import { NavDashboard } from "./nav-dashboard"
+import { NavRh } from "./nav-rh"
+import { NavFinancas } from "./nav-financas"
+
+
 import { Link } from "react-router-dom"
 import { useAuth } from "@/contexts/AuthContext"
+import { NavOperacoes } from "./nav-operacoes"
 
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  // Pega a URL do logo do .env ou usa uma imagem padrão
   const logoUrl = import.meta.env.VITE_LOGO_URL || "/logo.png"
   const { user } = useAuth()
   const data = {
@@ -46,7 +50,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       }
     ],
     navMain: [
-      // CRM – Relacionamento com clientes
       {
         title: "CRM - Gestão de Clientes",
         url: "/clients",
@@ -56,32 +59,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           { title: "Clientes (Empresas)", url: "/clients/company" },
         ],
       },
-
-      // Gestão de Profissionais
       {
-        title: "Profissionais",
-        url: "/professionals",
-        icon: Briefcase,
+        title: "Relatórios",
+        url: "/reports",
+        icon: FileText,
         items: [
-          { title: "Lista de Profissionais", url: "/professionals" },
-
-
+          { title: "Clientes", url: "/reports/clients" },
         ],
       },
-
-      // Processo de Contratação
-      {
-        title: "Contratações",
-        url: "/hires",
-        icon: ClipboardList,
-        items: [
-          { title: "Solicitações de Contratação", url: "/hires/requests" },
-          { title: "Candidaturas", url: "/hires/applications" },
-          { title: "Vagas", url: "/hires/jobs" },
-        ],
-      },
-
-      // Localização geográfica
       {
         title: "Localizações",
         url: "/locations",
@@ -91,82 +76,96 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           { title: "Distritos", url: "/locations/districts" },
         ],
       },
-
-      // NOVO BLOCO: Gerenciamento de Dados Compartilhados
       {
         title: "Gerenciamento de Dados",
         url: "/shared-data",
-        icon: List, // Usando List para representar lista de dados
+        icon: List,
         items: [
-          { title: "Cargos e Posições", url: "/shared-data/positions" },
           { title: "Idiomas", url: "/shared-data/languages" },
           { title: "Habilidades", url: "/shared-data/skills" },
-          { title: "Especialidades", url: "/shared-data/specialties" },
+        
           { title: "Cursos e Certificados", url: "/shared-data/courses" },
           { title: "Grau Acadêmico", url: "/shared-data/highest-degrees" },
           { title: "Estados Civis", url: "/shared-data/marital-status" },
           { title: "Gêneros", url: "/shared-data/genders" },
-          { title: "Disponibilidade", url: "/shared-data/disponibilidae" },
-          { title: "Nivel de Experiencia", url: "/shared-data/nivel-experiencia" },
-          { title: "Setores-empresa", url: "/shared-data/sectors" }
         ],
       },
-
-      // Administração interna da plataforma
+    
+      
+      
+    ],
+    navRh: [
       {
+        title: "Recursos Humanos",
+        url: "/rh",
+        icon: BriefcaseBusiness,
+        items: [
+          { title: "Profissionais", url: "/rh/professionals" },
+          { title: "Vagas", url: "/rh/jobs" },
+          { title: "Candidaturas", url: "/rh/applications" },
+          { title: "Solicitações de Contratação", url: "/rh/requests" },
+          { title: "Relatórios de RH", url: "/rh/reports" },
+          { title: "Cargos e Posições", url: "/rh/positions" },
+          { title: "Disponibilidade", url: "/rh/disponibilidade" },
+          { title: "Nível de Experiência", url: "/rh/nivel-experiencia" },
+          { title: "Setores-empresa", url: "/rh/sectors" }
+        ],
+      },
+        {
         title: "Administração",
         url: "/admin",
         icon: Shield,
         items: [
           { title: "Usuários Internos", url: "/admin/users" },
           { title: "Perfis e Permissões", url: "/admin/roles-permissions" },
-
-        ],
-      },
-
-      // Relatórios
-      {
-        title: "Relatórios",
-        url: "/reports",
-        icon: FileText,
-        items: [
-          { title: "Clientes", url: "/reports/clients" },
-          { title: "Profissionais", url: "/reports/professionals" },
-          { title: "Financeiro", url: "/reports/finance" },
-        ],
-      },
-
-      // Configurações gerais
-      {
-        title: "Configurações",
-        url: "/settings",
-        icon: Settings2,
-        items: [
-          { title: "Geral", url: "/settings/general" },
-          { title: "Notificações", url: "/settings/notifications" },
         ],
       },
     ],
-
-    // Projetos ou dashboards específicos
+    navFinancas: [
+      {
+        title: "Finanças",
+        url: "/financas",
+        icon: Landmark,
+        items: [
+          { title: "Dashboard Financeiro", url: "/financas/dashboard" },
+          { title: "Relatórios Financeiros", url: "/financas/relatorios" },
+          { title: "Contas a Pagar", url: "/financas/contas-pagar" },
+          { title: "Contas a Receber", url: "/financas/contas-receber" },
+          { title: "Fluxo de Caixa", url: "/financas/fluxo-caixa" }
+        ],
+      },
+    ],
+    navOperacoes: [
+      {
+        title: "Operações e Projetos",
+        url: "/operacoes",
+        icon: Briefcase,
+        items: [
+          { title: "Projetos", url: "/operacoes/projects" },
+          { title: "Gestão de Tarefas", url: "/operacoes/tasks" },
+          { title: "Contratos e Propostas", url: "/operacoes/contracts" },
+          { title: "Equipes", url: "/operacoes/teams" },
+        ],
+      },
+    ],
     projects: [
       {
-        name: "Operações Ativas",
-        url: "/dashboard/operations",
-        icon: PieChart,
+        name: "Geral",
+        url: "/settings/general",
+        icon: Settings2,
       },
       {
-        name: "Gestão de Equipes",
-        url: "/dashboard/teams",
+        name: "Notificações",
+        url: "settings/notifications",
         icon: Users,
       },
-    ],
+    ]
+   
   }
 
 
   return (
     <Sidebar collapsible="icon" {...props}>
-      {/* Header com o Logo */}
       <SidebarHeader className="flex justify-start items-center px-4 py-4">
         <Link to="/dashboard" className="flex items-center">
           <img
@@ -180,6 +179,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <NavDashboard dashboard={data.dashboard} />
         <NavMain items={data.navMain} />
+        <NavOperacoes items={data.navOperacoes} />
+        <NavRh items={data.navRh} />
+        <NavFinancas items={data.navFinancas} />
         <NavProjects projects={data.projects} />
       </SidebarContent>
 
