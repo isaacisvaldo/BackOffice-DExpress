@@ -1,20 +1,13 @@
-// src/services/api-client.ts
 import toast from 'react-hot-toast';
 
 const API_URL = import.meta.env.VITE_API_URL || "";
 
-/**
- * Interface genérica para parâmetros de consulta, incluindo paginação.
- */
 export interface FilterParams {
   page?: number;
   limit?: number;
   [key: string]: string | number | boolean | string[] | undefined | null;
 }
 
-/**
- * Função auxiliar para tratar a resposta da API de forma centralizada.
- */
 async function handleResponse(
   response: Response,
   successMessage?: string,
@@ -40,9 +33,6 @@ async function handleResponse(
   return response;
 }
 
-/**
- * Função central para chamadas à API com configuração padrão.
- */
 async function apiFetch(
   endpoint: string,
   options: RequestInit = {},
@@ -51,7 +41,7 @@ async function apiFetch(
   showSuccessToastForGet: boolean = false
 ) {
   const defaultOptions: RequestInit = {
-    credentials: 'include', // sempre envia cookies
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
       ...(options.headers || {})
@@ -64,9 +54,6 @@ async function apiFetch(
   return response;
 }
 
-/**
- * GET com filtros.
- */
 export async function fetchDataWithFilter<T extends FilterParams>(
   endpoint: string,
   params: T = {} as T,
@@ -94,9 +81,6 @@ export async function fetchDataWithFilter<T extends FilterParams>(
   return res.json();
 }
 
-/**
- * GET sem filtros.
- */
 export async function fetchData(endpoint: string, showSuccessToast: boolean = false) {
   const res = await apiFetch(
     endpoint,
@@ -108,9 +92,6 @@ export async function fetchData(endpoint: string, showSuccessToast: boolean = fa
   return res.json();
 }
 
-/**
- * POST, PUT, PATCH.
- */
 export async function sendData<T>(endpoint: string, method: "POST" | "PUT" | "PATCH", body: T) {
   const res = await apiFetch(
     endpoint,
@@ -121,9 +102,6 @@ export async function sendData<T>(endpoint: string, method: "POST" | "PUT" | "PA
   return res.json();
 }
 
-/**
- * DELETE.
- */
 export async function deleteData(endpoint: string) {
   const res = await apiFetch(
     endpoint,
@@ -136,76 +114,5 @@ export async function deleteData(endpoint: string) {
   if (contentType && contentType.includes("application/json")) {
     return res.json();
   }
-  return {};
-        }
-  const response = await fetch(`${API_URL}${endpoint}?${query.toString()}`, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-    credentials: 'include'
-  });
-
-  await handleResponse(response, "Dados listados com sucesso!", "GET", showSuccessToast);
-  return response.json();
-}
-
-/**
- * Função genérica para buscar dados de um endpoint sem filtros ou paginação (GET).
- * Ideal para buscar listas completas para dropdowns.
- * @param endpoint O caminho do endpoint da API (ex: '/cities/list').
- * @param showSuccessToast Define se deve mostrar um toast de sucesso.
- * @returns Os dados JSON da resposta da API.
- */
-export async function fetchData(endpoint: string, showSuccessToast: boolean = false) {
-  const response = await fetch(`${API_URL}${endpoint}`, {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-    credentials: 'include'
-  });
-
-  await handleResponse(response, "Dados carregados com sucesso!", "GET", showSuccessToast);
-  return response.json();
-}
-
-/**
- * Função genérica para enviar dados à API (POST, PUT, PATCH).
- * @param endpoint O caminho do endpoint da API (ex: '/professionals').
- * @param method O método HTTP (POST, PUT, PATCH).
- * @param body Os dados a serem enviados.
- * @returns Os dados JSON da resposta da API.
- */
-export async function sendData<T>(endpoint: string, method: "POST" | "PUT" | "PATCH", body: T) {
-  const response = await fetch(`${API_URL}${endpoint}`, {
-    method,
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-    credentials: 'include'
-  });
-
-  await handleResponse(response, "Dados enviados com sucesso!", method);
-  return response.json();
-}
-
-/**
- * Função genérica para deletar um recurso da API (DELETE).
- * Não envia um corpo de dados na requisição.
- * @param endpoint O caminho do endpoint da API (ex: '/professionals/123').
- * @returns Os dados JSON da resposta da API (geralmente um objeto de sucesso ou vazio).
- */
-export async function deleteData(endpoint: string) {
-  const response = await fetch(`${API_URL}${endpoint}`, {
-    method: "DELETE",
-    headers: { "Content-Type": "application/json" },
-    credentials: 'include'
-  });
-
-  await handleResponse(response, "Recurso removido com sucesso!", "DELETE");
-
-  // A resposta de um DELETE pode ser um 204 No Content, então é importante verificar
-  // se há um corpo de resposta antes de tentar fazer o parse.
-  const contentType = response.headers.get("content-type");
-  if (contentType && contentType.indexOf("application/json") !== -1) {
-    return response.json();
-  }
-
   return {};
 }
