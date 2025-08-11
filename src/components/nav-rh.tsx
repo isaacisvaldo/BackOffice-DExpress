@@ -1,3 +1,4 @@
+
 "use client"
 
 import { ChevronRight, type LucideIcon } from "lucide-react"
@@ -19,7 +20,7 @@ import {
 } from "@/components/ui/sidebar"
 import { Link } from "react-router-dom"
 
-export function NavMain({
+export function NavRh({
   items,
 }: {
   items: {
@@ -35,7 +36,7 @@ export function NavMain({
 }) {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Platforma</SidebarGroupLabel>
+      <SidebarGroupLabel>Recursos Humanos</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
           <Collapsible
@@ -72,3 +73,4 @@ export function NavMain({
     </SidebarGroup>
   )
 }
+

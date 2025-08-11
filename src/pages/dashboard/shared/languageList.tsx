@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import { DataTable } from "@/components/data-table";
-import { cityColumns, type City } from "@/components/location/citiesColunn";
-import { deleteCity, getCities } from "@/services/location/cities.service";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,23 +11,26 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { createCity as createCityService } from "@/services/location/cities.service";
 import { toast } from "sonner";
+import { createLanguage, deleteLanguage, getLanguages } from "@/services/shared/language/language.service";
+import { languageColumns, type Language } from "@/components/shared/language-column";
 import SwirlingEffectSpinner from "@/components/customized/spinner/spinner-06";
 
-export default function CitiesList() {
-  const [data, setData] = useState<City[]>([]);
+export default function LanguageList() {
+  const [data, setData] = useState<Language[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(5);
   const [totalPages, setTotalPages] = useState(1);
-const [isDeleting, setIsDeleting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const [nameFilter, setNameFilter] = useState<string>("");
   const [debouncedNameFilter, setDebouncedNameFilter] = useState<string>("");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newCityName, setNewCityName] = useState<string>("");
-  const [isCreatingCity, setIsCreatingCity] = useState(false);
+  const [newLanguageName, setNewLanguageName] = useState<string>("");
+  const [newLanguageLabel, setNewLanguageLabel] = useState<string>("");
+  const [isCreatingLanguage, setIsCreatingLanguage] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -44,15 +45,16 @@ const [isDeleting, setIsDeleting] = useState(false);
   const fetchData = async () => {
     setLoading(true);
     try {
-      const result = await getCities({
+      const result = await getLanguages({
         page,
         limit: limit === 0 ? undefined : limit,
-        search: debouncedNameFilter || undefined,
+        search: debouncedNameFilter || undefined, // Filter by 'label' for languages
       });
 
-      const mappedData: City[] = result.data.map((item: any) => ({
+      const mappedData: Language[] = result.data.map((item: any) => ({
         id: item.id,
         name: item.name,
+        label: item.label,
         createdAt: new Date(item.createdAt).toLocaleDateString("pt-PT"),
         updatedAt: new Date(item.updatedAt).toLocaleDateString("pt-PT"),
       }));
@@ -60,60 +62,68 @@ const [isDeleting, setIsDeleting] = useState(false);
       setData(mappedData);
       setTotalPages(result.totalPages || 1);
     } catch (error) {
-      console.error("Erro ao carregar cidades", error);
-      toast.error("Erro ao carregar cidades.");
+      console.error("Erro ao carregar idiomas", error);
+      toast.error("Erro ao carregar idiomas.");
     } finally {
       setLoading(false);
     }
   };
- const handleDelete = async (id: string) => {
-    setIsDeleting(true); 
+
+  const handleDelete = async (id: string) => {
+    setIsDeleting(true);
     try {
-      await deleteCity(id);
+      await deleteLanguage(id);
       toast.success("Sucesso", {
-        description: "Cidade excluído com sucesso!",
+        description: "Idioma excluído com sucesso!",
       });
-      fetchData(); 
+      fetchData();
     } catch (error) {
-      console.error("Erro ao excluir admin:", error);
+      console.error("Erro ao excluir idioma:", error);
       toast.error("Erro", {
-        description: "Falha ao excluir o Cidade. Tente novamente.",
+        description: "Falha ao excluir o Idioma. Tente novamente.",
       });
     } finally {
       setIsDeleting(false);
     }
   };
+
   useEffect(() => {
     fetchData();
   }, [page, limit, debouncedNameFilter]);
 
-  const handleCreateCity = async () => {
-    if (!newCityName.trim()) {
-      toast.error("O nome da cidade não pode ser vazio.");
+  const handleCreateLanguage = async () => {
+    if (!newLanguageName.trim() || !newLanguageLabel.trim()) {
+      toast.error("Nome e rótulo do idioma não podem ser vazios.");
       return;
     }
 
-    setIsCreatingCity(true);
+    setIsCreatingLanguage(true);
     try {
-      await createCityService({ name: newCityName });
-      toast.success("Cidade cadastrada com sucesso!");
+      await createLanguage({
+        name: newLanguageName,
+        label: newLanguageLabel,
+      });
+      toast.success("Idioma cadastrado com sucesso!");
       setIsModalOpen(false);
-      setNewCityName("");
+      setNewLanguageName("");
+      setNewLanguageLabel("");
       fetchData();
     } catch (error: any) {
-      console.error("Erro ao cadastrar cidade", error);
-      toast.error(error.message || "Erro ao cadastrar cidade.");
+      console.error("Erro ao cadastrar idioma", error);
+      toast.error(error.message || "Erro ao cadastrar idioma.");
     } finally {
-      setIsCreatingCity(false);
+      setIsCreatingLanguage(false);
     }
   };
-  const columns = cityColumns(handleDelete, isDeleting);
+
+  const columns = languageColumns(handleDelete, isDeleting); 
+
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-bold mb-4"> Cidades</h1>
+      <h1 className="text-2xl font-bold mb-4">Idiomas</h1>
 
       <div className="flex justify-end mb-4">
-        <Button onClick={() => setIsModalOpen(true)}>Cadastrar Nova Cidade</Button>
+        <Button onClick={() => setIsModalOpen(true)}>Cadastrar Novo Idioma</Button>
       </div>
 
       <div className="container mx-auto py-6">
@@ -133,8 +143,8 @@ const [isDeleting, setIsDeleting] = useState(false);
             filters={[
               {
                 type: "input",
-                column: "name",
-                placeholder: "Filtrar por nome...",
+                column: "label",
+                placeholder: "Filtrar por Rotulo...",
                 value: nameFilter,
                 onChange: setNameFilter,
               },
@@ -146,22 +156,34 @@ const [isDeleting, setIsDeleting] = useState(false);
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Cadastrar Nova Cidade</DialogTitle>
+            <DialogTitle>Cadastrar Novo Idioma</DialogTitle>
             <DialogDescription>
-              Preencha os dados para cadastrar uma nova cidade.
+              Preencha os dados para cadastrar um novo idioma.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="cityName" className="text-right">
+              <Label htmlFor="languageName" className="text-right">
                 Nome
               </Label>
               <Input
-                id="cityName"
-                value={newCityName}
-                onChange={(e) => setNewCityName(e.target.value)}
+                id="languageName"
+                value={newLanguageName}
+                onChange={(e) => setNewLanguageName(e.target.value)}
                 className="col-span-3"
-                placeholder="Nome da cidade"
+                placeholder="Ex: PORTUGUESE"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="languageLabel" className="text-right">
+                Rótulo
+              </Label>
+              <Input
+                id="languageLabel"
+                value={newLanguageLabel}
+                onChange={(e) => setNewLanguageLabel(e.target.value)}
+                className="col-span-3"
+                placeholder="Ex: pt-PT"
               />
             </div>
           </div>
@@ -169,8 +191,8 @@ const [isDeleting, setIsDeleting] = useState(false);
             <Button variant="outline" onClick={() => setIsModalOpen(false)}>
               Cancelar
             </Button>
-            <Button onClick={handleCreateCity} disabled={isCreatingCity}>
-              {isCreatingCity ? "Cadastrando..." : "Cadastrar"}
+            <Button onClick={handleCreateLanguage} disabled={isCreatingLanguage}>
+              {isCreatingLanguage ? "Cadastrando..." : "Cadastrar"}
             </Button>
           </DialogFooter>
         </DialogContent>

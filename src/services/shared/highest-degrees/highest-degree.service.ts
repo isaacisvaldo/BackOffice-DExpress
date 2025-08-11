@@ -51,6 +51,7 @@ export async function getHighestDegreesList(): Promise<HighestDegree[]> {
 export interface CreateHighestDegreeDto {
   name: string;
   label: string;
+  level:number;
 }
 
 /**

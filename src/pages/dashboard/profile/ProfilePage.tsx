@@ -4,6 +4,7 @@ import ProfileHeader from "@/components/profile/profile-header";
 import ProfileContent from "@/components/profile/profile-content";
 import ErrorPage from "../error/erro-page";
 import { getCurrentUser, type AdminUser } from "@/services/admin/admin.service";
+import SwirlingEffectSpinner from "@/components/customized/spinner/spinner-06";
 
 
 
@@ -31,9 +32,9 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center">
-        <p className="text-lg">Carregando...</p>
-      </div>
+     <div className="flex justify-center items-center py-10">
+           <SwirlingEffectSpinner></SwirlingEffectSpinner>
+          </div>
     );
   }
 

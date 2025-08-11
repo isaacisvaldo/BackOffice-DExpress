@@ -152,7 +152,7 @@ export const professionalColumns = (onDelete: (id: string) => void, isDeleting: 
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Ações</DropdownMenuLabel>
             <DropdownMenuItem asChild>
-              <Link to={`/professional/${professional.id}/details`}>
+              <Link to={`/rh/professional/${professional.id}/details`}>
                <InfoIcon className="mr-2 h-4 w-4" />
               <span>Detalhes</span></Link>
             </DropdownMenuItem>

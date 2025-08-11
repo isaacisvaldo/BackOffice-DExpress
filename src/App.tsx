@@ -16,24 +16,35 @@ import DistrictList from "./pages/dashboard/location/districList"
 import AdminList from "./pages/dashboard/admin/AdminList"
 import RoleList from "./pages/dashboard/role/RoleList"
 import ProfessionaDetails from "./pages/dashboard/profissional/profissionalDetails"
+import LanguageList from "./pages/dashboard/shared/languageList"
+import SkillList from "./pages/dashboard/shared/skillsList"
+import CourseList from "./pages/dashboard/shared/courseList"
+import HighestDegreeList from "./pages/dashboard/shared/HighestDegreeList"
+import MaritalStatusList from "./pages/dashboard/shared/MaritalStatusList"
+import GenderList from "./pages/dashboard/shared/GenderList"
+import SwirlingEffectSpinner from "./components/customized/spinner/spinner-06"
 
 // 🔹 Rota protegida
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const { isLoggedIn, isLoading } = useAuth()
-  if (isLoading) return <div>Carregando...</div>
+  if (isLoading) return <div className="flex justify-center items-center py-10">
+    <SwirlingEffectSpinner></SwirlingEffectSpinner>
+  </div>
   return isLoggedIn ? <>{children}</> : <Navigate to="/login" replace />
 }
 
 // 🔹 Rota pública (se logado → manda para dashboard)
 const PublicRoute = ({ children }: { children: React.ReactNode }) => {
   const { isLoggedIn, isLoading } = useAuth()
-  if (isLoading) return <div>Carregando...</div>
+  if (isLoading) return <div className="flex justify-center items-center py-10">
+    <SwirlingEffectSpinner></SwirlingEffectSpinner>
+  </div>
   return !isLoggedIn ? <>{children}</> : <Navigate to="/dashboard" replace />
 }
 
 export default function App() {
   return (
-    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+    <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
       {/* O BrowserRouter agora envolve o AuthProvider */}
       <BrowserRouter>
         <AuthProvider>
@@ -69,11 +80,17 @@ export default function App() {
               <Route path="dashboard" element={<DashboardPage />} />
               <Route path="locations/cities" element={<CitiesList />} />
               <Route path="locations/districts" element={<DistrictList />} />
-              <Route path="hires/applications" element={<ApplicationsPage />} />
-              <Route path="hires/applications/:id" element={<ApplicationDetailPage />} />
-              <Route path="professionals" element={<ProfessionalsList />} />
-              <Route path="professional/:id/details" element={<ProfessionaDetails />} />
+              <Route path="rh/applications" element={<ApplicationsPage />} />
+              <Route path="rh/application/:id" element={<ApplicationDetailPage />} />
+              <Route path="rh/professionals" element={<ProfessionalsList />} />
+              <Route path="rh/professional/:id/details" element={<ProfessionaDetails />} />
               <Route path="admin/roles-permissions" element={<RoleList />} />
+              <Route path="shared-data/languages" element={<LanguageList />} />
+              <Route path="shared-data/skills" element={<SkillList />} />
+              <Route path="shared-data/courses" element={<CourseList />} />
+              <Route path="shared-data/highest-degrees" element={<HighestDegreeList />} />
+              <Route path="shared-data/marital-status" element={<MaritalStatusList />} />
+              <Route path="shared-data/genders" element={<GenderList />} />
               <Route path="profile" element={<ProfilePage />} />
               <Route path="admin/users" element={<AdminList />} />
               {/* Página 404 */}

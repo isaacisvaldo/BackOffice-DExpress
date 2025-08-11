@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { getProfessionalById, type Professional } from "@/services/profissional/profissional.service";
 import toast from "react-hot-toast";
 import ProfessionalHeader from "@/components/profissional/profissionalHeader";
+import SwirlingEffectSpinner from "@/components/customized/spinner/spinner-06";
 
 export default  function ProfessionaDetails() {
     const { id } = useParams<{ id: string }>()
@@ -32,9 +33,9 @@ export default  function ProfessionaDetails() {
     }, [id]);
     if (loading) {
         return (
-            <div className="flex h-screen items-center justify-center">
-                <p className="text-lg">Carregando...</p>
-            </div>
+           <div className="flex justify-center items-center py-10">
+           <SwirlingEffectSpinner></SwirlingEffectSpinner>
+          </div>
         );
     }
     if (!profissional) {
