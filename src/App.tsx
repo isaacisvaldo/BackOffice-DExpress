@@ -19,23 +19,24 @@ import ProfessionaDetails from "./pages/dashboard/profissional/profissionalDetai
 
 // 🔹 Rota protegida
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
-  const { user, isLoading } = useAuth()
+  const { isLoggedIn, isLoading } = useAuth()
   if (isLoading) return <div>Carregando...</div>
-  return user ? <>{children}</> : <Navigate to="/login" replace />
+  return isLoggedIn ? <>{children}</> : <Navigate to="/login" replace />
 }
 
 // 🔹 Rota pública (se logado → manda para dashboard)
 const PublicRoute = ({ children }: { children: React.ReactNode }) => {
-  const { user, isLoading } = useAuth()
+  const { isLoggedIn, isLoading } = useAuth()
   if (isLoading) return <div>Carregando...</div>
-  return !user ? <>{children}</> : <Navigate to="/dashboard" replace />
+  return !isLoggedIn ? <>{children}</> : <Navigate to="/dashboard" replace />
 }
 
 export default function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <AuthProvider>
-        <BrowserRouter>
+      {/* O BrowserRouter agora envolve o AuthProvider */}
+      <BrowserRouter>
+        <AuthProvider>
           <Routes>
 
             {/* Rotas públicas */}
@@ -80,8 +81,8 @@ export default function App() {
             </Route>
 
           </Routes>
-        </BrowserRouter>
-      </AuthProvider>
+        </AuthProvider>
+      </BrowserRouter>
     </ThemeProvider>
   )
 }
