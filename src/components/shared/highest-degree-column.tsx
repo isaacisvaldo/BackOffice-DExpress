@@ -1,3 +1,5 @@
+// src/components/shared/highest-degree-column.ts
+
 import type { ColumnDef } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import { ArrowUpDown, MoreHorizontal } from "lucide-react"
@@ -9,30 +11,43 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "../ui/alert-dialog"
-
-export type City = {
-  id: string
-  name: string
-  createdAt: string
-  updatedAt: string
+export interface HighestDegree {
+    id: string;
+    
+    label: string;
+   
 }
 
-export const cityColumns= (
+export const highestDegreeColumns = (
   onDelete: (id: string) => void,
   isDeleting: boolean
-): ColumnDef<City>[] =>  [
+): ColumnDef<HighestDegree>[] => [
+ 
   {
-    accessorKey: "name",
+    accessorKey: "label",
     header: ({ column }) => (
       <Button
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        Nome
+        Rótulo
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: ({ row }) => <div className="font-medium">{row.getValue("name")}</div>,
+    cell: ({ row }) => <div className="font-medium">{row.getValue("label")}</div>,
+  },
+   {
+    accessorKey: "level",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        Level
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+    cell: ({ row }) => <div className="font-medium">{row.getValue("level")}</div>,
   },
   {
     accessorKey: "createdAt",
@@ -54,7 +69,7 @@ export const cityColumns= (
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const city = row.original
+      const highestDegree = row.original
 
       return (
         <DropdownMenu>
@@ -67,14 +82,12 @@ export const cityColumns= (
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Ações</DropdownMenuLabel>
            
-            <DropdownMenuItem onClick={() => alert(`Editar ${city.name}`)}>
+            <DropdownMenuItem onClick={() => alert(`Editar ${highestDegree.label}`)}>
               Editar
             </DropdownMenuItem>
            
-              {/* Início do AlertDialog para exclusão */}
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  {/* onSelect para prevenir o fechamento imediato do DropdownMenu */}
                   <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                     Excluir
                   </DropdownMenuItem>
@@ -83,16 +96,15 @@ export const cityColumns= (
                   <AlertDialogHeader>
                     <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      Essa ação não pode ser desfeita. Isso excluirá permanentemente a cidade{" "}
-                      **{city.name}** e removerá seus dados de nossos servidores.
+                      Essa ação não pode ser desfeita. Isso excluirá permanentemente o nível de escolaridade{" "}
+                      **{highestDegree.label}** e removerá seus dados de nossos servidores.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                    {/* Chama a função onDelete passada como prop e desabilita enquanto estiver excluindo */}
                     <AlertDialogAction
                       className="bg-red-500 hover:bg-red-600 text-white"
-                      onClick={() => onDelete(city.id)}
+                      onClick={() => onDelete(highestDegree.id)}
                       disabled={isDeleting}
                     >
                       {isDeleting ? "Excluindo..." : "Confirmar Exclusão"}

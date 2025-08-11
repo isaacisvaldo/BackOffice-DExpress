@@ -121,7 +121,7 @@ export const columns: ColumnDef<MappedJobApplication>[] = [
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Ações</DropdownMenuLabel>
           <DropdownMenuItem asChild>
-            <Link to={`/hires/applications/${app.id}`}>
+            <Link to={`/rh/application/${app.id}`}>
               Ver Detalhes
             </Link>
           </DropdownMenuItem>

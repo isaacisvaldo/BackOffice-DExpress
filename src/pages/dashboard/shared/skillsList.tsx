@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import { DataTable } from "@/components/data-table";
-import { cityColumns, type City } from "@/components/location/citiesColunn";
-import { deleteCity, getCities } from "@/services/location/cities.service";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,23 +11,26 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { createCity as createCityService } from "@/services/location/cities.service";
 import { toast } from "sonner";
+import { skillColumns, type Skill } from "@/components/shared/skill-columns";
+import { createSkill, deleteSkill, getSkills } from "@/services/shared/skills/skills.service";
 import SwirlingEffectSpinner from "@/components/customized/spinner/spinner-06";
 
-export default function CitiesList() {
-  const [data, setData] = useState<City[]>([]);
+export default function SkillList() {
+  const [data, setData] = useState<Skill[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(5);
   const [totalPages, setTotalPages] = useState(1);
-const [isDeleting, setIsDeleting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const [nameFilter, setNameFilter] = useState<string>("");
   const [debouncedNameFilter, setDebouncedNameFilter] = useState<string>("");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newCityName, setNewCityName] = useState<string>("");
-  const [isCreatingCity, setIsCreatingCity] = useState(false);
+  const [newSkillName, setNewSkillName] = useState<string>("");
+  const [newSkillLabel, setNewSkillLabel] = useState<string>("");
+  const [isCreatingSkill, setIsCreatingSkill] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -44,15 +45,16 @@ const [isDeleting, setIsDeleting] = useState(false);
   const fetchData = async () => {
     setLoading(true);
     try {
-      const result = await getCities({
+      const result = await getSkills({
         page,
         limit: limit === 0 ? undefined : limit,
         search: debouncedNameFilter || undefined,
       });
 
-      const mappedData: City[] = result.data.map((item: any) => ({
+      const mappedData: Skill[] = result.data.map((item: any) => ({
         id: item.id,
         name: item.name,
+        label: item.label,
         createdAt: new Date(item.createdAt).toLocaleDateString("pt-PT"),
         updatedAt: new Date(item.updatedAt).toLocaleDateString("pt-PT"),
       }));
@@ -60,65 +62,73 @@ const [isDeleting, setIsDeleting] = useState(false);
       setData(mappedData);
       setTotalPages(result.totalPages || 1);
     } catch (error) {
-      console.error("Erro ao carregar cidades", error);
-      toast.error("Erro ao carregar cidades.");
+      console.error("Erro ao carregar habilidades", error);
+      toast.error("Erro ao carregar habilidades.");
     } finally {
       setLoading(false);
     }
   };
- const handleDelete = async (id: string) => {
-    setIsDeleting(true); 
+
+  const handleDelete = async (id: string) => {
+    setIsDeleting(true);
     try {
-      await deleteCity(id);
+      await deleteSkill(id);
       toast.success("Sucesso", {
-        description: "Cidade excluído com sucesso!",
+        description: "Habilidade excluída com sucesso!",
       });
-      fetchData(); 
+      fetchData();
     } catch (error) {
-      console.error("Erro ao excluir admin:", error);
+      console.error("Erro ao excluir habilidade:", error);
       toast.error("Erro", {
-        description: "Falha ao excluir o Cidade. Tente novamente.",
+        description: "Falha ao excluir a habilidade. Tente novamente.",
       });
     } finally {
       setIsDeleting(false);
     }
   };
+
   useEffect(() => {
     fetchData();
   }, [page, limit, debouncedNameFilter]);
 
-  const handleCreateCity = async () => {
-    if (!newCityName.trim()) {
-      toast.error("O nome da cidade não pode ser vazio.");
+  const handleCreateSkill = async () => {
+    if (!newSkillName.trim() || !newSkillLabel.trim()) {
+      toast.error("Nome e rótulo da habilidade não podem ser vazios.");
       return;
     }
 
-    setIsCreatingCity(true);
+    setIsCreatingSkill(true);
     try {
-      await createCityService({ name: newCityName });
-      toast.success("Cidade cadastrada com sucesso!");
+      await createSkill({
+        name: newSkillName,
+        label: newSkillLabel,
+      });
+      toast.success("Habilidade cadastrada com sucesso!");
       setIsModalOpen(false);
-      setNewCityName("");
+      setNewSkillName("");
+      setNewSkillLabel("");
       fetchData();
     } catch (error: any) {
-      console.error("Erro ao cadastrar cidade", error);
-      toast.error(error.message || "Erro ao cadastrar cidade.");
+      console.error("Erro ao cadastrar habilidade", error);
+      toast.error(error.message || "Erro ao cadastrar habilidade.");
     } finally {
-      setIsCreatingCity(false);
+      setIsCreatingSkill(false);
     }
   };
-  const columns = cityColumns(handleDelete, isDeleting);
+
+  const columns = skillColumns(handleDelete, isDeleting);
+
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-bold mb-4"> Cidades</h1>
+      <h1 className="text-2xl font-bold mb-4">Habilidades</h1>
 
       <div className="flex justify-end mb-4">
-        <Button onClick={() => setIsModalOpen(true)}>Cadastrar Nova Cidade</Button>
+        <Button onClick={() => setIsModalOpen(true)}>Cadastrar Nova Habilidade</Button>
       </div>
 
       <div className="container mx-auto py-6">
         {loading ? (
-         <div className="flex justify-center items-center py-10">
+          <div className="flex justify-center items-center py-10">
            <SwirlingEffectSpinner></SwirlingEffectSpinner>
           </div>
         ) : (
@@ -133,8 +143,8 @@ const [isDeleting, setIsDeleting] = useState(false);
             filters={[
               {
                 type: "input",
-                column: "name",
-                placeholder: "Filtrar por nome...",
+                column: "label",
+                placeholder: "Filtrar por Rótulo...",
                 value: nameFilter,
                 onChange: setNameFilter,
               },
@@ -146,22 +156,34 @@ const [isDeleting, setIsDeleting] = useState(false);
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Cadastrar Nova Cidade</DialogTitle>
+            <DialogTitle>Cadastrar Nova Habilidade</DialogTitle>
             <DialogDescription>
-              Preencha os dados para cadastrar uma nova cidade.
+              Preencha os dados para cadastrar uma nova habilidade.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="cityName" className="text-right">
+              <Label htmlFor="skillName" className="text-right">
                 Nome
               </Label>
               <Input
-                id="cityName"
-                value={newCityName}
-                onChange={(e) => setNewCityName(e.target.value)}
+                id="skillName"
+                value={newSkillName}
+                onChange={(e) => setNewSkillName(e.target.value)}
                 className="col-span-3"
-                placeholder="Nome da cidade"
+                placeholder="Ex: PROGRAMAÇÃO"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="skillLabel" className="text-right">
+                Rótulo
+              </Label>
+              <Input
+                id="skillLabel"
+                value={newSkillLabel}
+                onChange={(e) => setNewSkillLabel(e.target.value)}
+                className="col-span-3"
+                placeholder="Ex: programming"
               />
             </div>
           </div>
@@ -169,8 +191,8 @@ const [isDeleting, setIsDeleting] = useState(false);
             <Button variant="outline" onClick={() => setIsModalOpen(false)}>
               Cancelar
             </Button>
-            <Button onClick={handleCreateCity} disabled={isCreatingCity}>
-              {isCreatingCity ? "Cadastrando..." : "Cadastrar"}
+            <Button onClick={handleCreateSkill} disabled={isCreatingSkill}>
+              {isCreatingSkill ? "Cadastrando..." : "Cadastrar"}
             </Button>
           </DialogFooter>
         </DialogContent>

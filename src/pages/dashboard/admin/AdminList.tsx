@@ -37,6 +37,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner"; // Verifique se 'sonner' está configurado ou use 'use-toast' do shadcn
 import { getGendersList } from "@/services/shared/gender/gender.service";
 import { getProfilesList, type Profile } from "@/services/shared/role/role.service";
+import SwirlingEffectSpinner from "@/components/customized/spinner/spinner-06";
 
 
 const formSchema = z.object({
@@ -355,7 +356,9 @@ export default function AdminList() {
 
       <div className="container mx-auto py-6">
         {loading ? (
-          <p>Carregando...</p>
+         <div className="flex justify-center items-center py-10">
+           <SwirlingEffectSpinner></SwirlingEffectSpinner>
+          </div>
         ) : (
           <DataTable
             columns={columns} 

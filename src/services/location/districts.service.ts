@@ -1,5 +1,5 @@
 // src/services/location/districts.service.ts
-import { fetchDataWithFilter, fetchData, sendData } from "../api-client";
+import { fetchDataWithFilter, fetchData, sendData,deleteData } from "../api-client";
 import type { FilterParams } from "../api-client";
 
 // ✅ O tipo de dado do Distrito com o objeto da Cidade
@@ -46,4 +46,7 @@ export interface CreateDistrictDto {
 
 export async function createDistrict(data: CreateDistrictDto): Promise<DistrictWithCity> {
   return sendData("/districts", "POST", data);
+}
+export async function deleteDistrict(id:string): Promise<DistrictWithCity> {
+   return deleteData(`/districts/${id}`);
 }

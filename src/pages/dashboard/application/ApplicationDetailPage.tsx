@@ -8,6 +8,7 @@ import { checkCandidateHasProfile, getApplicationById, updateApplicationStatus }
 import type { JobApplication } from "@/types/types"
 import ImageUploadStage from "@/components/ImageUploadStage"
 import type { Professional } from "@/services/profissional/profissional.service"
+import SwirlingEffectSpinner from "@/components/customized/spinner/spinner-06"
 
 
 export default function ApplicationDetailPage() {
@@ -75,7 +76,9 @@ export default function ApplicationDetailPage() {
   };
 
 
-  if (!application) return <div className="p-6">Carregando detalhes...</div>
+  if (!application) return <div className="flex justify-center items-center py-10">
+           <SwirlingEffectSpinner></SwirlingEffectSpinner>
+          </div>
 
   return (
     <div className="p-6 space-y-6">
