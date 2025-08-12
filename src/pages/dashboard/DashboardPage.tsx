@@ -65,6 +65,8 @@ const mappedData: MappedJobApplication[] = result.data.map(
             <div className="flex-1 min-w-[300px]">
               <ChartPieInteractive />
             </div>
+             {/* Vou substituir pela listagens das solicitacoes de contratacao ou os historicos */}
+            
             <div className="flex-[2] min-w-[450px]">
               <div className="bg-white dark:bg-gray-900 rounded-xl shadow-md p-4 h-[450px] flex flex-col">
                 <div className="flex-1 overflow-y-auto">

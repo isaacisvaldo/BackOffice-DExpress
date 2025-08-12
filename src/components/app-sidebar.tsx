@@ -25,12 +25,10 @@ import { NavProjects } from "./nav-projects"
 import { NavUser } from "./nav-user"
 import { NavDashboard } from "./nav-dashboard"
 import { NavRh } from "./nav-rh"
-import { NavFinancas } from "./nav-financas"
-
-
 import { Link } from "react-router-dom"
 import { useAuth } from "@/contexts/AuthContext"
 import { NavOperacoes } from "./nav-operacoes"
+import { NavContratacoes } from "./nav-contratacoes"
 
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -83,16 +81,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         items: [
           { title: "Idiomas", url: "/shared-data/languages" },
           { title: "Habilidades", url: "/shared-data/skills" },
-        
+
           { title: "Cursos e Certificados", url: "/shared-data/courses" },
           { title: "Grau Acadêmico", url: "/shared-data/highest-degrees" },
           { title: "Estados Civis", url: "/shared-data/marital-status" },
           { title: "Gêneros", url: "/shared-data/genders" },
         ],
       },
-    
-      
-      
+
+
+
     ],
     navRh: [
       {
@@ -103,7 +101,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           { title: "Profissionais", url: "/rh/professionals" },
           { title: "Vagas", url: "/rh/jobs" },
           { title: "Candidaturas", url: "/rh/applications" },
-          { title: "Solicitações de Contratação", url: "/rh/requests" },
+
           { title: "Relatórios de RH", url: "/rh/reports" },
           { title: "Cargos e Posições", url: "/rh/positions" },
           { title: "Disponibilidade", url: "/rh/disponibilidade" },
@@ -111,7 +109,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           { title: "Setores-empresa", url: "/rh/sectors" }
         ],
       },
-        {
+      {
         title: "Administração",
         url: "/admin",
         icon: Shield,
@@ -121,20 +119,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         ],
       },
     ],
-    navFinancas: [
-      {
-        title: "Finanças",
-        url: "/financas",
-        icon: Landmark,
-        items: [
-          { title: "Dashboard Financeiro", url: "/financas/dashboard" },
-          { title: "Relatórios Financeiros", url: "/financas/relatorios" },
-          { title: "Contas a Pagar", url: "/financas/contas-pagar" },
-          { title: "Contas a Receber", url: "/financas/contas-receber" },
-          { title: "Fluxo de Caixa", url: "/financas/fluxo-caixa" }
-        ],
-      },
-    ],
+  
     navOperacoes: [
       {
         title: "Operações e Projetos",
@@ -147,7 +132,54 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           { title: "Equipes", url: "/operacoes/teams" },
         ],
       },
+       {
+        title: "Finanças",
+        url: "/financas",
+        icon: Landmark,
+        items: [
+          { title: "Dashboard Financeiro", url: "/financas/dashboard" },
+          { title: "Relatórios Financeiros", url: "/financas/relatorios" },
+          { title: "Contas a Pagar", url: "/financas/contas-pagar" },
+          { title: "Contas a Receber", url: "/financas/contas-receber" },
+          { title: "Fluxo de Caixa", url: "/financas/fluxo-caixa" }
+        ],
+      },
     ],
+    navcontratacoes: [
+      {
+        title: "Contratações",
+        url: "/contratacoes",
+        icon: Briefcase,
+        items: [
+          { title: "Solicitações de Serviço", url: "/contratacoes/solicitacoes" },
+
+          { title: "Contratos Ativos", url: "/contratacoes/contratos-ativos" },
+
+          { title: "Histórico de Contratações", url: "/contratacoes/historico" },
+
+          { title: "Modelos de Contrato", url: "/contratacoes/modelos" },
+        ],
+      },
+        {
+        title: "Gerenciamento do Portal",
+        url: "/portal",
+        icon: Settings2,
+        items: [
+          {
+            title: "Usuários do Portal",
+            url: "/portal/users",
+          },
+
+          {
+            title: "Leads",
+            url: "/portal/leads",
+          },
+        ],
+      },
+
+
+    ],
+   
     projects: [
       {
         name: "Geral",
@@ -160,7 +192,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         icon: Users,
       },
     ]
-   
+
   }
 
 
@@ -179,9 +211,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent>
         <NavDashboard dashboard={data.dashboard} />
         <NavMain items={data.navMain} />
-        <NavOperacoes items={data.navOperacoes} />
+        <NavContratacoes items={data.navcontratacoes} />
+
         <NavRh items={data.navRh} />
-        <NavFinancas items={data.navFinancas} />
+        
+        <NavOperacoes items={data.navOperacoes} />
         <NavProjects projects={data.projects} />
       </SidebarContent>
 
