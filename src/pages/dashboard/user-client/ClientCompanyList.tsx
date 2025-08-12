@@ -227,9 +227,9 @@ export default function ClientCompanyProfileList() {
           </DialogTrigger>
           <DialogContent className="sm:max-w-[700px]">
             <DialogHeader>
-              <DialogTitle>Adicionar Novo Perfil de Empresa</DialogTitle>
+              <DialogTitle>Adicionar Nova Empresa</DialogTitle>
               <DialogDescription>
-                Preencha os dados para criar um novo perfil de empresa cliente.
+                Preencha os dados para criar uma nova empresa .
               </DialogDescription>
             </DialogHeader>
             <Form {...form}>
@@ -398,7 +398,7 @@ export default function ClientCompanyProfileList() {
                 </div>
                 
                 <Button type="submit" className="mt-4" disabled={isSubmitting}>
-                  {isSubmitting ? "Criando..." : "Criar Perfil"}
+                  {isSubmitting ? "Criando..." : "Criar Empresa"}
                 </Button>
               </form>
             </Form>
