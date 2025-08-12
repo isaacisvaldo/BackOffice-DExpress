@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/sidebar"
 import { Link } from "react-router-dom"
 
-export function NavFinancas({
+export function NavContratacoes({
   items,
 }: {
   items: {
@@ -36,7 +36,7 @@ export function NavFinancas({
 }) {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Finanças</SidebarGroupLabel>
+      <SidebarGroupLabel>Contratações</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
           <Collapsible

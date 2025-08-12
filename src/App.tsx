@@ -23,6 +23,9 @@ import HighestDegreeList from "./pages/dashboard/shared/HighestDegreeList"
 import MaritalStatusList from "./pages/dashboard/shared/MaritalStatusList"
 import GenderList from "./pages/dashboard/shared/GenderList"
 import SwirlingEffectSpinner from "./components/customized/spinner/spinner-06"
+import UserClientLeadsList from "./pages/dashboard/user-client/UserClientLeadsList"
+import UserClientList from "./pages/dashboard/user-client/UserClientList"
+import ClientCompanyProfileList from "./pages/dashboard/user-client/ClientCompanyList"
 
 // 🔹 Rota protegida
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
@@ -92,6 +95,15 @@ export default function App() {
               <Route path="shared-data/marital-status" element={<MaritalStatusList />} />
               <Route path="shared-data/genders" element={<GenderList />} />
               <Route path="profile" element={<ProfilePage />} />
+
+
+              <Route path="portal/users" element={<UserClientList />} />
+              <Route path="portal/leads" element={<UserClientLeadsList />} />
+
+
+              <Route path="clients/company" element={<ClientCompanyProfileList />} />
+
+
               <Route path="admin/users" element={<AdminList />} />
               {/* Página 404 */}
               <Route path="*" element={<NotFoundPage />} />

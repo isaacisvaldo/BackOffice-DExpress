@@ -38,6 +38,10 @@ export async function getDistricts(
 export async function getDistrictsList(): Promise<DistrictWithCity[]> {
   return fetchData("/districts/list");
 }
+export async function getDistrictsByCityId(id:string): Promise<DistrictWithCity[]> {
+  return fetchData(`/districts/${id}/city`);
+}
+
 
 export interface CreateDistrictDto {
   name: string;
