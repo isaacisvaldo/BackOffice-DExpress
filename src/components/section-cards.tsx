@@ -72,7 +72,7 @@ export function SectionCards() {
   // Se os dados estiverem prontos, renderiza os cards
   return (
     <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
-      
+
       {/* Profissionais cadastrados */}
       <Card className="@container/card">
         <CardHeader>
@@ -100,9 +100,9 @@ export function SectionCards() {
       {/* Famílias/clientes cadastrados */}
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Famílias Ativas</CardDescription>
+          <CardDescription>Base de Clientes</CardDescription> {/* Título mais genérico */}
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            {dashboardData.clients}
+            {dashboardData.clients} {/* Usa a soma total de clientes */}
           </CardTitle>
           <CardAction>
             <Badge variant="outline">
@@ -113,7 +113,7 @@ export function SectionCards() {
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex gap-2 font-medium">
-            Mais famílias estão contratando <IconTrendingUp className="size-4" />
+            Mais clientes estão contratando <IconTrendingUp className="size-4" /> {/* Mensagem também genérica */}
           </div>
           <div className="text-muted-foreground">
             Base de clientes em crescimento
