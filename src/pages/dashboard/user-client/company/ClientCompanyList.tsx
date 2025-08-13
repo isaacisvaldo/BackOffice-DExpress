@@ -32,11 +32,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { clientCompanyProfileColumns } from "@/components/shared/client-company-column";
-import { createClientCompanyProfile, deleteClientCompanyProfile, getClientCompanyProfiles, type ClientCompanyProfile } from "@/services/client/client-company-profile.service";
 import { getCitiesList, type City } from "@/services/location/cities.service";
 import type { District } from "@/types/types";
 import { getDistrictsByCityId } from "@/services/location/districts.service";
 import { getSectorsList } from "@/services/shared/sector/sector.service";
+import { createClientCompanyProfile, deleteClientCompanyProfile, getClientCompanyProfiles, type ClientCompanyProfile } from "@/services/client/company/client-company-profile.service";
 
 
 const formSchema = z.object({

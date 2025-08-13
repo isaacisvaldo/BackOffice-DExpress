@@ -20,7 +20,8 @@ import {
   AlertDialogTrigger,
 } from "../ui/alert-dialog";
 import { Badge } from "../ui/badge";
-import type { ClientCompanyProfile } from "@/services/client/client-company-profile.service";
+import type { ClientCompanyProfile } from "@/services/client/company/client-company-profile.service";
+
 
 export const clientCompanyProfileColumns = (
   onDelete: (id: string) => void,

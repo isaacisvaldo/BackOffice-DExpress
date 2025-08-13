@@ -1,4 +1,4 @@
-import  {  type FilterParams, fetchDataWithFilter, fetchData, sendData, deleteData } from "../api-client";
+import  {  type FilterParams, fetchDataWithFilter, fetchData, sendData, deleteData } from "../../api-client";
 export interface Sector {
   id:string;
   name:string;
