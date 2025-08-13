@@ -29,6 +29,7 @@ import ClientCompanyProfileList from "./pages/dashboard/user-client/company/Clie
 import ClientList from "./pages/dashboard/user-client/ClientList"
 import PackagesList from "./pages/dashboard/user-client/company/package/PackageList"
 import ContractsListAndCreation from "./pages/dashboard/service/ContractsListAndCreation"
+import DashboardFinancial from "./pages/dashboard/finance/DasboardFinancial"
 
 // 🔹 Rota protegida
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
@@ -98,6 +99,7 @@ export default function App() {
               <Route path="shared-data/marital-status" element={<MaritalStatusList />} />
               <Route path="shared-data/package" element={<PackagesList />} /> 
               <Route path="shared-data/genders" element={<GenderList />} />
+           
               <Route path="profile" element={<ProfilePage />} />
 
               <Route path="contratacoes/contratos-ativos" element={<ContractsListAndCreation />} />
@@ -109,7 +111,7 @@ export default function App() {
               <Route path="clients/company" element={<ClientCompanyProfileList />} /> 
               <Route path="clients/individual" element={<ClientList />} /> 
             
-
+           <Route path="financas/dashboard" element={<DashboardFinancial />} />
 
               <Route path="admin/users" element={<AdminList />} />
               {/* Página 404 */}

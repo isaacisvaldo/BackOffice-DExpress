@@ -33,6 +33,7 @@ import {
 } from "@/services/client/client.service";
 import { clientProfileColumns } from "@/components/shared/client-profile-column";
 import { createUser, type CreateUserDto } from "@/services/users-client/user-client.service";
+import { formatDate } from "@/util";
 
 const formSchema = z.object({
   firstName: z.string().min(2, { message: "O primeiro nome é obrigatório." }),
@@ -98,7 +99,12 @@ export default function ClientProfileList() {
         limit: limit === 0 ? undefined : limit,
         search: debouncedSearchFilter || undefined,
       });
-      setData(result.data);
+       const mappedData = result.data.map((item) => ({
+                    ...item,
+                   createdAt: formatDate(item.createdAt),
+                    updatedAt: formatDate(item.updatedAt),
+                  }));
+      setData(mappedData);
       setTotalPages(result.totalPages || 1);
     } catch (error) {
       console.error("Erro ao carregar perfis de cliente", error);
