@@ -13,7 +13,7 @@ const dateFormatter = new Intl.DateTimeFormat("pt-PT", {
   year: 'numeric',     // Ex: 2025
   hour: '2-digit',     // Ex: 13
   minute: '2-digit',   // Ex: 35
-  timeZone: 'UTC'
+
 });
 
 

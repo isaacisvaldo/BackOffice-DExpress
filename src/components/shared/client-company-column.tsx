@@ -76,10 +76,8 @@ export const clientCompanyProfileColumns = (
   {
     accessorKey: "createdAt",
     header: "Criado em",
-    cell: ({ row }) => {
-      const date = new Date(row.getValue("createdAt"));
-      return date.toLocaleDateString("pt-PT");
-    },
+      cell: ({ row }) => <div className="font-medium">{row.getValue("createdAt")}</div>,
+   
   },
   {
     id: "actions",

@@ -37,6 +37,7 @@ import type { District } from "@/types/types";
 import { getDistrictsByCityId } from "@/services/location/districts.service";
 import { getSectorsList } from "@/services/shared/sector/sector.service";
 import { createClientCompanyProfile, deleteClientCompanyProfile, getClientCompanyProfiles, type ClientCompanyProfile } from "@/services/client/company/client-company-profile.service";
+import { formatDate } from "@/util";
 
 
 const formSchema = z.object({
@@ -93,7 +94,12 @@ export default function ClientCompanyProfileList() {
         limit: limit === 0 ? undefined : limit,
         search: debouncedSearchFilter || undefined,
       });
-      setData(result.data);
+       const mappedData = result.data.map((item) => ({
+              ...item,
+             createdAt: formatDate(item.createdAt),
+              updatedAt: formatDate(item.updatedAt),
+            }));
+      setData(mappedData);
       setTotalPages(result.totalPages || 1);
     } catch (error) {
       console.error("Erro ao carregar perfis de empresa", error);
