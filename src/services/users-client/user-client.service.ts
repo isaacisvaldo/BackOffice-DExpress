@@ -69,7 +69,12 @@ export interface CreateUserDto {
   type: UserType;
 }
 
-export async function createUser(data: CreateUserDto): Promise<User> {
+export interface ApiResponseCreateUser{
+  message:string
+  userId:string
+
+}
+export async function createUser(data: CreateUserDto): Promise<ApiResponseCreateUser> {
   return sendData("/users", "POST", data);
 }
 

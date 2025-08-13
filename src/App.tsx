@@ -26,6 +26,7 @@ import SwirlingEffectSpinner from "./components/customized/spinner/spinner-06"
 import UserClientLeadsList from "./pages/dashboard/user-client/UserClientLeadsList"
 import UserClientList from "./pages/dashboard/user-client/UserClientList"
 import ClientCompanyProfileList from "./pages/dashboard/user-client/ClientCompanyList"
+import ClientList from "./pages/dashboard/user-client/ClientList"
 
 // 🔹 Rota protegida
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
@@ -101,7 +102,8 @@ export default function App() {
               <Route path="portal/leads" element={<UserClientLeadsList />} />
 
 
-              <Route path="clients/company" element={<ClientCompanyProfileList />} />
+              <Route path="clients/company" element={<ClientCompanyProfileList />} /> 
+              <Route path="clients/individual" element={<ClientList />} /> 
 
 
               <Route path="admin/users" element={<AdminList />} />

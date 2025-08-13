@@ -1,5 +1,3 @@
-// src/components/shared/user-column.ts
-
 import type { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
@@ -21,49 +19,29 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "../ui/alert-dialog";
-import type {  UserType } from "@/enums/user-type";
-import { Badge } from "../ui/badge";
+import type { ClientProfile } from "@/services/client/client.service";
 
-export interface User {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  isActive: boolean;
-  type: UserType;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export const userColumns = (
+export const clientProfileColumns = (
   onDelete: (id: string) => void,
   isDeleting: boolean
-): ColumnDef<User>[] => [
+): ColumnDef<ClientProfile>[] => [
   {
-    accessorKey: "firstName",
+    accessorKey: "fullName",
     header: ({ column }) => (
       <Button
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        Primeiro Nome
+        Nome Completo
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: ({ row }) => <div className="font-medium">{row.getValue("firstName")}</div>,
+    cell: ({ row }) => <div className="font-medium">{row.getValue("fullName")}</div>,
   },
   {
-    accessorKey: "lastName",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Sobrenome
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => <div className="font-medium">{row.getValue("lastName")}</div>,
+    accessorKey: "identityNumber",
+    header: "Nº Identificação",
+    cell: ({ row }) => <div>{row.getValue("identityNumber") || "N/A"}</div>,
   },
   {
     accessorKey: "email",
@@ -79,48 +57,22 @@ export const userColumns = (
     cell: ({ row }) => <div className="font-medium">{row.getValue("email")}</div>,
   },
   {
-    accessorKey: "type",
-    header: "Tipo",
-    cell: ({ row }) => {
-      const type = row.getValue("type") as UserType;
-      return (
-        <span className="capitalize">{type.toLowerCase()}</span>
-      );
-    },
-  },
-  {
-    accessorKey: "isActive",
-    header: "Ativo",
-    cell: ({ row }) => {
-      const isActive = row.getValue("isActive");
-      if (isActive) {
-        return (
-          <Badge className="bg-emerald-600/10 dark:bg-emerald-600/20 hover:bg-emerald-600/10 text-emerald-500 border-emerald-600/60 shadow-none rounded-full">
-            <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 mr-2" /> Ativo
-          </Badge>
-        );
-      } else {
-        return (
-          <Badge className="bg-red-600/10 dark:bg-red-600/20 hover:bg-red-600/10 text-red-500 border-red-600/60 shadow-none rounded-full">
-            <div className="h-1.5 w-1.5 rounded-full bg-red-500 mr-2" /> Inativo
-          </Badge>
-        );
-      }
-    },
+    accessorKey: "phoneNumber",
+    header: "Telefone",
   },
   {
     accessorKey: "createdAt",
     header: "Criado em",
     cell: ({ row }) => {
-       const date = new Date(row.getValue("createdAt"))
-      return date.toLocaleDateString("pt-PT")
+      const date = new Date(row.getValue("createdAt"));
+      return date.toLocaleDateString("pt-PT");
     },
   },
   {
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const user = row.original;
+      const profile = row.original;
 
       return (
         <DropdownMenu>
@@ -132,7 +84,10 @@ export const userColumns = (
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Ações</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => alert(`Editar ${user.email}`)}>
+            <DropdownMenuItem onClick={() => alert(`Ver ${profile.fullName}`)}>
+              Ver
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => alert(`Editar ${profile.fullName}`)}>
               Editar
             </DropdownMenuItem>
             <AlertDialog>
@@ -145,15 +100,14 @@ export const userColumns = (
                 <AlertDialogHeader>
                   <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Essa ação não pode ser desfeita. Isso excluirá permanentemente o usuário{" "}
-                    **{user.email}** e removerá seus dados de nossos servidores.
+                    Essa ação não pode ser desfeita. Isso excluirá permanentemente o perfil de **{profile.fullName}** e removerá seus dados de nossos servidores.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancelar</AlertDialogCancel>
                   <AlertDialogAction
                     className="bg-red-500 hover:bg-red-600 text-white"
-                    onClick={() => onDelete(user.id)}
+                    onClick={() => onDelete(profile.id)}
                     disabled={isDeleting}
                   >
                     {isDeleting ? "Excluindo..." : "Confirmar Exclusão"}

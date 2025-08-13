@@ -38,7 +38,7 @@ import type { District } from "@/types/types";
 import { getDistrictsByCityId } from "@/services/location/districts.service";
 import { getSectorsList } from "@/services/shared/sector/sector.service";
 
-// O campo 'cityId' foi removido do schema
+
 const formSchema = z.object({
   companyName: z.string().min(3, { message: "O nome da empresa deve ter pelo menos 3 caracteres." }),
   nif: z.string().min(9, { message: "NIF inválido (mínimo 9 dígitos)." }),
@@ -47,7 +47,7 @@ const formSchema = z.object({
   optionalContact: z.string().optional(),
   address: z.string().min(5, { message: "O endereço deve ter pelo menos 5 caracteres." }),
   sectorId: z.string().uuid({ message: "Selecione um setor válido." }),
-  // O campo 'cityId' foi removido
+
   districtId: z.string().uuid({ message: "Selecione um distrito válido." }), 
 });
 
@@ -71,7 +71,6 @@ export default function ClientCompanyProfileList() {
   // Mantemos o state local para a cidade selecionada, pois ela controla os distritos
   const [selectedCityId, setSelectedCityId] = useState<string>("");
 
-  // O campo 'cityId' foi removido dos defaultValues
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -217,7 +216,7 @@ export default function ClientCompanyProfileList() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold">Empresas</h1>
+        <h1 className="text-2xl font-bold">Clientes (Empresa)*</h1>
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogTrigger asChild>
             <Button>
