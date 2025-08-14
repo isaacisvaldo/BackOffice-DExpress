@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getDashboardSummary } from "@/services/dasboard/dasboardService";
+import { getDashboardSummary } from "@/services/dasboard/dasboard.service";
 import { IconTrendingUp, IconTrendingDown } from "@tabler/icons-react";
 import { GenericCard } from './ui/generic-card';
 import { CardPlaceholder } from './ui/card-placeholder';

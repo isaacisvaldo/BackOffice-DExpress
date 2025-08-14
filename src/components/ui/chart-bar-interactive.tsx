@@ -60,7 +60,7 @@ const chartConfig = {
 export function ChartBarInteractive() {
   const [activeChart, setActiveChart] =
     React.useState<keyof typeof chartConfig>("receitas") 
- const [loading, setLoading] = React.useState(false)
+ const [loading, ] = React.useState(false)
   const total = React.useMemo(
     () => ({
       receitas: chartData.reduce((acc, curr) => acc + curr.receitas, 0),

@@ -24,7 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { getGrowthData } from "@/services/dasboard/dasboardService"
+import { getGrowthData, type IGrowthData } from "@/services/dasboard/dasboard.service"
 
 export const description = "An interactive area chart"
 
@@ -48,7 +48,7 @@ const chartConfig = {
 
 export function ChartAreaInteractive() {
   const [timeRange, setTimeRange] = React.useState("90d")
-  const [chartData, setChartData] = React.useState([])
+  const [chartData, setChartData] = React.useState<IGrowthData[]>([]);
   const [loading, setLoading] = React.useState(false)
 
   React.useEffect(() => {

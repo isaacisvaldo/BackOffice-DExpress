@@ -25,112 +25,124 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { getCompaniesBySector, type ICompaniesBySector } from "@/services/dasboard/dasboard.service"
+import { CardPlaceholder } from "./card-placeholder"
+
 
 export const description = "An interactive pie chart for company sectors"
 
-// Dados estáticos de exemplo que serão usados até que a API esteja pronta.
-const chartDataStatic = [
-  { sector: "Tecnologia", companies: 350, fill: "var(--chart-1)" },
-  { sector: "Construção", companies: 280, fill: "var(--chart-2)" },
-  { sector: "Saúde", companies: 150, fill: "var(--chart-3)" },
-  { sector: "Varejo", companies: 420, fill: "var(--chart-4)" },
-  { sector: "Serviços", companies: 200, fill: "var(--chart-5)" },
-]
+interface BackendChartDataItem {
+  sector: string;
+  companies: number;
+}
+
+interface FormattedChartDataItem extends BackendChartDataItem {
+  fill: string;
+}
+
+const colorPalette = [
+  "var(--chart-1)",
+  "var(--chart-2)",
+  "var(--chart-3)",
+  "var(--chart-4)",
+  "var(--chart-5)",
+  "var(--chart-6)",
+  "var(--chart-7)",
+  "var(--chart-8)",
+];
+
+function formatChartData(data: ICompaniesBySector[]): FormattedChartDataItem[] {
+  return data.map((item, index) => ({
+    ...item,
+    fill: colorPalette[index % colorPalette.length],
+  }));
+}
 
 const chartConfig = {
   companies: {
     label: "Empresas",
   },
-  Tecnologia: {
-    label: "Tecnologia",
-    color: "var(--chart-1)",
-  },
-  Construção: {
-    label: "Construção",
-    color: "var(--chart-2)",
-  },
-  Saúde: {
-    label: "Saúde",
-    color: "var(--chart-3)",
-  },
-  Varejo: {
-    label: "Varejo",
-    color: "var(--chart-4)",
-  },
-  Serviços: {
-    label: "Serviços",
-    color: "var(--chart-5)",
-  },
-} satisfies ChartConfig
+} satisfies ChartConfig;
 
-// Componente para exibir um placeholder de carregamento
-function ChartPlaceholder() {
-  return (
-    <Card className="animate-pulse pt-0">
-      <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
-        <div className="grid flex-1 gap-1">
-          <div className="h-6 w-48 bg-gray-200 dark:bg-gray-700 rounded-md"></div>
-          <div className="h-4 w-72 bg-gray-200 dark:bg-gray-700 rounded-md"></div>
-        </div>
-        <div className="hidden w-[160px] h-10 bg-gray-200 dark:bg-gray-700 rounded-lg sm:ml-auto sm:flex"></div>
-      </CardHeader>
-      <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-        <div className="h-[250px] w-full bg-gray-200 dark:bg-gray-700 rounded-md"></div>
-      </CardContent>
-    </Card>
-  );
-}
 
 export function ChartPieInteractive() {
   const id = "pie-interactive-companies"
-  const [chartData, ] = React.useState(chartDataStatic);
-  const [loading, ] = React.useState(false);
-  const [activeSector, setActiveSector] = React.useState(chartDataStatic[0].sector);
-  
-  // Comentário: Quando sua rota de API estiver pronta, você pode descomentar
-  // o código abaixo para carregar os dados dinamicamente.
-  /*
+  // --- 1. DECLARAÇÃO DE TODOS OS HOOKS PRIMEIRO ---
+  const [chartData, setChartData] = React.useState<FormattedChartDataItem[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [activeSector, setActiveSector] = React.useState("");
+  const [currentChartConfig, setCurrentChartConfig] = React.useState<ChartConfig>(chartConfig);
+
   React.useEffect(() => {
     async function fetchChartData() {
       try {
-        setLoading(true);
-        // ✨ Descomente e ajuste esta URL para a sua rota de API real
-        // const response = await fetch(`/api/dashboard/companies-by-sector`);
-        
-        // if (!response.ok) {
-        //   throw new Error('Falha ao buscar dados do gráfico.');
-        // }
-        //
-        // const data = await response.json();
-        // setChartData(data);
-        // // Opcional: define o primeiro item como ativo por padrão
-        // if (data.length > 0) {
-        //   setActiveSector(data[0].sector);
-        // }
+        const response = await getCompaniesBySector();
+
+        if (!response.success || !response.data) {
+          throw new Error('Falha ao buscar dados do gráfico: Resposta inválida.');
+        }
+
+        const backendData: ICompaniesBySector[] = response.data;
+
+        const formattedData = formatChartData(backendData);
+        setChartData(formattedData);
+
+        const dynamicChartConfig: ChartConfig = { companies: { label: "Empresas" } };
+        formattedData.forEach(item => {
+          dynamicChartConfig[item.sector as keyof ChartConfig] = {
+            label: item.sector,
+            color: item.fill,
+          };
+        });
+        setCurrentChartConfig(dynamicChartConfig);
+
+        if (formattedData.length > 0) {
+          setActiveSector(formattedData[0].sector);
+        }
       } catch (error) {
         console.error("Erro ao buscar dados do gráfico:", error);
         setChartData([]);
+        setActiveSector("");
       } finally {
         setLoading(false);
       }
     }
     fetchChartData();
   }, []);
-  */
-  
+
   const activeIndex = React.useMemo(
     () => chartData.findIndex((item) => item.sector === activeSector),
     [activeSector, chartData]
   )
   const sectors = React.useMemo(() => chartData.map((item) => item.sector), [chartData])
 
+  // --- 2. RENDERIZAÇÃO CONDICIONAL APÓS TODOS OS HOOKS ---
+  // A partir daqui, a ordem não importa mais.
   if (loading) {
-    return <ChartPlaceholder />;
+    return <CardPlaceholder />
   }
+
+  if (chartData.length === 0) {
+    return (
+      <Card data-chart={id} className="flex flex-col">
+        <CardHeader>
+          <CardTitle>Empresas por Setor</CardTitle>
+          <CardDescription>
+            Não foi possível carregar os dados das empresas por setor.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-1 items-center justify-center p-6">
+          <p className="text-muted-foreground">Nenhum dado disponível.</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const currentActiveData = activeIndex !== -1 ? chartData[activeIndex] : null;
 
   return (
     <Card data-chart={id} className="flex flex-col">
-      <ChartStyle id={id} config={chartConfig} />
+      <ChartStyle id={id} config={currentChartConfig} />
       <CardHeader className="flex-row items-start space-y-0 pb-0">
         <div className="grid gap-1">
           <CardTitle>Empresas por Setor</CardTitle>
@@ -147,7 +159,7 @@ export function ChartPieInteractive() {
           </SelectTrigger>
           <SelectContent align="end" className="rounded-xl">
             {sectors.map((key) => {
-              const config = chartConfig[key as keyof typeof chartConfig]
+              const config = currentChartConfig[key as keyof typeof currentChartConfig]
 
               if (!config) {
                 return null
@@ -163,7 +175,7 @@ export function ChartPieInteractive() {
                     <span
                       className="flex h-3 w-3 shrink-0 rounded-xs"
                       style={{
-                        backgroundColor: `var(--color-${key.replace(/\s+/g, '')})`,
+                        backgroundColor: config?.color,
                       }}
                     />
                     {config?.label}
@@ -177,7 +189,7 @@ export function ChartPieInteractive() {
       <CardContent className="flex flex-1 justify-center pb-0">
         <ChartContainer
           id={id}
-          config={chartConfig}
+          config={currentChartConfig}
           className="mx-auto aspect-square w-full max-w-[300px]"
         >
           <PieChart>
@@ -208,7 +220,7 @@ export function ChartPieInteractive() {
             >
               <Label
                 content={({ viewBox }) => {
-                  if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                  if (viewBox && "cx" in viewBox && "cy" in viewBox && currentActiveData) {
                     return (
                       <text
                         x={viewBox.cx}
@@ -221,7 +233,7 @@ export function ChartPieInteractive() {
                           y={viewBox.cy}
                           className="fill-foreground text-3xl font-bold"
                         >
-                          {chartData[activeIndex].companies.toLocaleString()}
+                          {currentActiveData.companies.toLocaleString()}
                         </tspan>
                         <tspan
                           x={viewBox.cx}
