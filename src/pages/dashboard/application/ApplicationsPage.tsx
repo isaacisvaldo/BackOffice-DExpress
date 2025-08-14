@@ -27,8 +27,9 @@ export default function ApplicationsPage() {
           page, 
           limit: limit === 0 ? undefined : limit,
           status: statusFilter,
-          createdAt: dateFilter
+          createdAtStart: dateFilter
         })
+      
 
 
 const mappedData: MappedJobApplication[] = result.data.map(
@@ -96,7 +97,7 @@ const mappedData: MappedJobApplication[] = result.data.map(
               },
               {
                 type: "date",
-                column: "createdAt",
+                column: "appliedAt",
                 placeholder: "Filtrar por data...",
                 value: dateFilter,
                 onChange: setDateFilter

@@ -59,7 +59,7 @@ export default function ProfessionalHeader({ user }: ProfileHeaderProps) {
               </Badge>
             </div>
             {/* ✅ Adicionei a linha de descrição do perfil */}
-            <p className="text-muted-foreground">Cargo</p>
+            <p className="text-muted-foreground">{user.desiredPosition.label}</p>
             <div className="text-muted-foreground flex flex-wrap gap-4 text-sm">
               <div className="flex items-center gap-1">
                 <Mail className="size-4" />

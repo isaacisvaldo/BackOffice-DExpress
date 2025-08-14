@@ -18,8 +18,7 @@ import { createProfessional } from "@/services/profissional/profissional.service
 import { z } from "zod";
 import toast from "react-hot-toast";
 
-// Importe as funções de serviço reais da sua API
-
+// Importe as funções de serviço que buscam as listas de opções
 import { getSkillsList } from "@/services/shared/skills/skills.service";
 import { getLanguagesList } from "@/services/shared/language/language.service";
 import { getGendersList } from "@/services/shared/gender/gender.service";
@@ -30,6 +29,8 @@ import { getHighestDegreesList } from "@/services/shared/highest-degrees/highest
 import { getCoursesList } from "@/services/shared/courses/course.service";
 import { getGeneralAvailabilitiesList } from "@/services/shared/general-availabilities/general-availability.service";
 
+import type { JobApplication } from "@/types/types";
+import SwirlingEffectSpinner from "@/components/customized/spinner/spinner-06"; // Importe seu spinner aqui
 
 const professionalFormSchema = z.object({
   fullName: z.string().min(1, "Nome completo é obrigatório."),
@@ -70,9 +71,10 @@ export default function ProfessionalForm({
   application,
   onProfessionalCreated,
 }: {
-  application: any;
+  application: JobApplication;
   onProfessionalCreated?: (professionalId: string) => void;
 }) {
+  const [isLoading, setIsLoading] = useState<boolean>(true); // Estado para controlar o carregamento
   const [availabilityList, setAvailabilityList] = useState<any[]>([]);
   const [experienceList, setExperienceList] = useState<any[]>([]);
   const [genderList, setGenderList] = useState<any[]>([]);
@@ -84,19 +86,19 @@ export default function ProfessionalForm({
   const [skillsList, setSkillsList] = useState<any[]>([]);
 
   const [form, setForm] = useState<FormDataState>({
-    fullName: "",
+    fullName: "", // Inicialize com valores vazios, serão preenchidos no useEffect
     email: "",
     phoneNumber: "",
     identityNumber: "",
     availabilityTypeId: "",
     experienceLevelId: "",
-    jobApplicationId: application?.id,
+    jobApplicationId: "", // Será preenchido
     description: "",
     expectedAvailability: "",
     hasCriminalRecord: false,
     hasMedicalCertificate: false,
     hasTrainingCertificate: false,
-    locationId: application?.location?.id || "",
+    locationId: "",
     genderId: "",
     birthDate: "",
     maritalStatusId: "",
@@ -113,37 +115,87 @@ export default function ProfessionalForm({
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  // useEffect para carregar as listas de opções e preencher o formulário
   useEffect(() => {
-    const loadDataFromApi = async () => {
+    const loadAllData = async () => {
+      setIsLoading(true); // Começa o carregamento
       try {
-        setAvailabilityList(await getGeneralAvailabilitiesList());
-        setExperienceList(await getExperienceLevelsList());
-        setGenderList(await getGendersList());
-        setMaritalStatusList(await getMaritalStatusesList());
-        setHighestDegreeList(await getHighestDegreesList());
-        setDesiredPositionList(await getDesiredPositionsList());
-        setCoursesList(await getCoursesList());
-        setLanguagesList(await getLanguagesList());
-        setSkillsList(await getSkillsList()); 
+        // Carrega todas as listas de opções em paralelo
+        const [
+          availabilities,
+          experiences,
+          genders,
+          maritalStatuses,
+          highestDegrees,
+          desiredPositions,
+          courses,
+          languages,
+          skills,
+        ] = await Promise.all([
+          getGeneralAvailabilitiesList(),
+          getExperienceLevelsList(),
+          getGendersList(),
+          getMaritalStatusesList(),
+          getHighestDegreesList(),
+          getDesiredPositionsList(),
+          getCoursesList(),
+          getLanguagesList(),
+          getSkillsList(),
+        ]);
+
+        setAvailabilityList(availabilities);
+        setExperienceList(experiences);
+        setGenderList(genders);
+        setMaritalStatusList(maritalStatuses);
+        setHighestDegreeList(highestDegrees);
+        setDesiredPositionList(desiredPositions);
+        setCoursesList(courses);
+        setLanguagesList(languages);
+        setSkillsList(skills);
+
+        // Preenche o formulário com os dados da 'application' APÓS as listas serem carregadas
+        if (application) {
+          setForm((prev) => ({
+            ...prev,
+            fullName: application.fullName || "",
+            email: application.email || "",
+            phoneNumber: application.phoneNumber || "",
+            identityNumber: application.identityNumber || "",
+            
+            availabilityTypeId: application.generalAvailabilityId || "",
+            experienceLevelId: application.experienceLevelId || "",
+            genderId: application.genderId || "",
+            maritalStatusId: application.maritalStatusId || "",
+            highestDegreeId: application.highestDegreeId || "",
+            desiredPositionId: application.desiredPositionId || "",
+            
+            jobApplicationId: application.id,
+            description: "", // Ajuste se houver descrição na JobApplication
+            expectedAvailability: application.availabilityDate ? new Date(application.availabilityDate).toISOString().split('T')[0] : "",
+            hasCriminalRecord: false, // Não vem da JobApplication
+            hasMedicalCertificate: false, // Não vem da JobApplication
+            hasTrainingCertificate: false, // Não vem da JobApplication
+            locationId: application.locationId || "",
+            birthDate: application.birthDate ? new Date(application.birthDate).toISOString().split('T')[0] : "",
+            hasChildren: application.hasChildren ?? false,
+            knownDiseases: application.knownDiseases || "",
+            expectedSalary: 0, // Não vem da JobApplication
+            courseIds: application.courses?.map(c => c.id) || [],
+            languageIds: application.languages?.map(l => l.id) || [],
+            skillIds: application.skills?.map(s => s.id) || [],
+            profileImage: undefined,
+          }));
+        }
       } catch (error) {
-        console.error("Erro ao carregar dados da API:", error);
-        toast.error("Falha ao carregar as opções do formulário.");
+        console.error("Erro ao carregar dados do formulário:", error);
+        toast.error("Falha ao carregar o formulário.");
+      } finally {
+        setIsLoading(false); // Finaliza o carregamento, independentemente de sucesso ou erro
       }
     };
 
-    loadDataFromApi();
-  }, []);
-
-  useEffect(() => {
-    if (application) {
-      setForm((prev) => ({
-        ...prev,
-        fullName: application.fullName || "",
-        email: application.email || "",
-        phoneNumber: application.phoneNumber || "",
-      }));
-    }
-  }, [application]);
+    loadAllData();
+  }, [application]); // Dependência: 'application' para re-executar se ela mudar (o que não deve acontecer muito aqui, mas é bom ter)
 
   const handleChange = (key: string, value: any) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -199,9 +251,20 @@ export default function ProfessionalForm({
     }
   };
 
+  // Renderiza o spinner enquanto os dados estão sendo carregados
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center py-10">
+        <SwirlingEffectSpinner />
+      </div>
+    );
+  }
+
+  // Renderiza o formulário apenas quando isLoading for false
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* INPUTS DE TEXTO */}
         <InputBlock
           label="Nome Completo"
           value={form.fullName}
@@ -227,19 +290,23 @@ export default function ProfessionalForm({
           error={errors.identityNumber}
         />
 
+        {/* SELECTS */}
         <SelectBlock
           label="Disponibilidade"
           value={form.availabilityTypeId}
           onChange={(v) => handleChange("availabilityTypeId", v)}
           options={availabilityList}
+          error={errors.availabilityTypeId}
         />
         <SelectBlock
           label="Nível de Experiência"
           value={form.experienceLevelId}
           onChange={(v) => handleChange("experienceLevelId", v)}
           options={experienceList}
+          error={errors.experienceLevelId}
         />
 
+        {/* INPUTS DE DATA */}
         <InputBlock
           type="date"
           label="Data Esperada de Disponibilidade"
@@ -255,17 +322,20 @@ export default function ProfessionalForm({
           error={errors.birthDate}
         />
 
+        {/* MAIS SELECTS PRÉ-PREENCHIDOS */}
         <SelectBlock
           label="Estado Civil"
           value={form.maritalStatusId}
           onChange={(v) => handleChange("maritalStatusId", v)}
           options={maritalStatusList}
+          error={errors.maritalStatusId}
         />
         <SelectBlock
           label="Gênero"
           value={form.genderId}
           onChange={(v) => handleChange("genderId", v)}
           options={genderList}
+          error={errors.genderId}
         />
         <SelectBlock
           label="Grau Acadêmico"
@@ -279,8 +349,10 @@ export default function ProfessionalForm({
           value={form.desiredPositionId}
           onChange={(v) => handleChange("desiredPositionId", v)}
           options={desiredPositionList}
+          error={errors.desiredPositionId}
         />
 
+        {/* OUTROS CAMPOS */}
         <InputBlock
           label="Salário Esperado"
           type="number"
@@ -306,6 +378,7 @@ export default function ProfessionalForm({
           />
         </div>
 
+        {/* MULTISELECTS PRÉ-PREENCHIDOS */}
         <MultiSelectPopover
           label="Cursos Realizados"
           options={coursesList}
@@ -325,6 +398,7 @@ export default function ProfessionalForm({
           onChange={(ids) => handleChange("skillIds", ids)}
         />
 
+        {/* CHECKBOXES */}
         <CheckboxField
           label="Tem Registo Criminal"
           checked={form.hasCriminalRecord}
@@ -351,7 +425,10 @@ export default function ProfessionalForm({
   );
 }
 
-// Reusable Components (with adjusted spacing)
+// ==============================================================================
+// Componentes Reutilizáveis (inalterados, mas necessários para a completude)
+// ==============================================================================
+
 function InputBlock({
   label,
   type = "text",
@@ -373,7 +450,7 @@ function InputBlock({
         value={value}
         onChange={(e) => onChange(e.target.value)}
       />
-      {error && <p className="text-red-500 text-sm">{error}</p>}
+      {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
     </div>
   );
 }
@@ -396,7 +473,10 @@ function SelectBlock({
       <Label>{label}</Label>
       <Select value={value} onValueChange={onChange}>
         <SelectTrigger className="w-full">
-          <SelectValue />
+          {/* Mostra o label correspondente ao valor selecionado */}
+          <SelectValue placeholder="Selecione uma opção">
+            {options.find(opt => opt.id === value)?.label || "Selecione uma opção"}
+          </SelectValue>
         </SelectTrigger>
         <SelectContent>
           {Array.isArray(options) &&
@@ -407,7 +487,7 @@ function SelectBlock({
             ))}
         </SelectContent>
       </Select>
-      {error && <p className="text-red-500 text-sm">{error}</p>}
+      {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
     </div>
   );
 }
