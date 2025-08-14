@@ -16,17 +16,17 @@ async function handleResponse(
 ): Promise<Response> {
   if (response.ok) {
     if (method !== 'GET' || showSuccessToastForGet) {
+
       toast.success(successMessage || 'Operação concluída com sucesso!');
     }
   } else {
     try {
       const errorBody = await response.json();
-      const errorMessage = errorBody?.message || "Ocorreu um erro desconhecido.";
+      const errorMessage = errorBody?.message || "Ocorreu um erro inesperado ao se comunicar com a API.";
       toast.error(errorMessage);
       throw new Error(errorMessage);
     } catch {
       const errorMessage = "Ocorreu um erro inesperado ao se comunicar com a API.";
-      toast.error(errorMessage);
       throw new Error(errorMessage);
     }
   }
@@ -81,32 +81,32 @@ export async function fetchDataWithFilter<T extends FilterParams>(
   return res.json();
 }
 
-export async function fetchData(endpoint: string, showSuccessToast: boolean = false) {
+export async function fetchData(endpoint: string, successMessage = "Dados carregados com sucesso!", showSuccessToast: boolean = false) {
   const res = await apiFetch(
     endpoint,
     { method: 'GET' },
-    "Dados carregados com sucesso!",
+    successMessage,
     "GET",
     showSuccessToast
   );
   return res.json();
 }
 
-export async function sendData<T>(endpoint: string, method: "POST" | "PUT" | "PATCH", body: T) {
+export async function sendData<T>(endpoint: string, method: "POST" | "PUT" | "PATCH", body: T,successMessage="Dados enviados com sucesso!") {
   const res = await apiFetch(
     endpoint,
     { method, body: JSON.stringify(body) },
-    "Dados enviados com sucesso!",
+   successMessage ,
     method
   );
   return res.json();
 }
 
-export async function deleteData(endpoint: string) {
+export async function deleteData(endpoint: string,successMessage="Recurso removido com sucesso!") {
   const res = await apiFetch(
     endpoint,
     { method: 'DELETE' },
-    "Recurso removido com sucesso!",
+    successMessage,
     "DELETE"
   );
 

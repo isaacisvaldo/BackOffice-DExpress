@@ -1,33 +1,12 @@
-import { IconTrendingDown, IconTrendingUp } from "@tabler/icons-react";
-import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardAction,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { useState, useEffect } from 'react'; // Importa os hooks necessários
+import { useState, useEffect } from 'react';
 import { getDashboardSummary } from "@/services/dasboard/dasboardService";
+import { IconTrendingUp, IconTrendingDown } from "@tabler/icons-react";
+import { GenericCard } from './ui/generic-card';
+import { CardPlaceholder } from './ui/card-placeholder';
 
-// Adicione um componente de placeholder para o estado de carregamento
-function CardPlaceholder() {
-  return (
-    <Card className="@container/card animate-pulse">
-      <CardHeader>
-        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded-md w-3/4 mb-2"></div>
-        <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded-md w-1/2"></div>
-      </CardHeader>
-      <CardFooter className="flex-col items-start gap-1.5 text-sm">
-        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded-md w-full"></div>
-        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded-md w-2/3"></div>
-      </CardFooter>
-    </Card>
-  );
-}
 
-export function SectionCards() {
+
+export function SectionCards() { 
   const [dashboardData, setDashboardData] = useState({
     professionals: 0,
     clients: 0,
@@ -53,7 +32,6 @@ export function SectionCards() {
         setLoading(false);
       }
     }
-
     fetchDashboardData();
   }, []);
 
@@ -69,105 +47,52 @@ export function SectionCards() {
     );
   }
 
-  // Se os dados estiverem prontos, renderiza os cards
+
+  const cardsData = [
+    {
+      title: "Profissionais Cadastrados",
+      value: dashboardData.professionals,
+      badgeText: "+8.2%",
+      badgeIcon: IconTrendingUp, 
+      footerText: "Crescimento constante",
+      footerDetail: "Novos profissionais entrando semanalmente",
+      footerIcon: IconTrendingUp 
+    },
+    {
+      title: "Base de Clientes",
+      value: dashboardData.clients,
+      badgeText: "+12%",
+      badgeIcon: IconTrendingUp,
+      footerText: "Mais clientes estão contratando",
+      footerDetail: "Base de clientes em crescimento",
+      footerIcon: IconTrendingUp
+    },
+    {
+      title: "Serviços em Andamento",
+      value: dashboardData.activeServices,
+      badgeText: "+5%",
+      badgeIcon: IconTrendingUp,
+      footerText: "Mais contratações concluídas",
+      footerDetail: "Taxa de conclusão de serviços acima de 90%",
+      footerIcon: IconTrendingUp
+    },
+    {
+      title: "Solicitações Canceladas",
+      value: dashboardData.cancellations,
+      badgeText: "-3.5%",
+      badgeIcon: IconTrendingDown,
+      footerText: "Cancelamentos reduziram",
+      footerDetail: "Melhor performance de atendimento este mês",
+      footerIcon: IconTrendingDown
+    },
+  ];
+
   return (
-    <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
-
-      {/* Profissionais cadastrados */}
-      <Card className="@container/card">
-        <CardHeader>
-          <CardDescription>Profissionais Cadastrados</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            {dashboardData.professionals}
-          </CardTitle>
-          <CardAction>
-            <Badge variant="outline">
-              <IconTrendingUp />
-              +8.2%
-            </Badge>
-          </CardAction>
-        </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Crescimento constante <IconTrendingUp className="size-4" />
-          </div>
-          <div className="text-muted-foreground">
-            Novos profissionais entrando semanalmente
-          </div>
-        </CardFooter>
-      </Card>
-
-      {/* Famílias/clientes cadastrados */}
-      <Card className="@container/card">
-        <CardHeader>
-          <CardDescription>Base de Clientes</CardDescription> {/* Título mais genérico */}
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            {dashboardData.clients} {/* Usa a soma total de clientes */}
-          </CardTitle>
-          <CardAction>
-            <Badge variant="outline">
-              <IconTrendingUp />
-              +12%
-            </Badge>
-          </CardAction>
-        </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Mais clientes estão contratando <IconTrendingUp className="size-4" /> {/* Mensagem também genérica */}
-          </div>
-          <div className="text-muted-foreground">
-            Base de clientes em crescimento
-          </div>
-        </CardFooter>
-      </Card>
-
-      {/* Serviços em andamento */}
-      <Card className="@container/card">
-        <CardHeader>
-          <CardDescription>Serviços em Andamento</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            {dashboardData.activeServices}
-          </CardTitle>
-          <CardAction>
-            <Badge variant="outline">
-              <IconTrendingUp />
-              +5%
-            </Badge>
-          </CardAction>
-        </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Mais contratações concluídas <IconTrendingUp className="size-4" />
-          </div>
-          <div className="text-muted-foreground">
-            Taxa de conclusão de serviços acima de 90%
-          </div>
-        </CardFooter>
-      </Card>
-
-      {/* Cancelamentos ou alertas */}
-      <Card className="@container/card">
-        <CardHeader>
-          <CardDescription>Solicitações Canceladas</CardDescription>
-          <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-            {dashboardData.cancellations}
-          </CardTitle>
-          <CardAction>
-            <Badge variant="outline">
-              <IconTrendingDown />
-              -3.5%
-            </Badge>
-          </CardAction>
-        </CardHeader>
-        <CardFooter className="flex-col items-start gap-1.5 text-sm">
-          <div className="line-clamp-1 flex gap-2 font-medium">
-            Cancelamentos reduziram <IconTrendingDown className="size-4" />
-          </div>
-          <div className="text-muted-foreground">
-            Melhor performance de atendimento este mês
-          </div>
-        </CardFooter>
-      </Card>
+    <div className="grid grid-cols-1 gap-4 px-4 lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
+      
+      {cardsData.map((card, index) => (
+        <GenericCard key={index} {...card} />
+      ))}
     </div>
   );
 }
