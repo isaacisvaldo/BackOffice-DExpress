@@ -24,8 +24,10 @@ export type ApplicationResponse = {
 // Nova interface para os parâmetros de filtro da candidatura, que estende FilterParams
 interface GetApplicationsParams extends FilterParams {
   status?: string;
-  createdAt?: string;
+  createdAtStart?: string;
+  createdAtEnd?: string;
 }
+ 
 
 export async function getApplications(
   params: GetApplicationsParams = {},

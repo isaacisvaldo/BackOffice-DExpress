@@ -6,7 +6,7 @@ import { getDesiredPositionsList } from "@/services/shared/desired-positions/des
 import { getExperienceLevelsList } from "@/services/shared/experience-levels/experience-levels.service";
 import { getGeneralAvailabilitiesList } from "@/services/shared/general-availabilities/general-availability.service";
 import type { DesiredPosition, GeneralAvailability, ExperienceLevel } from "@/types/types";
-import { useState, useEffect } from "react"; // Removido o 'useCallback'
+import { useState, useEffect } from "react"; 
 import { toast } from "sonner";
 
 export default function ProfessionalsList() {

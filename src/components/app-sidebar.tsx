@@ -86,6 +86,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           { title: "Grau Acadêmico", url: "/shared-data/highest-degrees" },
           { title: "Estados Civis", url: "/shared-data/marital-status" },
           { title: "Gêneros", url: "/shared-data/genders" },
+          { title: "Pacotes (planos Empresariais)", url: "/shared-data/package" },
         ],
       },
 

@@ -27,10 +27,11 @@ import EmailEditor from "../EmailEditor"
 import ProfessionalForm from "../profissional/profissionalForm"
 import type { Professional } from "@/services/profissional/profissional.service"
 import { Link } from "react-router-dom"
+import type { JobApplication } from "@/types/types"
 
 
 interface ApplicationDetailTabsProps {
-    application: any
+    application: JobApplication
     status: string 
     onStatusChange: (status: string) => void
     hasProfile: Professional | null;
