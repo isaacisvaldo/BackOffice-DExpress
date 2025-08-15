@@ -14,6 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { useNavigate } from "react-router-dom"
 
 interface PageHeaderProps {
   breadcrumb?: string[]
@@ -24,13 +25,13 @@ interface PageHeaderProps {
 export function PageHeader({ breadcrumb = [], onSearch, actions }: PageHeaderProps) {
   const [search, setSearch] = useState("")
   const inputRef = useRef<HTMLInputElement>(null)
-
+ const navigate = useNavigate() 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
     setSearch(value)
     if (onSearch) onSearch(value)
   }
-
+ 
   return (
     <header className="flex h-16 shrink-0 items-center justify-between gap-4 px-4 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
       {/* Esquerda: Sidebar + Pesquisa + Breadcrumb */}
@@ -103,7 +104,9 @@ export function PageHeader({ breadcrumb = [], onSearch, actions }: PageHeaderPro
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-center justify-center">
+            <DropdownMenuItem className="text-center justify-center" onClick={() => navigate("/settings/notifications")}> 
+
+             
               Ver todas as notificações
             </DropdownMenuItem>
           </DropdownMenuContent>
