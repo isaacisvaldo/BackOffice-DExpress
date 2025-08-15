@@ -7,6 +7,7 @@ import { userColumns, type User } from "@/components/shared/user-column";
 import SwirlingEffectSpinner from "@/components/customized/spinner/spinner-06";
 import { deleteUser, getUsers } from "@/services/users-client/user-client.service";
 import type { UserType } from "@/enums/user-type";
+import { formatDate } from "@/util";
 
 export default function UserClientList() {
   const [data, setData] = useState<User[]>([]);
@@ -43,8 +44,8 @@ export default function UserClientList() {
         email: item.email,
         isActive: item.isActive,
         type: item.type as UserType,
-        createdAt: new Date(item.createdAt).toLocaleDateString("pt-PT"),
-        updatedAt: new Date(item.updatedAt).toLocaleDateString("pt-PT"),
+        createdAt: formatDate(item.createdAt),
+                           updatedAt: formatDate(item.updatedAt),
       }));
 
       setData(mappedData);

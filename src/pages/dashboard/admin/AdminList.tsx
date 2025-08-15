@@ -38,6 +38,7 @@ import { toast } from "sonner"; // Verifique se 'sonner' está configurado ou us
 import { getGendersList } from "@/services/shared/gender/gender.service";
 import { getProfilesList, type Profile } from "@/services/shared/role/role.service";
 import SwirlingEffectSpinner from "@/components/customized/spinner/spinner-06";
+import { formatDate } from "@/util";
 
 
 const formSchema = z.object({
@@ -89,7 +90,12 @@ export default function AdminList() {
         limit: limit === 0 ? undefined : limit,
         search: debouncedNameFilter || undefined,
       });
-      setData(result.data);
+      const mappedData = result.data.map((item) => ({
+        ...item,
+       createdAt: formatDate(item.createdAt),
+        updatedAt: formatDate(item.updatedAt),
+      }));
+      setData(mappedData);
       setTotalPages(result.totalPages || 1);
     } catch (error) {
       console.error("Erro ao carregar administradores", error);

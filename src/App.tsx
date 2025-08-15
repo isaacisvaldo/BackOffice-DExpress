@@ -25,7 +25,12 @@ import GenderList from "./pages/dashboard/shared/GenderList"
 import SwirlingEffectSpinner from "./components/customized/spinner/spinner-06"
 import UserClientLeadsList from "./pages/dashboard/user-client/UserClientLeadsList"
 import UserClientList from "./pages/dashboard/user-client/UserClientList"
-import ClientCompanyProfileList from "./pages/dashboard/user-client/ClientCompanyList"
+import ClientCompanyProfileList from "./pages/dashboard/user-client/company/ClientCompanyList"
+import ClientList from "./pages/dashboard/user-client/ClientList"
+import PackagesList from "./pages/dashboard/user-client/company/package/PackageList"
+import ContractsListAndCreation from "./pages/dashboard/service/ContractsListAndCreation"
+import DashboardFinancial from "./pages/dashboard/finance/DasboardFinancial"
+import ServiceRequestList from "./pages/dashboard/service/ServiceRequestList"
 
 // 🔹 Rota protegida
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
@@ -93,16 +98,22 @@ export default function App() {
               <Route path="shared-data/courses" element={<CourseList />} />
               <Route path="shared-data/highest-degrees" element={<HighestDegreeList />} />
               <Route path="shared-data/marital-status" element={<MaritalStatusList />} />
+              <Route path="shared-data/package" element={<PackagesList />} /> 
               <Route path="shared-data/genders" element={<GenderList />} />
+           
               <Route path="profile" element={<ProfilePage />} />
 
+              <Route path="contratacoes/contratos-ativos" element={<ContractsListAndCreation />} />
 
               <Route path="portal/users" element={<UserClientList />} />
               <Route path="portal/leads" element={<UserClientLeadsList />} />
 
 
-              <Route path="clients/company" element={<ClientCompanyProfileList />} />
-
+              <Route path="clients/company" element={<ClientCompanyProfileList />} /> 
+              <Route path="clients/individual" element={<ClientList />} /> 
+              <Route path="contratacoes/solicitacoes" element={<ServiceRequestList />} /> 
+            
+           <Route path="financas/dashboard" element={<DashboardFinancial />} />
 
               <Route path="admin/users" element={<AdminList />} />
               {/* Página 404 */}

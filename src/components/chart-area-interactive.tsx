@@ -24,7 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { getGrowthData } from "@/services/dasboard/dasboardService"
+import { getGrowthData, type IGrowthData } from "@/services/dasboard/dasboard.service"
 
 export const description = "An interactive area chart"
 
@@ -48,7 +48,7 @@ const chartConfig = {
 
 export function ChartAreaInteractive() {
   const [timeRange, setTimeRange] = React.useState("90d")
-  const [chartData, setChartData] = React.useState([])
+  const [chartData, setChartData] = React.useState<IGrowthData[]>([]);
   const [loading, setLoading] = React.useState(false)
 
   React.useEffect(() => {
@@ -76,7 +76,20 @@ export function ChartAreaInteractive() {
   }, [timeRange])
 
   const dataForChart = chartData
-  if (loading) return null
+   if (loading) {
+    return (
+      <Card className="p-6">
+        <div className="flex items-center gap-2 space-y-0 py-5 sm:flex-row">
+          <div className="grid flex-1 gap-1">
+            <div className="h-6 w-48 bg-gray-200 dark:bg-gray-700 animate-pulse rounded"></div>
+            <div className="h-4 w-64 bg-gray-200 dark:bg-gray-700 animate-pulse rounded"></div>
+          </div>
+          <div className="h-10 w-[160px] bg-gray-200 dark:bg-gray-700 animate-pulse rounded-lg"></div>
+        </div>
+        <div className="w-full h-[250px] bg-gray-200 dark:bg-gray-700 animate-pulse rounded-lg"></div>
+      </Card>
+    );
+  }
 
   return (
     <Card className="pt-0">
