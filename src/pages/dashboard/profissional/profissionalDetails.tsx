@@ -5,6 +5,7 @@ import { getProfessionalById, type Professional } from "@/services/profissional/
 import toast from "react-hot-toast";
 import ProfessionalHeader from "@/components/profissional/profissionalHeader";
 import SwirlingEffectSpinner from "@/components/customized/spinner/spinner-06";
+import ProfessionalContent from "@/components/profissional/profissional-content";
 
 export default  function ProfessionaDetails() {
     const { id } = useParams<{ id: string }>()
@@ -56,6 +57,8 @@ export default  function ProfessionaDetails() {
                 <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
                     {/* ✅ Passa o objeto 'user' diretamente para os componentes filhos */}
         <ProfessionalHeader user={profissional} />
+        <ProfessionalContent />
+        
                 </div>
             </div>
         </div>

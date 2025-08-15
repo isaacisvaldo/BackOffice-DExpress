@@ -124,7 +124,9 @@ export function ChartPieInteractive() {
 
   if (chartData.length === 0) {
     return (
-      <Card data-chart={id} className="flex flex-col">
+        
+           
+      <Card data-chart={id} className="flex flex-col h-full">
         <CardHeader>
           <CardTitle>Empresas por Setor</CardTitle>
           <CardDescription>
@@ -135,6 +137,7 @@ export function ChartPieInteractive() {
           <p className="text-muted-foreground">Nenhum dado disponível.</p>
         </CardContent>
       </Card>
+    
     );
   }
 

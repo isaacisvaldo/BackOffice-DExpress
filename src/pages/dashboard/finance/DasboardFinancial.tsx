@@ -6,7 +6,7 @@ import { ListCardGeneric } from "@/components/ui/generic-card-with-list";
 import { useState } from "react";
 
 export default function DashboardFinancial() {
-  const [loading, setLoading] = useState(false);
+  const [loading, ] = useState(false);
   const users = [
     {
       title: "João Silva",
