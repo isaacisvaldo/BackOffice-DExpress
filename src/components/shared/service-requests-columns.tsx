@@ -36,6 +36,7 @@ export type MappedServiceRequest = {
     nif: string | undefined
     status: StatusRequest;
     description: string;
+    createdAt:string;
     startDate: string;
     endDate: string;
 };
@@ -122,6 +123,11 @@ export const serviceRequestColumns = (
             accessorKey: "description",
             header: "Descrição",
             cell: ({ row }) => <div className="truncate max-w-xs">{row.getValue("description")}</div>,
+        },
+           {
+            accessorKey: "createdAt",
+            header: "Criado em",
+            cell: ({ row }) => <div className="truncate max-w-xs">{row.getValue("createdAt")}</div>,
         },
         {
             accessorKey: "status",

@@ -4,6 +4,7 @@ import SwirlingEffectSpinner from "@/components/customized/spinner/spinner-06";
 import { DataTable } from "@/components/data-table";
 import { serviceRequestColumns, type MappedServiceRequest } from "@/components/shared/service-requests-columns";
 import { deleteServiceRequest, getServiceRequests, StatusRequest, UserType, type ServiceRequest } from "@/services/serviceRequest/service-request.service";
+import { formatDate } from "@/util";
 
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
@@ -47,6 +48,7 @@ export default function ServiceRequestList() {
             nif:item.requesterType === UserType.INDIVIDUAL ? item.individualIdentityNumber: item.companyNif,
             status: item.status,
             description: item.description,
+            createdAt: formatDate(item.createdAt),
             startDate: item.startDate,
             endDate: item.endDate,
           })
