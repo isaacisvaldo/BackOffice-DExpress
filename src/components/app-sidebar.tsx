@@ -108,7 +108,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           { title: "Gêneros", url: "/shared-data/genders" },
           { title: "Disponibilidade", url: "/shared-data/disponibilidae" },
           { title: "Nivel de Experiencia", url: "/shared-data/nivel-experiencia" },
-          { title: "Setores-empresa", url: "/shared-data/sectors" }
+          { title: "Setores-empresa", url: "/setor/setor" }
+          
         ],
       },
 
