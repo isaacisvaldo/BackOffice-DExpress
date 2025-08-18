@@ -230,7 +230,6 @@ export function ApplicationDetailTabs({
                   <Input value={application.identityNumber || "-"} disabled />
                 </div>
                 <div>
-
                   <Label className="mb-5">Status</Label>
                 
                   <Select value={status} onValueChange={onStatusChange}>

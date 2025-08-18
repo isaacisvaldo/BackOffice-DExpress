@@ -195,6 +195,7 @@ export default function ProfessionalContent({
   });
 
   const [isLoading, setIsLoading] = useState(true);
+  
   const [errors, setErrors] = useState < Record < string, string >> ({});
   const [newExperience, setNewExperience] = useState < SimplifiedItemExp > ({
     localTrabalho: '',
