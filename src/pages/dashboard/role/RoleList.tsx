@@ -5,6 +5,7 @@ import { DataTable } from "@/components/data-table";
 import { getProfiles, type Profile } from "@/services/shared/role/role.service";
 import { roleColumns } from "@/components/role/roleColumns";
 import ProfileDetailsModal from "@/components/role/roleDetailModal";
+import SwirlingEffectSpinner from "@/components/customized/spinner/spinner-06";
 
 export default function RoleList() {
   const [data, setData] = useState<Profile[]>([]);
@@ -81,7 +82,9 @@ export default function RoleList() {
       <h1 className="text-2xl font-bold mb-4">Lista de Perfis</h1>
       <div className="container mx-auto py-6">
         {loading ? (
-          <p>Carregando...</p>
+        <div className="flex justify-center items-center py-10">
+           <SwirlingEffectSpinner></SwirlingEffectSpinner>
+          </div>
         ) : (
           <DataTable
             columns={roleColumns}

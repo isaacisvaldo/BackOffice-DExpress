@@ -1,75 +1,129 @@
-import { useEffect, useState } from "react"
-import { DataTable } from "@/components/data-table"
-import { cityColumns, type City } from "@/components/location/citiesColunn"
-import { getCities } from "@/services/location/cities.service"
+import { useEffect, useState } from "react";
+import { DataTable } from "@/components/data-table";
+import { cityColumns, type City } from "@/components/location/citiesColunn";
+import { deleteCity, getCities } from "@/services/location/cities.service";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { createCity as createCityService } from "@/services/location/cities.service";
+import { toast } from "sonner";
+import SwirlingEffectSpinner from "@/components/customized/spinner/spinner-06";
 
 export default function CitiesList() {
-  const [data, setData] = useState<City[]>([])
-  const [loading, setLoading] = useState(true)
-  const [page, setPage] = useState(1)
-  const [limit, setLimit] = useState(5)
-  const [totalPages, setTotalPages] = useState(1)
+  const [data, setData] = useState<City[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(5);
+  const [totalPages, setTotalPages] = useState(1);
+const [isDeleting, setIsDeleting] = useState(false);
+  const [nameFilter, setNameFilter] = useState<string>("");
+  const [debouncedNameFilter, setDebouncedNameFilter] = useState<string>("");
 
-  // ✅ Estado para o valor do input (atualiza em tempo real)
-  const [nameFilter, setNameFilter] = useState<string>("")
-  
-  // ✅ Novo estado para o valor debounced (usado na chamada da API)
-  const [debouncedNameFilter, setDebouncedNameFilter] = useState<string>("")
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newCityName, setNewCityName] = useState<string>("");
+  const [isCreatingCity, setIsCreatingCity] = useState(false);
 
-  // ✅ 1. useEffect para o Debounce
-  // Ele aguarda 500ms após a última digitação antes de atualizar o estado `debouncedNameFilter`.
   useEffect(() => {
     const timer = setTimeout(() => {
-      setDebouncedNameFilter(nameFilter)
-    }, 500) // ✅ Atraso de 500ms
+      setDebouncedNameFilter(nameFilter);
+    }, 500);
 
-    // A função de limpeza (cleanup) é crucial para evitar chamadas duplicadas.
-    // Ela cancela o timer anterior se o usuário digitar novamente antes que o tempo se esgote.
     return () => {
-      clearTimeout(timer)
-    }
-  }, [nameFilter]) // ✅ Este useEffect só é executado quando `nameFilter` muda.
+      clearTimeout(timer);
+    };
+  }, [nameFilter]);
 
-  // ✅ 2. useEffect para a Chamada da API
-  // Ele agora depende do `debouncedNameFilter`, não do `nameFilter` em tempo real.
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const result = await getCities({
+        page,
+        limit: limit === 0 ? undefined : limit,
+        search: debouncedNameFilter || undefined,
+      });
+
+      const mappedData: City[] = result.data.map((item: any) => ({
+        id: item.id,
+        name: item.name,
+        createdAt: new Date(item.createdAt).toLocaleDateString("pt-PT"),
+        updatedAt: new Date(item.updatedAt).toLocaleDateString("pt-PT"),
+      }));
+
+      setData(mappedData);
+      setTotalPages(result.totalPages || 1);
+    } catch (error) {
+      console.error("Erro ao carregar cidades", error);
+      toast.error("Erro ao carregar cidades.");
+    } finally {
+      setLoading(false);
+    }
+  };
+ const handleDelete = async (id: string) => {
+    setIsDeleting(true); 
+    try {
+      await deleteCity(id);
+      toast.success("Sucesso", {
+        description: "Cidade excluído com sucesso!",
+      });
+      fetchData(); 
+    } catch (error) {
+      console.error("Erro ao excluir admin:", error);
+      toast.error("Erro", {
+        description: "Falha ao excluir o Cidade. Tente novamente.",
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
   useEffect(() => {
-    async function fetchData() {
-      setLoading(true)
-      try {
-        const result = await getCities({
-          page,
-          limit: limit === 0 ? undefined : limit,
-          search: debouncedNameFilter || undefined, // ✅ Usa o estado debounced
-        })
+    fetchData();
+  }, [page, limit, debouncedNameFilter]);
 
-        const mappedData: City[] = result.data.map((item: any) => ({
-          id: item.id,
-          name: item.name,
-          createdAt: new Date(item.createdAt).toLocaleDateString("pt-PT"),
-          updatedAt: new Date(item.updatedAt).toLocaleDateString("pt-PT"),
-        }))
-
-        setData(mappedData)
-        setTotalPages(result.totalPages || 1)
-      } catch (error) {
-        console.error("Erro ao carregar cidades", error)
-      } finally {
-        setLoading(false)
-      }
+  const handleCreateCity = async () => {
+    if (!newCityName.trim()) {
+      toast.error("O nome da cidade não pode ser vazio.");
+      return;
     }
-    
-    fetchData()
-  }, [page, limit, debouncedNameFilter]) // ✅ Este useEffect é executado apenas quando `page`, `limit` ou `debouncedNameFilter` muda.
 
+    setIsCreatingCity(true);
+    try {
+      await createCityService({ name: newCityName });
+      toast.success("Cidade cadastrada com sucesso!");
+      setIsModalOpen(false);
+      setNewCityName("");
+      fetchData();
+    } catch (error: any) {
+      console.error("Erro ao cadastrar cidade", error);
+      toast.error(error.message || "Erro ao cadastrar cidade.");
+    } finally {
+      setIsCreatingCity(false);
+    }
+  };
+  const columns = cityColumns(handleDelete, isDeleting);
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-bold mb-4">Lista de Cidades</h1>
+      <h1 className="text-2xl font-bold mb-4"> Cidades</h1>
+
+      <div className="flex justify-end mb-4">
+        <Button onClick={() => setIsModalOpen(true)}>Cadastrar Nova Cidade</Button>
+      </div>
+
       <div className="container mx-auto py-6">
         {loading ? (
-          <p>Carregando...</p>
+         <div className="flex justify-center items-center py-10">
+           <SwirlingEffectSpinner></SwirlingEffectSpinner>
+          </div>
         ) : (
           <DataTable
-            columns={cityColumns}
+            columns={columns}
             data={data}
             page={page}
             setPage={setPage}
@@ -81,13 +135,46 @@ export default function CitiesList() {
                 type: "input",
                 column: "name",
                 placeholder: "Filtrar por nome...",
-                value: nameFilter, // ✅ O input continua usando o estado em tempo real
+                value: nameFilter,
                 onChange: setNameFilter,
               },
             ]}
           />
         )}
       </div>
+
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Cadastrar Nova Cidade</DialogTitle>
+            <DialogDescription>
+              Preencha os dados para cadastrar uma nova cidade.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="cityName" className="text-right">
+                Nome
+              </Label>
+              <Input
+                id="cityName"
+                value={newCityName}
+                onChange={(e) => setNewCityName(e.target.value)}
+                className="col-span-3"
+                placeholder="Nome da cidade"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsModalOpen(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={handleCreateCity} disabled={isCreatingCity}>
+              {isCreatingCity ? "Cadastrando..." : "Cadastrar"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
-  )
+  );
 }

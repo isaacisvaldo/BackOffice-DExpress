@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
+import { formatDate } from "@/util"
 
 
 interface ApplicationHeaderProps {
@@ -89,7 +90,7 @@ export default function ApplicationHeader({
               <div className="flex items-center gap-1">
                 <Calendar className="size-4" />
                 Aplicado em{" "}
-                {new Date(application.createdAt).toLocaleDateString("pt-PT")}
+                {    formatDate(application.createdAt)}
               </div>
             </div>
           </div>

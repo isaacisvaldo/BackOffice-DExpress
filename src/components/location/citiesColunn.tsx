@@ -8,6 +8,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "../ui/alert-dialog"
 
 export type City = {
   id: string
@@ -16,7 +17,10 @@ export type City = {
   updatedAt: string
 }
 
-export const cityColumns: ColumnDef<City>[] = [
+export const cityColumns= (
+  onDelete: (id: string) => void,
+  isDeleting: boolean
+): ColumnDef<City>[] =>  [
   {
     accessorKey: "name",
     header: ({ column }) => (
@@ -62,15 +66,40 @@ export const cityColumns: ColumnDef<City>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Ações</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => alert(`Ver detalhes de ${city.name}`)}>
-              Ver Detalhes
-            </DropdownMenuItem>
+           
             <DropdownMenuItem onClick={() => alert(`Editar ${city.name}`)}>
               Editar
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => alert(`Excluir ${city.name}`)}>
-              Excluir
-            </DropdownMenuItem>
+           
+              {/* Início do AlertDialog para exclusão */}
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  {/* onSelect para prevenir o fechamento imediato do DropdownMenu */}
+                  <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                    Excluir
+                  </DropdownMenuItem>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Essa ação não pode ser desfeita. Isso excluirá permanentemente a cidade{" "}
+                      **{city.name}** e removerá seus dados de nossos servidores.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    {/* Chama a função onDelete passada como prop e desabilita enquanto estiver excluindo */}
+                    <AlertDialogAction
+                      className="bg-red-500 hover:bg-red-600 text-white"
+                      onClick={() => onDelete(city.id)}
+                      disabled={isDeleting}
+                    >
+                      {isDeleting ? "Excluindo..." : "Confirmar Exclusão"}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
           </DropdownMenuContent>
         </DropdownMenu>
       )

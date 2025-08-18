@@ -1,3 +1,4 @@
+import SwirlingEffectSpinner from "@/components/customized/spinner/spinner-06";
 import { DataTable } from "@/components/data-table";
 import { professionalColumns, type MappedProfessional } from "@/components/profissional/professionals-columns";
 import { deleteProfessional, getProfessionals, updateProfessionalAvailability, type Professional } from "@/services/profissional/profissional.service";
@@ -5,7 +6,7 @@ import { getDesiredPositionsList } from "@/services/shared/desired-positions/des
 import { getExperienceLevelsList } from "@/services/shared/experience-levels/experience-levels.service";
 import { getGeneralAvailabilitiesList } from "@/services/shared/general-availabilities/general-availability.service";
 import type { DesiredPosition, GeneralAvailability, ExperienceLevel } from "@/types/types";
-import { useState, useEffect } from "react"; // Removido o 'useCallback'
+import { useState, useEffect } from "react"; 
 import { toast } from "sonner";
 
 export default function ProfessionalsList() {
@@ -169,7 +170,7 @@ export default function ProfessionalsList() {
       <div className="container mx-auto py-6">
         {loading ? (
           <div className="flex justify-center items-center py-10">
-            <span className="text-blue-500 text-lg">Carregando...</span>
+           <SwirlingEffectSpinner></SwirlingEffectSpinner>
           </div>
         ) : (
           <DataTable
