@@ -195,7 +195,7 @@ export function ChartAreaInteractive() {
                 />
               }
             />
-            {/* Area para clientes_fisica */}
+           
             <Area
               dataKey="clientes_fisica"
               type="natural"
