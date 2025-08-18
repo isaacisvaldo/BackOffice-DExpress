@@ -129,7 +129,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         items: [
           { title: "Projetos", url: "/operacoes/projects" },
           { title: "Gestão de Tarefas", url: "/operacoes/tasks" },
-          { title: "Contratos e Propostas", url: "/operacoes/contracts" },
           { title: "Equipes", url: "/operacoes/teams" },
         ],
       },

@@ -106,7 +106,8 @@ export interface JobApplication {
     maritalStatus?: MaritalStatus;
     experienceLevel?: ExperienceLevel;
     generalAvailability?: GeneralAvailability;
-    languages?: Language[];
-    skills?: Skill[];
-    courses?: Course[];
+    languages: Language[];
+    ProfessionalExperience:any;
+    skills: Skill[];
+    courses: Course[];
 }
