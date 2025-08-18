@@ -98,7 +98,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         url: "/shared-data",
         icon: List, // Usando List para representar lista de dados
         items: [
-          { title: "Cargos e Posições", url: "/shared-data/positions" },
+          { title: "Cargos e Posições", url: "/desired-positions/desired-positions" },
           { title: "Idiomas", url: "/shared-data/languages" },
           { title: "Habilidades", url: "/shared-data/skills" },
           { title: "Especialidades", url: "/shared-data/specialties" },
@@ -106,8 +106,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           { title: "Grau Acadêmico", url: "/shared-data/highest-degrees" },
           { title: "Estados Civis", url: "/shared-data/marital-status" },
           { title: "Gêneros", url: "/shared-data/genders" },
-          { title: "Disponibilidade", url: "/shared-data/disponibilidae" },
-          { title: "Nivel de Experiencia", url: "/shared-data/nivel-experiencia" },
+          { title: "Disponibilidade", url: "/disponibility/disponibility" },
+          { title: "Nivel de Experiencia", url: "/experience-levels/experience-levels" },
           { title: "Setores-empresa", url: "/setor/setor" }
           
         ],
