@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { DataTable } from "@/components/data-table"
 import { sectorColumns, type Sector } from "@/components/sector/sectorColumns"
 import { getSector } from "@/services/sector/sector.service"
+import { formatDate } from "@/util"
 
 
 export default function SectorList() {
@@ -36,13 +37,15 @@ export default function SectorList() {
         const result = await getSector({
           page,
           limit: limit === 0 ? undefined : limit,
-          name: debouncedNameFilter || undefined, // ✅ filtro no name
+          name: debouncedNameFilter || undefined, 
         })
 
         const mappedData: Sector[] = result.data.map((item: any) => ({
           id: item.id,
           name: item.name,
           label: item.label,
+           createdAt: formatDate(item.createdAt),
+          updatedAt: formatDate(item.updatedAt),
         }))
 
         setData(mappedData)

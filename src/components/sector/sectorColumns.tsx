@@ -13,22 +13,11 @@ export type Sector = {
   id: string
   name: string
   label: string
+  createdAt:string
 }
 
 export const sectorColumns: ColumnDef<Sector>[] = [
-  {
-    accessorKey: "name",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Nome
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => <div className="font-medium">{row.getValue("name")}</div>,
-  },
+ 
   {
     accessorKey: "label",
     header: ({ column }) => (
@@ -36,12 +25,18 @@ export const sectorColumns: ColumnDef<Sector>[] = [
         variant="ghost"
         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
       >
-        Label
+        Rótulo
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
     cell: ({ row }) => <div>{row.getValue("label")}</div>,
   },
+  {
+      accessorKey: "createdAt",
+      header: "Criado em",
+        cell: ({ row }) => <div className="font-medium">{row.getValue("createdAt")}</div>,
+       
+    },
   {
     id: "actions",
     enableHiding: false,

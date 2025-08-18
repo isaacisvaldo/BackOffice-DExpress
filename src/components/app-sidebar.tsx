@@ -108,10 +108,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           { title: "Candidaturas", url: "/rh/applications" },
 
           { title: "Relatórios de RH", url: "/rh/reports" },
-          { title: "Cargos e Posições", url: "/rh/positions" },
-          { title: "Disponibilidade", url: "/rh/disponibilidade" },
-          { title: "Nível de Experiência", url: "/rh/nivel-experiencia" },
-          { title: "Setores-empresa", url: "/rh/sectors" }
+    
+         
         ],
       },
       {

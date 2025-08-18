@@ -116,6 +116,8 @@ export default function App() {
 
               <Route path="portal/users" element={<UserClientList />} />
               <Route path="portal/leads" element={<UserClientLeadsList />} />
+              <Route path="rh/sectors" element={<SectorList />} />
+             
 
 
               <Route path="clients/company" element={<ClientCompanyProfileList />} /> 

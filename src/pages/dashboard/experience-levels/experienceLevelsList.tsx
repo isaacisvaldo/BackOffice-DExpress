@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { DataTable } from "@/components/data-table"
 import { desiredPositionColumns, type DesiredPosition } from "@/components/desired-positions/desiredPositionsColumns"
 import { getDesiredPositions } from "@/services/desired-positions/desired-positions.service"
+import { formatDate } from "@/util"
 
 export default function DesiredPositionList() {
   const [data, setData] = useState<DesiredPosition[]>([])
@@ -37,6 +38,8 @@ export default function DesiredPositionList() {
           id: item.id,
           name: item.name,
           description: item.description,
+            createdAt: formatDate(item.createdAt),
+            updatedAt: formatDate(item.updatedAt),
         }))
 
         setData(mappedData)
