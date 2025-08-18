@@ -82,7 +82,7 @@ import {
 import {
   getCoursesList
 } from '@/services/shared/courses/course.service';
-import { updateProfessional, type Professional } from '@/services/profissional/profissional.service';
+import { updateProfessional, updateProfessionalAvailability, type Professional } from '@/services/profissional/profissional.service';
 
 // Interfaces
 interface SimplifiedItem {
@@ -316,9 +316,24 @@ export default function ProfessionalContent({
     }
   };
 
-  const handleToggleAvailability = (isAvailable: boolean) => {
-    handleChange('isAvailable', isAvailable);
+  // --- Lógica de atualização de disponibilidade ---
+  const handleToggleAvailability = async (newAvailability: boolean) => {
+    const originalAvailability = editedProfessional.isAvailable;
+    // Otimisticamente, atualiza o estado local
+    handleChange('isAvailable', newAvailability);
+
+    try {
+      // Chama o serviço de atualização com a nova disponibilidade
+      await updateProfessionalAvailability(editedProfessional.id,newAvailability);
+   
+    } catch (error) {
+      console.error("Erro ao atualizar a disponibilidade:", error);
+      toast.error("Falha ao atualizar a disponibilidade. Tentando reverter a alteração...");
+      // Em caso de falha, reverte o estado local para o valor original
+      handleChange('isAvailable', originalAvailability);
+    }
   };
+
 
   const handleAddExperience = async () => {
     const result = experienceSchema.safeParse(newExperience);
@@ -457,7 +472,7 @@ export default function ProfessionalContent({
                 checked={editedProfessional.isAvailable}
                 onCheckedChange={handleToggleAvailability}
               />
-              <Label htmlFor="is-available">{editedProfessional.isAvailable ? "Disponível para trabalho" : "Indisponível para trabalho"}</Label>
+              <Label htmlFor="is-available">{editedProfessional.isAvailable ? "Disponível para trabalho " : "Indisponível para trabalho"}</Label>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <SelectBlock
@@ -729,8 +744,13 @@ function MultiSelectPopover({ label, options, selectedIds, onChange }: {
                   onChange(newIds);
                 }}
               >
-                <Checkbox checked={selectedIds.includes(option.id)} />
-                <span>{getOptionText(option)}</span>
+                <Checkbox
+                  id={option.id}
+                  checked={selectedIds.includes(option.id)}
+                />
+                <label htmlFor={option.id} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                  {getOptionText(option)}
+                </label>
               </div>
             ))}
         </PopoverContent>
