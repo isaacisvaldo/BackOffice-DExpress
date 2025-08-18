@@ -199,7 +199,7 @@ export function ChartAreaInteractive() {
             <Area
               dataKey="clientes_fisica"
               type="natural"
-              fill="url(#fillClientesFisica)" // Referencia o novo gradiente
+              fill="url(#fillClientesFisica)" 
               stroke="var(--color-clientes_fisica)"
               stackId="a"
             />
