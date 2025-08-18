@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Camera, UploadCloud, XCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Label } from './ui/label';
+import { useNavigate } from 'react-router-dom';
 
 // Simule o serviço de upload de imagem
 const uploadProfessionalImage = async (professionalId: string, imageFile: File) => {
@@ -22,14 +23,16 @@ const uploadProfessionalImage = async (professionalId: string, imageFile: File) 
             }
         }, 1500);
     });
+
 };
 
 interface ImageUploadStageProps {
     professionalId: string;
-    onClose: () => void; // Para fechar o estágio de upload
+    onClose: () => void; 
 }
 
 export default function ImageUploadStage({ professionalId, onClose }: ImageUploadStageProps) {
+     const navigate = useNavigate()
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
     const [isUploading, setIsUploading] = useState<boolean>(false);
@@ -60,7 +63,8 @@ export default function ImageUploadStage({ professionalId, onClose }: ImageUploa
         try {
             await uploadProfessionalImage(professionalId, selectedFile);
             toast.success("Imagem enviada com sucesso!");
-            onClose(); // Fechar após o upload bem-sucedido
+            onClose(); 
+              navigate(`/rh/professional/${professionalId}/details`) 
         } catch (error) {
             console.error("Erro ao fazer upload da imagem:", error);
             toast.error("Erro ao enviar a imagem.");

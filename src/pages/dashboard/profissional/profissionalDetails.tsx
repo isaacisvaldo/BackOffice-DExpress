@@ -57,7 +57,7 @@ export default  function ProfessionaDetails() {
                 <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
                     {/* ✅ Passa o objeto 'user' diretamente para os componentes filhos */}
         <ProfessionalHeader user={profissional} />
-        <ProfessionalContent />
+        <ProfessionalContent professional={profissional} />
         
                 </div>
             </div>

@@ -62,6 +62,7 @@ const professionalFormSchema = z.object({
   courseIds: z.array(z.string().uuid()),
   languageIds: z.array(z.string().uuid()),
   skillIds: z.array(z.string().uuid()),
+  experienceIds: z.array(z.string().uuid()),
   profileImage: z.any().optional(),
 });
 
@@ -74,7 +75,8 @@ export default function ProfessionalForm({
   application: JobApplication;
   onProfessionalCreated?: (professionalId: string) => void;
 }) {
-  const [isLoading, setIsLoading] = useState<boolean>(true); // Estado para controlar o carregamento
+  const [isLoading, setIsLoading] = useState<boolean>(true); 
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [availabilityList, setAvailabilityList] = useState<any[]>([]);
   const [experienceList, setExperienceList] = useState<any[]>([]);
   const [genderList, setGenderList] = useState<any[]>([]);
@@ -107,6 +109,7 @@ export default function ProfessionalForm({
     desiredPositionId: "",
     expectedSalary: 0,
     highestDegreeId: "",
+    experienceIds: [],
     courseIds: [],
     languageIds: [],
     skillIds: [],
@@ -161,14 +164,14 @@ export default function ProfessionalForm({
             email: application.email || "",
             phoneNumber: application.phoneNumber || "",
             identityNumber: application.identityNumber || "",
-            
+
             availabilityTypeId: application.generalAvailabilityId || "",
             experienceLevelId: application.experienceLevelId || "",
             genderId: application.genderId || "",
             maritalStatusId: application.maritalStatusId || "",
             highestDegreeId: application.highestDegreeId || "",
             desiredPositionId: application.desiredPositionId || "",
-            
+
             jobApplicationId: application.id,
             description: "", // Ajuste se houver descrição na JobApplication
             expectedAvailability: application.availabilityDate ? new Date(application.availabilityDate).toISOString().split('T')[0] : "",
@@ -184,6 +187,7 @@ export default function ProfessionalForm({
             languageIds: application.languages?.map(l => l.id) || [],
             skillIds: application.skills?.map(s => s.id) || [],
             profileImage: undefined,
+            experienceIds: application.ProfessionalExperience?.map((s: any) => s.id) || [],
           }));
         }
       } catch (error) {
@@ -204,6 +208,8 @@ export default function ProfessionalForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+       setIsSubmitting(true);
+    
     const result = professionalFormSchema.safeParse(form);
 
     if (!result.success) {
@@ -216,6 +222,7 @@ export default function ProfessionalForm({
       setErrors(newErrors);
       toast.error("Formulário inválido. Corrija os erros.");
       console.error("Formulário inválido. Corrija os erros.", newErrors);
+       setIsSubmitting(false);
       return;
     }
 
@@ -248,6 +255,8 @@ export default function ProfessionalForm({
     } catch (error) {
       console.error("Erro ao salvar profissional:", error);
       toast.error("Falha ao salvar o profissional.");
+    } finally {
+        setIsSubmitting(false);
     }
   };
 
@@ -261,124 +270,118 @@ export default function ProfessionalForm({
   }
 
   // Renderiza o formulário apenas quando isLoading for false
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* INPUTS DE TEXTO */}
-        <InputBlock
-          label="Nome Completo"
-          value={form.fullName}
-          onChange={(v) => handleChange("fullName", v)}
-          error={errors.fullName}
-        />
-        <InputBlock
-          label="Email"
-          value={form.email}
-          onChange={(v) => handleChange("email", v)}
-          error={errors.email}
-        />
-        <InputBlock
-          label="Telefone"
-          value={form.phoneNumber}
-          onChange={(v) => handleChange("phoneNumber", v)}
-          error={errors.phoneNumber}
-        />
-        <InputBlock
-          label="Número de Identificação"
-          value={form.identityNumber || ""}
-          onChange={(v) => handleChange("identityNumber", v)}
-          error={errors.identityNumber}
-        />
+return (
+  <form onSubmit={handleSubmit} className="space-y-4">
+    <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* INPUTS DE TEXTO */}
+      <InputBlock
+        label="Nome Completo"
+        value={form.fullName}
+        onChange={(v) => handleChange("fullName", v)}
+        error={errors.fullName}
+      />
+      <InputBlock
+        label="Email"
+        value={form.email}
+        onChange={(v) => handleChange("email", v)}
+        error={errors.email}
+      />
+      {/* ... todos os seus outros componentes, exceto o salário e a experiência ... */}
+      <InputBlock
+        label="Telefone"
+        value={form.phoneNumber}
+        onChange={(v) => handleChange("phoneNumber", v)}
+        error={errors.phoneNumber}
+      />
+      <InputBlock
+        label="Número de Identificação"
+        value={form.identityNumber || ""}
+        onChange={(v) => handleChange("identityNumber", v)}
+        error={errors.identityNumber}
+      />
 
-        {/* SELECTS */}
-        <SelectBlock
-          label="Disponibilidade"
-          value={form.availabilityTypeId}
-          onChange={(v) => handleChange("availabilityTypeId", v)}
-          options={availabilityList}
-          error={errors.availabilityTypeId}
-        />
-        <SelectBlock
-          label="Nível de Experiência"
-          value={form.experienceLevelId}
-          onChange={(v) => handleChange("experienceLevelId", v)}
-          options={experienceList}
-          error={errors.experienceLevelId}
-        />
+      {/* SELECTS */}
+      <SelectBlock
+        label="Disponibilidade"
+        value={form.availabilityTypeId}
+        onChange={(v) => handleChange("availabilityTypeId", v)}
+        options={availabilityList}
+        error={errors.availabilityTypeId}
+      />
+      <SelectBlock
+        label="Nível de Experiência"
+        value={form.experienceLevelId}
+        onChange={(v) => handleChange("experienceLevelId", v)}
+        options={experienceList}
+        error={errors.experienceLevelId}
+      />
 
-        {/* INPUTS DE DATA */}
-        <InputBlock
-          type="date"
-          label="Data Esperada de Disponibilidade"
-          value={form.expectedAvailability || ""}
-          onChange={(v) => handleChange("expectedAvailability", v)}
-          error={errors.expectedAvailability}
-        />
-        <InputBlock
-          type="date"
-          label="Data de Nascimento"
-          value={form.birthDate}
-          onChange={(v) => handleChange("birthDate", v)}
-          error={errors.birthDate}
-        />
+      {/* INPUTS DE DATA */}
+      <InputBlock
+        type="date"
+        label="Data Esperada de Disponibilidade"
+        value={form.expectedAvailability || ""}
+        onChange={(v) => handleChange("expectedAvailability", v)}
+        error={errors.expectedAvailability}
+      />
+      <InputBlock
+        type="date"
+        label="Data de Nascimento"
+        value={form.birthDate}
+        onChange={(v) => handleChange("birthDate", v)}
+        error={errors.birthDate}
+      />
 
-        {/* MAIS SELECTS PRÉ-PREENCHIDOS */}
-        <SelectBlock
-          label="Estado Civil"
-          value={form.maritalStatusId}
-          onChange={(v) => handleChange("maritalStatusId", v)}
-          options={maritalStatusList}
-          error={errors.maritalStatusId}
-        />
-        <SelectBlock
-          label="Gênero"
-          value={form.genderId}
-          onChange={(v) => handleChange("genderId", v)}
-          options={genderList}
-          error={errors.genderId}
-        />
-        <SelectBlock
-          label="Grau Acadêmico"
-          value={form.highestDegreeId}
-          onChange={(v) => handleChange("highestDegreeId", v)}
-          options={highestDegreeList}
-          error={errors.highestDegreeId}
-        />
-        <SelectBlock
-          label="Deseja Trabalhar como"
-          value={form.desiredPositionId}
-          onChange={(v) => handleChange("desiredPositionId", v)}
-          options={desiredPositionList}
-          error={errors.desiredPositionId}
-        />
+      {/* MAIS SELECTS PRÉ-PREENCHIDOS */}
+      <SelectBlock
+        label="Estado Civil"
+        value={form.maritalStatusId}
+        onChange={(v) => handleChange("maritalStatusId", v)}
+        options={maritalStatusList}
+        error={errors.maritalStatusId}
+      />
+      <SelectBlock
+        label="Gênero"
+        value={form.genderId}
+        onChange={(v) => handleChange("genderId", v)}
+        options={genderList}
+        error={errors.genderId}
+      />
+      <SelectBlock
+        label="Grau Acadêmico"
+        value={form.highestDegreeId}
+        onChange={(v) => handleChange("highestDegreeId", v)}
+        options={highestDegreeList}
+        error={errors.highestDegreeId}
+      />
+      <SelectBlock
+        label="Deseja Trabalhar como"
+        value={form.desiredPositionId}
+        onChange={(v) => handleChange("desiredPositionId", v)}
+        error={errors.desiredPositionId}
+        options={desiredPositionList}
+      />
 
-        {/* OUTROS CAMPOS */}
-        <InputBlock
-          label="Salário Esperado"
-          type="number"
-          value={form.expectedSalary}
-          onChange={(v) => handleChange("expectedSalary", parseInt(v) || 0)}
-          error={errors.expectedSalary}
+      {/* OUTROS CAMPOS */}
+      <div className="gap-2">
+        <Label className="mb-5" htmlFor="knownDiseases">Doenças Conhecidas</Label>
+        <Textarea
+          id="knownDiseases"
+          value={form.knownDiseases || ""}
+          onChange={(e) => handleChange("knownDiseases", e.target.value)}
         />
+      </div>
+      <div className="gap-2">
+        <Label className="mb-5" htmlFor="description">Descrição</Label>
+        <Textarea
+          id="description"
+          value={form.description || ""}
+          onChange={(e) => handleChange("description", e.target.value)}
+        />
+      </div>
 
-        <div className="grid gap-2">
-          <Label htmlFor="knownDiseases">Doenças Conhecidas</Label>
-          <Textarea
-            id="knownDiseases"
-            value={form.knownDiseases || ""}
-            onChange={(e) => handleChange("knownDiseases", e.target.value)}
-          />
-        </div>
-        <div className="grid gap-2">
-          <Label htmlFor="description">Descrição</Label>
-          <Textarea
-            id="description"
-            value={form.description || ""}
-            onChange={(e) => handleChange("description", e.target.value)}
-          />
-        </div>
-
-        {/* MULTISELECTS PRÉ-PREENCHIDOS */}
+      {/* MULTISELECTS PRÉ-PREENCHIDOS */}
+      <div className="md:col-span-2 space-y-4">
         <MultiSelectPopover
           label="Cursos Realizados"
           options={coursesList}
@@ -386,43 +389,81 @@ export default function ProfessionalForm({
           onChange={(ids) => handleChange("courseIds", ids)}
         />
         <MultiSelectPopover
-          label="Idiomas"
-          options={languagesList}
-          selectedIds={form.languageIds}
-          onChange={(ids) => handleChange("languageIds", ids)}
-        />
-        <MultiSelectPopover
           label="Habilidades e Qualidades"
           options={skillsList}
           selectedIds={form.skillIds}
           onChange={(ids) => handleChange("skillIds", ids)}
         />
+        <MultiSelectPopover
+          label="Idiomas"
+          options={languagesList}
+          selectedIds={form.languageIds}
+          onChange={(ids) => handleChange("languageIds", ids)}
+        />
 
-        {/* CHECKBOXES */}
-        <CheckboxField
-          label="Tem Registo Criminal"
-          checked={form.hasCriminalRecord}
-          onChange={(v) => handleChange("hasCriminalRecord", v)}
+         <InputBlock
+          label="Salário Esperado"
+          type="number"
+          value={form.expectedSalary}
+          onChange={(v) => handleChange("expectedSalary", parseInt(v) || 0)}
+          error={errors.expectedSalary}
         />
-        <CheckboxField
-          label="Tem Atestado Médico"
-          checked={form.hasMedicalCertificate}
-          onChange={(v) => handleChange("hasMedicalCertificate", v)}
-        />
-        <CheckboxField
-          label="Tem Certificado de Formação"
-          checked={form.hasTrainingCertificate}
-          onChange={(v) => handleChange("hasTrainingCertificate", v)}
-        />
-        <CheckboxField
-          label="Tem Filhos"
-          checked={form.hasChildren}
-          onChange={(v) => handleChange("hasChildren", v)}
-        />
-      </CardContent>
-      <Button type="submit">Salvar Profissional</Button>
-    </form>
-  );
+      </div>
+
+    </CardContent>
+
+    {/* SEÇÃO DE SALÁRIO E EXPERIÊNCIA PROFISSIONAL SEPARADA */}
+    {/* Este é o grid de 12 colunas que você deseja */}
+    <div className="grid grid-cols-1 md:grid-cols-12 gap-8 px-6">
+      <div className="md:col-span-6 space-y-4">
+       
+        <div className="space-y-4">
+          <CheckboxField
+            label="Tem Registo Criminal"
+            checked={form.hasCriminalRecord}
+            onChange={(v) => handleChange("hasCriminalRecord", v)}
+          />
+          <CheckboxField
+            label="Tem Atestado Médico"
+            checked={form.hasMedicalCertificate}
+            onChange={(v) => handleChange("hasMedicalCertificate", v)}
+          />
+          <CheckboxField
+            label="Tem Certificado de Formação"
+            checked={form.hasTrainingCertificate}
+            onChange={(v) => handleChange("hasTrainingCertificate", v)}
+          />
+          <CheckboxField
+            label="Tem Filhos"
+            checked={form.hasChildren}
+            onChange={(v) => handleChange("hasChildren", v)}
+          />
+        </div>
+      </div>
+      <div className="md:col-span-6 space-y-4">
+  <Label className="mb-5  font-semibold text-gray-800" htmlFor="description">Experiência Profissional</Label>
+  
+  {application.ProfessionalExperience.map((experience: any, index: any) => (
+    <div key={index}> {/* Remove as classes de borda e arredondamento */}
+      <h4 className="font-medium">{experience.cargo}</h4>
+      <p className="text-sm text-gray-600">{experience.localTrabalho}</p>
+      <p className="text-xs text-gray-500">
+        {experience.startDate} - {experience.endDate}
+      </p>
+      {/* Adiciona uma linha horizontal para separar os itens, exceto o último */}
+      {index < application.ProfessionalExperience.length - 1 && (
+        <hr className="my-4" />
+      )}
+    </div>
+  ))}
+</div>
+    </div>
+     <Button type="submit" className="mt-4" disabled={isSubmitting}>
+                  {isSubmitting ? "Criando..." : "Criar Profissional"}
+                </Button>
+   
+  </form>
+);
 }
 
 // ==============================================================================
@@ -444,7 +485,7 @@ function InputBlock({
 }) {
   return (
     <div className="grid gap-2">
-      <Label>{label}</Label>
+      <Label className="mb-5">{label}</Label>
       <Input
         type={type}
         value={value}
@@ -470,7 +511,7 @@ function SelectBlock({
 }) {
   return (
     <div className="grid gap-2">
-      <Label>{label}</Label>
+      <Label className="mb-5">{label}</Label>
       <Select value={value} onValueChange={onChange}>
         <SelectTrigger className="w-full">
           {/* Mostra o label correspondente ao valor selecionado */}
@@ -509,15 +550,15 @@ function MultiSelectPopover({
 
   return (
     <div className="grid gap-2">
-      <Label>{label}</Label>
+      <Label className="mb-5">{label}</Label>
       <Popover>
         <PopoverTrigger asChild>
           <Button variant="outline" className="w-full justify-between">
             {selectedIds.length > 0 && Array.isArray(options)
               ? options
-                  .filter((s) => selectedIds.includes(s.id))
-                  .map((s) => getOptionText(s))
-                  .join(", ")
+                .filter((s) => selectedIds.includes(s.id))
+                .map((s) => getOptionText(s))
+                .join(", ")
               : "Selecione as opções"}
             <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
@@ -560,7 +601,7 @@ function CheckboxField({
   return (
     <div className="flex items-center gap-2">
       <Checkbox checked={checked} onCheckedChange={onChange} />
-      <Label>{label}</Label>
+      <Label className="mb-5">{label}</Label>
     </div>
   );
 }
