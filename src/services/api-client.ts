@@ -116,3 +116,24 @@ export async function deleteData(endpoint: string,successMessage="Recurso removi
   }
   return {};
 }
+
+// --- NOVA FUNÇÃO DE UPLOAD DE ARQUIVO ---
+export async function uploadFile(
+  endpoint: string,
+  file: File,
+  successMessage = "Arquivo enviado com sucesso!"
+) {
+  const formData = new FormData();
+  formData.append('file', file); 
+
+  const res = await apiFetch(
+    endpoint,
+    {
+      method: 'POST',
+      body: formData,
+    },
+    successMessage,
+    "POST"
+  );
+  return res.json();
+}

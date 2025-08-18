@@ -213,3 +213,16 @@ export async function updateProfessionalAvailability(
 export async function deleteProfessional(id: string): Promise<Professional> {
   return deleteData(`/professionals/${id}`);
 }
+
+/**
+ * Atualiza a URL da imagem de perfil de um profissional.
+ * @param id O ID do profissional.
+ * @param imageUrl A nova URL da imagem.
+ * @returns O objeto Professional atualizado.
+ */
+export async function updateProfessionalImageUrl(
+  id: string,
+  imageUrl: string,
+): Promise<Professional> {
+  return sendData(`/professionals/${id}/image-url`, "PATCH", { imageUrl });
+}
