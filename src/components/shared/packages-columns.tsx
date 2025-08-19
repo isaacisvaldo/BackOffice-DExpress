@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "../ui/alert-dialog"
 import type { Package } from "@/services"
+import { Badge } from "../ui/badge"
 
 
 export const packageColumns = (
@@ -31,29 +32,45 @@ export const packageColumns = (
     cell: ({ row }) => <div className="text-center font-medium">{row.getValue("name")}</div>, // Adicionado para centralizar o conteúdo
   },
   {
-    accessorKey: "cost",
+    accessorKey: "price",
     header: () => <div className="text-center">Custo</div>,
     cell: ({ row }) => {
-      const cost = parseFloat(row.getValue("cost"))
+      const price = parseFloat(row.getValue("price"))
       return (
         <div className="text-center">
           {new Intl.NumberFormat("pt-AO", {
             style: "currency",
             currency: "AOA",
-          }).format(cost)}
+          }).format(price)}
         </div>
       )
     },
   },
-  {
-    accessorKey: "hours",
-    header: () => <div className="text-center">Horas</div>,
-    cell: ({ row }) => <div className="text-center">{row.getValue("hours")}h</div>, // Corrigido para text-center
-  },
+ 
   {
     accessorKey: "employees",
     header: () => <div className="text-center">Funcionários</div>,
-    cell: ({ row }) => <div className="text-center">{row.getValue("employees")}</div>, // Corrigido para text-center
+    cell: ({ row }) => <div className="text-center">{row.getValue("employees")}</div>, 
+  },
+   {
+    accessorKey: "isPopular",
+    header: () => <div className="text-center">Popular</div>,
+    cell: ({ row }) => {
+      const isPopular = row.getValue("isPopular");
+      return (
+        <div className="text-center">
+          {isPopular ? (
+             <Badge className="bg-emerald-600/10 dark:bg-emerald-600/20 hover:bg-emerald-600/10 text-emerald-500 border-emerald-600/60 shadow-none rounded-full">
+        <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 mr-2" /> Popular
+      </Badge>
+          ) : (
+            <Badge className="bg-red-600/10 dark:bg-red-600/20 hover:bg-red-600/10 text-red-500 border-red-600/60 shadow-none rounded-full">
+        <div className="h-1.5 w-1.5 rounded-full bg-red-500 mr-2" /> Não
+      </Badge>
+          )}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "createdAt",

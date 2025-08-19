@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,30 +5,18 @@ import { Input } from "@/components/ui/input";
 import { Camera, UploadCloud, XCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Label } from './ui/label';
+import { useNavigate } from 'react-router-dom';
+import { uploadFile } from '@/services/api-client';
+import { updateProfessionalImageUrl } from '@/services/profissional/profissional.service';
 
-// Simule o serviço de upload de imagem
-const uploadProfessionalImage = async (professionalId: string, imageFile: File) => {
-    console.log(`Simulando upload para Professional ID: ${professionalId}`);
-    console.log(`Arquivo: ${imageFile.name}, Tipo: ${imageFile.type}, Tamanho: ${imageFile.size} bytes`);
-    
-    // Simule um atraso de rede e um sucesso/falha
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            if (Math.random() > 0.2) { // 80% de chance de sucesso
-                resolve({ success: true, message: "Imagem enviada com sucesso!" });
-            } else {
-                reject(new Error("Falha ao enviar a imagem. Tente novamente."));
-            }
-        }, 1500);
-    });
-};
 
 interface ImageUploadStageProps {
     professionalId: string;
-    onClose: () => void; // Para fechar o estágio de upload
+    onClose: () => void;
 }
 
 export default function ImageUploadStage({ professionalId, onClose }: ImageUploadStageProps) {
+    const navigate = useNavigate()
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
     const [isUploading, setIsUploading] = useState<boolean>(false);
@@ -58,9 +45,13 @@ export default function ImageUploadStage({ professionalId, onClose }: ImageUploa
 
         setIsUploading(true);
         try {
-            await uploadProfessionalImage(professionalId, selectedFile);
+            const url = await uploadFile('/upload', selectedFile);
+            if (!url) return
+            // Atuaizar o dado do profissional !
+            await updateProfessionalImageUrl(professionalId, url)
             toast.success("Imagem enviada com sucesso!");
-            onClose(); // Fechar após o upload bem-sucedido
+            onClose();
+            navigate(`/rh/professional/${professionalId}/details`);
         } catch (error) {
             console.error("Erro ao fazer upload da imagem:", error);
             toast.error("Erro ao enviar a imagem.");
@@ -115,8 +106,7 @@ export default function ImageUploadStage({ professionalId, onClose }: ImageUploa
         return () => {
             stopCamera();
         };
-    }, [stream]); 
-
+    }, [stream]);
 
     return (
         <Card className="max-w-xl mx-auto">
@@ -141,16 +131,16 @@ export default function ImageUploadStage({ professionalId, onClose }: ImageUploa
                     {stream && (
                         <div className="relative mt-4">
                             <video ref={videoRef} autoPlay playsInline className="w-full rounded-md border" />
-                            <Button 
-                                onClick={takePhoto} 
+                            <Button
+                                onClick={takePhoto}
                                 className="absolute bottom-4 left-1/2 -translate-x-1/2"
                             >
                                 <Camera className="mr-2 h-4 w-4" /> Tirar Foto
                             </Button>
-                            <Button 
-                                variant="destructive" 
-                                size="icon" 
-                                onClick={stopCamera} 
+                            <Button
+                                variant="destructive"
+                                size="icon"
+                                onClick={stopCamera}
                                 className="absolute top-2 right-2"
                             >
                                 <XCircle className="h-4 w-4" />
@@ -168,9 +158,9 @@ export default function ImageUploadStage({ professionalId, onClose }: ImageUploa
                     </div>
                 )}
 
-                <Button 
-                    onClick={handleUpload} 
-                    disabled={!selectedFile || isUploading} 
+                <Button
+                    onClick={handleUpload}
+                    disabled={!selectedFile || isUploading}
                     className="w-full mt-6"
                 >
                     {isUploading ? "Enviando..." : <><UploadCloud className="mr-2 h-4 w-4" /> Enviar Imagem</>}

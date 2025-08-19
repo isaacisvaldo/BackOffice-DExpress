@@ -1,6 +1,6 @@
 // src/services/professional/professional.service.ts
 
-import type { DesiredPosition } from "@/types/types";
+import type { Course, DesiredPosition, ExperienceLevel,Location, Gender, HighestDegree, Language, MaritalStatus, Skill } from "@/types/types";
 import {
   type FilterParams,
   fetchDataWithFilter,
@@ -9,7 +9,39 @@ import {
   deleteData,
 } from "../api-client"; 
 
+export interface ProfessionalSkill {
+  professionalId: string;
+  skillId: string;
+  createdAt: string;
+  updatedAt: string;
+  skill: Skill;
+}
 
+export interface ProfessionalLanguage {
+  professionalId: string;
+  languageId: string;
+  level?: string;
+  language: Language;
+}
+
+export interface ProfessionalCourse {
+  professionalId: string;
+  courseId: string;
+  createdAt: string;
+  updatedAt: string;
+  course: Course;
+}
+interface ProfessionalExperience {
+  id?: string;
+  professionalId?: string;
+  localTrabalho: string;
+  tempo:string;
+  cargo: string;
+  description?: string;
+  startDate: string;
+  endDate?: string;
+  isCurrent?: boolean;
+}
 export interface Professional {
   id: string;
   fullName: string;
@@ -26,22 +58,33 @@ export interface Professional {
   hasTrainingCertificate: boolean;
   locationId: string;
   genderId: string;
-  birthDate: string; 
+  birthDate: string;
   maritalStatusId: string;
   hasChildren: boolean;
   knownDiseases?: string;
   desiredPositionId: string;
-  desiredPosition:DesiredPosition
   expectedSalary: number;
   highestDegreeId: string;
   profileImage?: string;
-  isAvailable:boolean;
-  location:any;
+  isAvailable: boolean;
+
   createdAt: string;
   updatedAt: string;
-  courseIds: string[];
-  languageIds: string[];
-  skillIds: string[];
+
+  desiredPosition?: DesiredPosition;
+  gender?: Gender;
+  location: Location;
+  experienceLevel: ExperienceLevel;
+  maritalStatus: MaritalStatus;
+  highestDegree: HighestDegree;
+
+  // AQUI está a correção: use as interfaces de ligação
+  professionalSkills: ProfessionalSkill[];
+  professionalLanguages: ProfessionalLanguage[];
+  professionalCourses: ProfessionalCourse[];
+
+  ProfessionalExperience: ProfessionalExperience[];
+  contracts: any;
 }
 
 export interface CreateProfessionalDto {
@@ -169,4 +212,17 @@ export async function updateProfessionalAvailability(
 
 export async function deleteProfessional(id: string): Promise<Professional> {
   return deleteData(`/professionals/${id}`);
+}
+
+/**
+ * Atualiza a URL da imagem de perfil de um profissional.
+ * @param id O ID do profissional.
+ * @param imageUrl A nova URL da imagem.
+ * @returns O objeto Professional atualizado.
+ */
+export async function updateProfessionalImageUrl(
+  id: string,
+  imageUrl: string,
+): Promise<Professional> {
+  return sendData(`/professionals/${id}/image-url`, "PATCH", { imageUrl });
 }

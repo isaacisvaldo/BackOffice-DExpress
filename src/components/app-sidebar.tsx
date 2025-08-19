@@ -79,6 +79,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         url: "/shared-data",
         icon: List,
         items: [
+          { title: "Cargos e Posições", url: "/desired-positions/desired-positions" },
           { title: "Idiomas", url: "/shared-data/languages" },
           { title: "Habilidades", url: "/shared-data/skills" },
 
@@ -86,6 +87,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           { title: "Grau Acadêmico", url: "/shared-data/highest-degrees" },
           { title: "Estados Civis", url: "/shared-data/marital-status" },
           { title: "Gêneros", url: "/shared-data/genders" },
+          { title: "Disponibilidade", url: "/disponibility/disponibility" },
+          { title: "Nivel de Experiencia", url: "/experience-levels/experience-levels" },
+          { title: "Setores-empresa", url: "/setor/setor" },
           { title: "Pacotes (planos Empresariais)", url: "/shared-data/package" },
         ],
       },
@@ -104,10 +108,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           { title: "Candidaturas", url: "/rh/applications" },
 
           { title: "Relatórios de RH", url: "/rh/reports" },
-          { title: "Cargos e Posições", url: "/rh/positions" },
-          { title: "Disponibilidade", url: "/rh/disponibilidade" },
-          { title: "Nível de Experiência", url: "/rh/nivel-experiencia" },
-          { title: "Setores-empresa", url: "/rh/sectors" }
+    
         ],
       },
       {
@@ -129,7 +130,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         items: [
           { title: "Projetos", url: "/operacoes/projects" },
           { title: "Gestão de Tarefas", url: "/operacoes/tasks" },
-          { title: "Contratos e Propostas", url: "/operacoes/contracts" },
           { title: "Equipes", url: "/operacoes/teams" },
         ],
       },

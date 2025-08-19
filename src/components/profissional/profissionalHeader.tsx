@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Camera, Calendar, Mail, CheckCircle } from "lucide-react";
 import type { Professional } from "@/services/profissional/profissional.service";
+import { formatDate } from "@/util";
 
 
 interface ProfileHeaderProps {
@@ -59,7 +60,7 @@ export default function ProfessionalHeader({ user }: ProfileHeaderProps) {
               </Badge>
             </div>
            
-            <p className="text-muted-foreground">{user.desiredPosition.label}</p>
+            <p className="text-muted-foreground">{user.desiredPosition?.label}</p>
             <div className="text-muted-foreground flex flex-wrap gap-4 text-sm">
               <div className="flex items-center gap-1">
                 <Mail className="size-4" />
@@ -67,7 +68,7 @@ export default function ProfessionalHeader({ user }: ProfileHeaderProps) {
               </div>
               <div className="flex items-center gap-1">
                 <Calendar className="size-4" />
-                Criado em {new Date(user.createdAt).toLocaleDateString()}
+                Criado em { formatDate(user.createdAt)}
               </div>
             </div>
           </div>
