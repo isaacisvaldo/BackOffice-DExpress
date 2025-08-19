@@ -14,10 +14,18 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import SwirlingEffectSpinner from "@/components/customized/spinner/spinner-06";
-import { Textarea } from "@/components/ui/textarea";
-import { createPackage, deletePackage, getPackages, type CreatePackageDto, type Package, type PaginatedPackagesResponse } from "@/services";
+import {
+  createPackage,
+  deletePackage,
+  getPackages,
+  type CreatePackageDto,
+  type Package,
+  type PaginatedPackagesResponse,
+} from "@/services";
 import { packageColumns } from "@/components/shared";
 import { formatDate } from "@/util";
+import { MinusCircle, PlusCircle } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function PackagesList() {
   const [data, setData] = useState<Package[]>([]);
@@ -35,13 +43,12 @@ export default function PackagesList() {
     name: "",
     description: "",
     employees: 1,
-    hours: 1,
-    cost: 0,
-    percentage: 0,
-    equivalent: 0,
-    baseSalary: 0,
-    totalBalance: 0,
+    price: 0,
+    details: [],
   });
+  
+  // Adiciona o estado para um novo item de 'details' que o usuário está digitando
+  const [newDetailItem, setNewDetailItem] = useState("");
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -62,13 +69,11 @@ export default function PackagesList() {
         search: debouncedNameFilter || undefined,
       });
 
-const mappedData = result.data.map((item) => ({
-  ...item,
- createdAt: formatDate(item.createdAt),
-  updatedAt: formatDate(item.updatedAt),
-}));
-    
-      
+      const mappedData = result.data.map((item) => ({
+        ...item,
+        createdAt: formatDate(item.createdAt),
+        updatedAt: formatDate(item.updatedAt),
+      }));
 
       setData(mappedData);
       setTotalPages(result.totalPages || 1);
@@ -103,8 +108,8 @@ const mappedData = result.data.map((item) => ({
   }, [page, limit, debouncedNameFilter]);
 
   const handleCreatePackage = async () => {
-    if (!newPackage.name.trim()) {
-      toast.error("O nome do pacote não pode ser vazio.");
+    if (!newPackage.name.trim() || newPackage.price <= 0) {
+      toast.error("O nome e o preço do pacote são obrigatórios.");
       return;
     }
 
@@ -117,12 +122,8 @@ const mappedData = result.data.map((item) => ({
         name: "",
         description: "",
         employees: 1,
-        hours: 1,
-        cost: 0,
-        percentage: 0,
-        equivalent: 0,
-        baseSalary: 0,
-        totalBalance: 0,
+        price: 0,
+        details: [],
       });
       fetchData();
     } catch (error: any) {
@@ -135,38 +136,27 @@ const mappedData = result.data.map((item) => ({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
-    
-    // Converte o valor para o tipo correto (número ou string)
-    const newValue = id === 'employees' || id === 'hours' || id === 'cost' || id === 'percentage' || id === 'equivalent' || id === 'baseSalary' || id === 'totalBalance' ? Number(value) : value;
+    const newValue = id === 'price' || id === 'employees' ? Number(value) : value;
+    setNewPackage(prev => ({ ...prev, [id]: newValue }));
+  };
 
-    setNewPackage(prev => {
-      const updatedPackage = { ...prev, [id]: newValue };
+  // Funções para lidar com os itens de 'details'
+  const handleAddDetail = () => {
+    if (newDetailItem.trim() !== "") {
+      setNewPackage(prev => ({ ...prev, details: [...prev.details!, newDetailItem.trim()] }));
+      setNewDetailItem("");
+    }
+  };
 
-      // Lógica de cálculo automático
-      const { employees, hours, equivalent, cost } = updatedPackage;
-
-      // Cálculo do Salário Base
-      updatedPackage.baseSalary = employees * hours * equivalent;
-
-      // Cálculo do Saldo Total
-      updatedPackage.totalBalance = cost - updatedPackage.baseSalary;
-
-      // Cálculo da Percentagem (com verificação para evitar divisão por zero)
-      updatedPackage.percentage = cost > 0 ? (updatedPackage.totalBalance / cost) : 0;
- console.log({ 
-      employees,
-      hours,
-      equivalent,
-      cost,
-      baseSalary: updatedPackage.baseSalary,
-      totalBalance: updatedPackage.totalBalance,
-      percentage: updatedPackage.percentage,
-    });
-      return updatedPackage;
-    });
+  const handleRemoveDetail = (indexToRemove: number) => {
+    setNewPackage(prev => ({
+      ...prev,
+      details: prev.details!.filter((_, index) => index !== indexToRemove)
+    }));
   };
 
   const columns = packageColumns(handleDelete, isDeleting);
+
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-2xl font-bold mb-4">Pacotes de Serviço</h1>
@@ -203,7 +193,7 @@ const mappedData = result.data.map((item) => ({
       </div>
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="sm:max-w-[700px]"> {/* Modal aumentado */}
+        <DialogContent className="sm:max-w-[700px]">
           <DialogHeader>
             <DialogTitle>Cadastrar Novo Pacote</DialogTitle>
             <DialogDescription>
@@ -224,30 +214,43 @@ const mappedData = result.data.map((item) => ({
               <Input id="employees" type="number" value={newPackage.employees} onChange={handleChange} className="col-span-3" min={1} />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="hours" className="text-right">Horas</Label>
-              <Input id="hours" type="number" value={newPackage.hours} onChange={handleChange} className="col-span-3" min={1} />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="equivalent" className="text-right">Salário p/ Func. (Kz/h)</Label>
-              <Input id="equivalent" type="number" value={newPackage.equivalent} onChange={handleChange} className="col-span-3" min={0} step="0.01" />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="cost" className="text-right">Custo Total (Kz)</Label>
-              <Input id="cost" type="number" value={newPackage.cost} onChange={handleChange} className="col-span-3" min={0} step="0.01" />
+              <Label htmlFor="price" className="text-right">Preço (Kz)</Label>
+              <Input id="price" type="number" value={newPackage.price} onChange={handleChange} className="col-span-3" min={0} step="0.01" />
             </div>
             
-            {/* Campos Calculados e Read-only */}
+            {/* Seção de Adição Dinâmica */}
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="baseSalary" className="text-right">Salário Base (Kz)</Label>
-              <Input id="baseSalary" type="number" value={newPackage.baseSalary} readOnly className="col-span-3 bg-gray-100 dark:bg-gray-800 cursor-not-allowed" />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="totalBalance" className="text-right">Saldo Total (Kz)</Label>
-              <Input id="totalBalance" type="number" value={newPackage.totalBalance} readOnly className="col-span-3 bg-gray-100 dark:bg-gray-800 cursor-not-allowed" />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="percentage" className="text-right">Percentagem (%)</Label>
-              <Input id="percentage" type="number" value={(newPackage.percentage * 100).toFixed(2)} readOnly className="col-span-3 bg-gray-100 dark:bg-gray-800 cursor-not-allowed" />
+              <Label htmlFor="details" className="text-right">O que está incluído</Label>
+              <div className="col-span-3 flex flex-col gap-2">
+                {/* Inputs Dinâmicos para os detalhes */}
+                {newPackage.details && newPackage.details.map((item, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <Input value={item} readOnly className="flex-1" />
+                    <Button type="button" variant="ghost" onClick={() => handleRemoveDetail(index)}>
+                      <MinusCircle className="h-4 w-4 text-red-500" />
+                    </Button>
+                  </div>
+                ))}
+
+                {/* Input e Botão para Adicionar */}
+                <div className="flex items-center gap-2">
+                  <Input
+                    placeholder="Adicionar item"
+                    value={newDetailItem}
+                    onChange={(e) => setNewDetailItem(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleAddDetail();
+                      }
+                    }}
+                    className="flex-1"
+                  />
+                  <Button type="button" onClick={handleAddDetail}>
+                    <PlusCircle className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
           <DialogFooter>
