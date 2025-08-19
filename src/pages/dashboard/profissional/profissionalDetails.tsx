@@ -12,7 +12,6 @@ export default  function ProfessionaDetails() {
     const [profissional, setProfissional] = useState<Professional | null>(null)
     const [loading, setLoading] = useState(true);
 
-
     const fetchData = async () => {
         if (!id) return;
         setLoading(true);
@@ -21,17 +20,27 @@ export default  function ProfessionaDetails() {
             setProfissional(profissional)
         } catch (error) {
             setLoading(false);
-                setProfissional(null)
+            setProfissional(null)
             toast.error("Erro ao carregar dados da candidatura");
             console.error(error);
         }finally {
-        setLoading(false);
-    }
+            setLoading(false);
+        }
     };
-    useEffect(() => {
 
+    // Nova função para lidar com a atualização da imagem
+    const handleImageUpdated = (newImageUrl: string) => {
+      if (profissional) {
+        // Atualiza apenas a URL da imagem no estado do profissional
+        setProfissional({ ...profissional, profileImage: newImageUrl });
+        toast.success("Foto de perfil atualizada com sucesso!");
+      }
+    };
+
+    useEffect(() => {
         fetchData();
     }, [id]);
+
     if (loading) {
         return (
            <div className="flex justify-center items-center py-10">
@@ -55,13 +64,11 @@ export default  function ProfessionaDetails() {
         <div className="flex flex-1 flex-col">
             <div className="@container/main flex flex-1 flex-col gap-2">
                 <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-                    {/* ✅ Passa o objeto 'user' diretamente para os componentes filhos */}
-        <ProfessionalHeader user={profissional} />
-        <ProfessionalContent professional={profissional} />
-        
+                    {/* ✅ Passa o objeto 'user' e a nova função para o componente filho */}
+                    <ProfessionalHeader user={profissional} onImageUpdated={handleImageUpdated} />
+                    <ProfessionalContent professional={profissional} />
                 </div>
             </div>
         </div>
     );
-
 }
