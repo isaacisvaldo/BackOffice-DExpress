@@ -40,11 +40,19 @@ async function apiFetch(
   method?: string,
   showSuccessToastForGet: boolean = false
 ) {
+  const defaultHeaders: HeadersInit = {
+    'Content-Type': 'application/json',
+  };
+
+  if (options.body instanceof FormData) {
+    delete defaultHeaders['Content-Type'];
+  }
+  
   const defaultOptions: RequestInit = {
     credentials: 'include',
     headers: {
-      'Content-Type': 'application/json',
-      ...(options.headers || {})
+      ...defaultHeaders,
+      ...(options.headers || {}),
     },
     ...options
   };
@@ -53,7 +61,6 @@ async function apiFetch(
   await handleResponse(response, successMessage, method, showSuccessToastForGet);
   return response;
 }
-
 export async function fetchDataWithFilter<T extends FilterParams>(
   endpoint: string,
   params: T = {} as T,
@@ -118,11 +125,14 @@ export async function deleteData(endpoint: string,successMessage="Recurso removi
 }
 
 // --- NOVA FUNÇÃO DE UPLOAD DE ARQUIVO ---
+export interface FileUploadResponse {
+  url: string;
+}
 export async function uploadFile(
   endpoint: string,
   file: File,
   successMessage = "Arquivo enviado com sucesso!"
-) {
+): Promise<FileUploadResponse> {
   const formData = new FormData();
   formData.append('file', file); 
 
