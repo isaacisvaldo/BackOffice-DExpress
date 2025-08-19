@@ -45,10 +45,10 @@ export default function ImageUploadStage({ professionalId, onClose }: ImageUploa
 
         setIsUploading(true);
         try {
-            const url = await uploadFile('/upload', selectedFile);
-            if (!url) return
+            const data = await uploadFile('/upload', selectedFile);
+            if (!data) return
             // Atuaizar o dado do profissional !
-            await updateProfessionalImageUrl(professionalId, url)
+            await updateProfessionalImageUrl(professionalId, data.url)
             toast.success("Imagem enviada com sucesso!");
             onClose();
             navigate(`/rh/professional/${professionalId}/details`);
