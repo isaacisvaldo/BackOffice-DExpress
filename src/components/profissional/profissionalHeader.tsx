@@ -26,6 +26,14 @@ export default function ProfessionalHeader({ user, onImageUpdated }: ProfileHead
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
+
+    if (file && !file.type.startsWith('image/')) {
+      toast.error("Por favor, selecione um arquivo de imagem válido (ex: .jpg, .png).");
+      setSelectedFile(null);
+      setPreviewUrl(null);
+      return;
+    }
+
     if (file) {
       setSelectedFile(file);
       setPreviewUrl(URL.createObjectURL(file));
@@ -41,13 +49,10 @@ export default function ProfessionalHeader({ user, onImageUpdated }: ProfileHead
     setIsUploading(true);
 
     try {
-    
       const data = await uploadFile('/upload', selectedFile);
       if (data && data.url) {
-    
         await updateProfessionalImageUrl(user.id, data.url);
         onImageUpdated(data.url);
-        
         toast.success("Foto de perfil atualizada com sucesso!");
         console.log("Upload de foto concluído. A nova URL é:", data.url);
       } else {
@@ -139,6 +144,7 @@ export default function ProfessionalHeader({ user, onImageUpdated }: ProfileHead
             <input 
               type="file" 
               className="file:rounded-md file:border-0 file:bg-blue-500 file:text-white file:px-4 file:py-2 hover:file:bg-blue-600"
+              // Adiciona o atributo 'accept' para restringir a seleção a imagens
               accept="image/*"
               onChange={handleFileChange}
             />
