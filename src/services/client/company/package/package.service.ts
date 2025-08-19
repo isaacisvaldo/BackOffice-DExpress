@@ -18,15 +18,12 @@ export interface Package {
   name: string;
   description?: string;
   employees: number;
-  hours: number;
-  cost: number;
-  percentage: number;
-  equivalent: number;
-  baseSalary: number;
-  totalBalance: number;
+  price: number;
   isActive: boolean;
+  isPopular: boolean;
   createdAt: string;
   updatedAt: string;
+  details?: string[];
 }
 
 /**
@@ -49,12 +46,9 @@ export interface CreatePackageDto {
   name: string;
   description?: string;
   employees: number;
-  hours: number;
-  cost: number;
-  percentage: number;
-  equivalent: number;
-  baseSalary: number;
-  totalBalance: number;
+  price: number;
+  isActive?: boolean;
+  details?: string[];
 }
 
 /**
@@ -64,13 +58,9 @@ export interface UpdatePackageDto {
   name?: string;
   description?: string;
   employees?: number;
-  hours?: number;
-  cost?: number;
-  percentage?: number;
-  equivalent?: number;
-  baseSalary?: number;
-  totalBalance?: number;
+  price?: number;
   isActive?: boolean;
+  details?: string[];
 }
 
 // --- Parâmetros de Filtro ---
