@@ -48,9 +48,8 @@ export default function ServiceRequestList() {
             nif:item.requesterType === UserType.INDIVIDUAL ? item.individualIdentityNumber: item.companyNif,
             status: item.status,
             description: item.description,
-            createdAt: formatDate(item.createdAt),
-            startDate: item.startDate,
-            endDate: item.endDate,
+            serviceFrequency:item.serviceFrequency,
+            createdAt:formatDate(item.createdAt)
           })
         );
         setRequests(mappedData);
