@@ -1,19 +1,24 @@
+// src/contexts/AuthContext.tsx
+
 import { createContext, useContext, useEffect, useState } from "react";
 import { isAuthenticated, login as loginAPI, logout as logoutAPI } from "@/services/auth/authService";
-import { useLocation } from "react-router-dom"; // Importa useLocation
+import { useLocation } from "react-router-dom"; 
 
 interface User {
   id: string;
   name: string;
   email: string;
   role: string;
+  avatar?: string;
   permissions: string[];
+
 }
 
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  updateProfileImage: (newImageUrl: string) => void; // Adicione esta linha
   isLoading: boolean;
   isLoggedIn: boolean;
 }
@@ -31,7 +36,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setisLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   
-  // Obtém o caminho da URL atual
   const location = useLocation();
   const { pathname } = location;
 
@@ -55,7 +59,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     }
     
-    // Condição para não executar a verificação nas rotas de login
     if (pathname === '/login' || pathname === '/') {
         setisLoading(false);
         setUser(null);
@@ -63,7 +66,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } else {
         checkAuth();
     }
-  }, [pathname]); // Adiciona pathname como dependência para re-executar quando a rota muda
+  }, [pathname]);
 
   async function login(email: string, password: string) {
     const data = await loginAPI(email, password);
@@ -76,10 +79,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
     setIsLoggedIn(false);
   }
+  
+  // Função para atualizar a imagem do perfil no estado do contexto
+   function updateProfileImage(newImageUrl: string) {
+    if (user) {
+      setUser({ ...user, avatar: newImageUrl });
+    }
+  }
 
   return (
     <AuthContext.Provider
-      value={{ user, login, logout, isLoading, isLoggedIn }}
+      value={{ user, login, logout, updateProfileImage, isLoading, isLoggedIn }}
     >
       {children}
     </AuthContext.Provider>
