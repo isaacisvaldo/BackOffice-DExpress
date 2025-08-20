@@ -30,7 +30,7 @@ interface CompanyClient { id: string; companyName: string; }
 interface IndividualClient { id: string; fullName: string; }
 interface Package { id: string; name: string; expectedSalary: number; }
 interface Professional { id: string; fullName: string; }
-interface Location { id: string; name: string; }
+
 interface DesiredPosition { id: string; name: string; }
 
 const mockFetchDropdownData = async () => {
@@ -53,11 +53,7 @@ const mockFetchDropdownData = async () => {
       { id: 'prof2', fullName: 'Sofia Ramos' },
       { id: 'prof3', fullName: 'Bruno Costa' },
     ],
-    locations: [
-      { id: 'loc1', name: 'Lisboa' },
-      { id: 'loc2', name: 'Porto' },
-      { id: 'loc3', name: 'Faro' },
-    ],
+ 
     desiredPositions: [
       { id: 'pos1', name: 'Desenvolvedor' },
       { id: 'pos2', name: 'Gerente de Projetos' },
@@ -91,7 +87,7 @@ export default function ContractsListAndCreation() {
   const [individualClients, setIndividualClients] = useState<IndividualClient[]>([]);
   const [packages, setPackages] = useState<Package[]>([]);
   const [professionals, setProfessionals] = useState<Professional[]>([]);
-  const [locations, setLocations] = useState<Location[]>([]);
+
   const [desiredPositions, setDesiredPositions] = useState<DesiredPosition[]>([]);
   const fetchData = async () => {
     setLoading(true);
@@ -106,7 +102,7 @@ export default function ContractsListAndCreation() {
       setIndividualClients(dropdownData.individualClients);
       setPackages(dropdownData.packages);
       setProfessionals(dropdownData.professionals);
-      setLocations(dropdownData.locations);
+    
       setDesiredPositions(dropdownData.desiredPositions);
     } catch (error: any) {
       console.error("Erro ao carregar dados", error);
@@ -175,6 +171,7 @@ export default function ContractsListAndCreation() {
         )}
       </div>
 
+ 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -203,7 +200,7 @@ export default function ContractsListAndCreation() {
                     locationId: '',
                   });
                 }}>
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="Selecione o tipo" />
                   </SelectTrigger>
                   <SelectContent>
@@ -226,12 +223,12 @@ export default function ContractsListAndCreation() {
             </div>
       
             {/* Bloco de campos para Pessoa Singular */}
-            {contractType === 'individual' && (
+            {contractType === 'individual' ? (
               <>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="individualClientId" className="text-right">Pessoa Singular</Label>
                   <Select value={newContract.individualClientId} onValueChange={(value) => setNewContract(prev => ({ ...prev, individualClientId: value }))}>
-                    <SelectTrigger className="col-span-3">
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Selecione a pessoa" />
                     </SelectTrigger>
                     <SelectContent>
@@ -243,7 +240,7 @@ export default function ContractsListAndCreation() {
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="desiredPositionId" className="text-right">Posição Desejada</Label>
                   <Select value={newContract.desiredPositionId} onValueChange={(value) => setNewContract(prev => ({ ...prev, desiredPositionId: value }))}>
-                    <SelectTrigger className="col-span-3">
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Selecione a posição" />
                     </SelectTrigger>
                     <SelectContent>
@@ -254,7 +251,7 @@ export default function ContractsListAndCreation() {
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="professionalId" className="text-right">Profissional</Label>
                   <Select value={newContract.professionalId} onValueChange={(value) => setNewContract(prev => ({ ...prev, professionalId: value }))}>
-                    <SelectTrigger className="col-span-3">
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Selecione o profissional" />
                     </SelectTrigger>
                     <SelectContent>
@@ -263,15 +260,12 @@ export default function ContractsListAndCreation() {
                   </Select>
                 </div>
               </>
-            )}
-
-            {/* Bloco de campos para Empresa */}
-            {contractType === 'company' && (
+            ) : (
               <>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="companyClientId" className="text-right">Empresa</Label>
                   <Select value={newContract.companyClientId} onValueChange={(value) => setNewContract(prev => ({ ...prev, companyClientId: value }))}>
-                    <SelectTrigger className="col-span-3">
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Selecione a empresa" />
                     </SelectTrigger>
                     <SelectContent>
@@ -292,7 +286,7 @@ export default function ContractsListAndCreation() {
                       }));
                     }
                   }}>
-                    <SelectTrigger className="col-span-3">
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Selecione o pacote" />
                     </SelectTrigger>
                     <SelectContent>
@@ -307,6 +301,7 @@ export default function ContractsListAndCreation() {
                       options={professionals.map(p => ({ value: p.id, label: p.fullName }))}
                       selectedValues={newContract.professionalIds || []}
                       onSelectChange={(selected: string[]) => setNewContract(prev => ({ ...prev, professionalIds: selected }))}
+                    
                     />
                   </div>
                 </div>
@@ -314,16 +309,10 @@ export default function ContractsListAndCreation() {
             )}
 
             {/* Campo de Localização */}
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="locationId" className="text-right">Localização</Label>
-              <Select value={newContract.locationId} onValueChange={(value) => setNewContract(prev => ({ ...prev, locationId: value }))}>
-                <SelectTrigger className="col-span-3">
-                  <SelectValue placeholder="Selecione a localização" />
-                </SelectTrigger>
-                <SelectContent>
-                  {locations.map(l => <SelectItem key={l.id} value={l.id}>{l.name}</SelectItem>)}
-                </SelectContent>
-              </Select>
+          
+             <div className="grid grid-cols-4 items-center gap-4">
+           <Label htmlFor="locationId" className="text-right">Localização</Label>
+              <Input id="locationId" value={newContract.title} placeholder="Luanda - Maianga"  disabled className="col-span-3" />
             </div>
             
             {/* Campos de Data, Frequência e Valor */}
@@ -366,7 +355,7 @@ export default function ContractsListAndCreation() {
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="status" className="text-right">Status</Label>
               <Select value={newContract.status} onValueChange={(value) => setNewContract(prev => ({ ...prev, status: value }))}>
-                <SelectTrigger className="col-span-3">
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Selecione o status" />
                 </SelectTrigger>
                 <SelectContent>
