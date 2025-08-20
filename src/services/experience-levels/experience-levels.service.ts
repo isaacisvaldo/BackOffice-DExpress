@@ -4,7 +4,6 @@ interface GetExperienceLevelParams extends FilterParams {
   name?: string
   label?: string
 }
-
 export interface ExperienceLevel {
   id: string
   name: string
@@ -47,10 +46,6 @@ export interface CreateExperienceLevelDto {
 export async function createExperienceLevel(data: CreateExperienceLevelDto): Promise<ExperienceLevel> {
   return sendData("/experience-levels", "POST", data)
 }
-
-/**
- * Atualizar
- */
 export interface UpdateExperienceLevelDto {
   name?: string
   label?: string
@@ -59,9 +54,7 @@ export async function updateExperienceLevel(id: string, data: UpdateExperienceLe
   return sendData(`/experience-levels/${id}`, "PUT", data)
 }
 
-/**
- * Deletar
- */
+
 export async function deleteExperienceLevel(id: string): Promise<void> {
   return deleteData(`/experience-levels/${id}`)
 }
