@@ -32,9 +32,9 @@ import UserClientList from "./pages/dashboard/user-client/UserClientList"
 import ClientCompanyProfileList from "./pages/dashboard/user-client/company/ClientCompanyList"
 import ClientList from "./pages/dashboard/user-client/ClientList"
 import PackagesList from "./pages/dashboard/user-client/company/package/PackageList"
-import ContractsListAndCreation from "./pages/dashboard/service/ContractsListAndCreation"
+import ContractsListAndCreation from "./pages/dashboard/contract/ContractsListAndCreation"
 import DashboardFinancial from "./pages/dashboard/finance/DasboardFinancial"
-import ServiceRequestList from "./pages/dashboard/service/ServiceRequestList"
+import ServiceRequestList from "./pages/dashboard/contract/ServiceRequestList"
 import NotificationList from "./pages/dashboard/notifications/notificationList"
 
 // 🔹 Rota protegida

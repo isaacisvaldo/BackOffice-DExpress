@@ -77,7 +77,7 @@ export function SectionCards() {
       footerIcon: IconTrendingUp
     },
     {
-      title: "Solicitações Canceladas",
+      title: "Solicitações de Seriços Canceladas",
       value: dashboardData.cancellations,
       badgeText: "-3.5%",
       badgeIcon: IconTrendingDown,

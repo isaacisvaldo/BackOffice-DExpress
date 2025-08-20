@@ -1,13 +1,13 @@
 // src/services/professional/professional.service.ts
 
-import type { Course, DesiredPosition, ExperienceLevel,Location, Gender, HighestDegree, Language, MaritalStatus, Skill } from "@/types/types";
+import type { Course, DesiredPosition, ExperienceLevel, Location, Gender, HighestDegree, Language, MaritalStatus, Skill } from "@/types/types";
 import {
   type FilterParams,
   fetchDataWithFilter,
   fetchData,
   sendData,
   deleteData,
-} from "../api-client"; 
+} from "../api-client";
 
 export interface ProfessionalSkill {
   professionalId: string;
@@ -35,7 +35,7 @@ interface ProfessionalExperience {
   id?: string;
   professionalId?: string;
   localTrabalho: string;
-  tempo:string;
+  tempo: string;
   cargo: string;
   description?: string;
   startDate: string;
@@ -86,7 +86,15 @@ export interface Professional {
   ProfessionalExperience: ProfessionalExperience[];
   contracts: any;
 }
+export interface CreateProfessionalExperienceDto {
+  localTrabalho: string ;
+  cargo: string;
+  tempo?: string ;
+  description?: string; // Adicione o '?' aqui
+  startDate?: string ; // Adicione o '?' aqui
 
+  endDate?: string ; // Adicione o '?' aqui
+}
 export interface CreateProfessionalDto {
   fullName: string;
   email: string;
@@ -182,6 +190,13 @@ export async function createProfessional(
   return sendData("/professionals", "POST", data);
 }
 
+export async function addExperienceToProfessional(
+  data: CreateProfessionalExperienceDto,
+  id: string
+): Promise<Professional> {
+  return sendData(`/professionals/${id}experiences`, "POST", data);
+}
+
 export async function getProfessionals(
   params: FilterProfessionalDto = {},
 ): Promise<PaginatedProfessionalsResponse> {
@@ -207,7 +222,7 @@ export async function updateProfessionalAvailability(
   id: string,
   isAvailable: boolean,
 ): Promise<Professional> {
-  return sendData(`/professionals/${id}/availability/${isAvailable}`, "PATCH", { });
+  return sendData(`/professionals/${id}/availability/${isAvailable}`, "PATCH", {});
 }
 
 export async function deleteProfessional(id: string): Promise<Professional> {
@@ -225,4 +240,17 @@ export async function updateProfessionalImageUrl(
   imageUrl: string,
 ): Promise<Professional> {
   return sendData(`/professionals/${id}/image-url`, "PATCH", { imageUrl });
+}
+
+/**
+ * Remove uma experiência de um profissional.
+ * @param professionalId O ID do profissional.
+ * @param experienceId O ID da experiência a ser removida.
+ * @returns O objeto da experiência removida.
+ */
+export async function removeExperienceFromProfessional(
+  professionalId: string,
+  experienceId: string,
+): Promise<ProfessionalExperience> {
+  return deleteData(`/professionals/${professionalId}/experiences/${experienceId}`);
 }
