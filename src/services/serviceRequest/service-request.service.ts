@@ -1,4 +1,5 @@
 
+
 import {
   type FilterParams,
   fetchDataWithFilter,
@@ -18,8 +19,6 @@ export const UserType = {
 
 export type UserType = typeof UserType[keyof typeof UserType];
 
-
-
 export const StatusRequest = {
   PENDING: 'PENDING',
   IN_REVIEW: 'IN_REVIEW',
@@ -28,6 +27,17 @@ export const StatusRequest = {
   COMPLETED: 'COMPLETED',
   REJECTED: 'REJECTED',
 } as const;
+export const ServiceFrequency = {
+    MONTHLY: 'MONTHLY',
+    BIMONTHLY: 'BIMONTHLY',
+    QUARTERLY: 'QUARTERLY',
+    SEMIANNUALLY: 'SEMIANNUALLY',
+    ANNUALLY: 'ANNUALLY',
+    BIENNIALLY: 'BIENNIALLY',
+} as const;
+
+// Extrair os tipos do objeto
+export type ServiceFrequency = typeof ServiceFrequency[keyof typeof ServiceFrequency];
 
 export type StatusRequest = typeof StatusRequest[keyof typeof StatusRequest];
 
@@ -46,8 +56,7 @@ export interface ServiceRequest {
   companyDistrictId?: string;
   companySectorId?: string;
   description: string;
-  startDate: string;
-  endDate: string;
+serviceFrequency:ServiceFrequency 
   createdAt: string;
   status: StatusRequest;
   planId?: string;

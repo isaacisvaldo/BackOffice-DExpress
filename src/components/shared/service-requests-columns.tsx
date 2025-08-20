@@ -23,48 +23,77 @@ import {
 import { ArrowUpDown, MoreHorizontal, Trash2, InfoIcon } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Link } from "react-router-dom";
+import { Badge } from "../ui/badge";
 
-import { StatusRequest } from "@/services/serviceRequest/service-request.service";
+// Definindo o StatusRequest como um objeto com 'as const'
+export const StatusRequest = {
+    PENDING: 'PENDING',
+    IN_REVIEW: 'IN_REVIEW',
+    PLAN_OFFERED: 'PLAN_OFFERED',
+    CONTRACT_GENERATED: 'CONTRACT_GENERATED',
+    COMPLETED: 'COMPLETED',
+    REJECTED: 'REJECTED',
+} as const;
 
+// Definindo o ServiceFrequency como um objeto com 'as const'
+export const ServiceFrequency = {
+    MONTHLY: 'MONTHLY',
+    BIMONTHLY: 'BIMONTHLY',
+    QUARTERLY: 'QUARTERLY',
+    SEMIANNUALLY: 'SEMIANNUALLY',
+    ANNUALLY: 'ANNUALLY',
+    BIENNIALLY: 'BIENNIALLY',
+} as const;
 
-// Tipo para os dados mapeados para a tabela (o que será exibido)
+// Extrair os tipos do objeto
+export type StatusRequest = typeof StatusRequest[keyof typeof StatusRequest];
+export type ServiceFrequency = typeof ServiceFrequency[keyof typeof ServiceFrequency];
+// Tipo para os dados mapeados para a tabela
 export type MappedServiceRequest = {
     id: string;
     requesterEmail: string;
     requesterType: string;
-    name: string | undefined
-    nif: string | undefined
+    name?: string;
+    nif?: string;
     status: StatusRequest;
     description: string;
-    createdAt:string;
-    startDate: string;
-    endDate: string;
+    serviceFrequency: ServiceFrequency;
 };
 
 
+// Mapeie os valores do enum para rótulos de exibição
+const serviceFrequencyLabels: Record<ServiceFrequency, string> = {
+    [ServiceFrequency.MONTHLY]: "Mensal",
+    [ServiceFrequency.BIMONTHLY]: "Bimestral",
+    [ServiceFrequency.QUARTERLY]: "Trimestral",
+    [ServiceFrequency.SEMIANNUALLY]: "Semestral",
+    [ServiceFrequency.ANNUALLY]: "Anual",
+    [ServiceFrequency.BIENNIALLY]: "Bienal",
+};
+
 // Define as opções de status para o dropdown
-const statusStyles: Record<string, { label: string; className: string }> = {
-    PENDING: {
+const statusStyles: Record<StatusRequest, { label: string; className: string }> = {
+    [StatusRequest.PENDING]: {
         label: "Pendente",
         className: "bg-gray-100 text-gray-800 border border-gray-300",
     },
-    IN_REVIEW: {
+    [StatusRequest.IN_REVIEW]: {
         label: "Em Análise",
         className: "bg-yellow-100 text-yellow-800 border border-yellow-300",
     },
-    PLAN_OFFERED: {
+    [StatusRequest.PLAN_OFFERED]: {
         label: "Plano Oferecido",
         className: "bg-blue-100 text-blue-800 border border-blue-300",
     },
-    CONTRACT_GENERATED: {
+    [StatusRequest.CONTRACT_GENERATED]: {
         label: "Contrato Gerado",
         className: "bg-green-100 text-green-800 border border-green-300",
     },
-    COMPLETED: {
+    [StatusRequest.COMPLETED]: {
         label: "Aprovado",
         className: "bg-green-100 text-green-800 border border-green-300",
     },
-    REJECTED: {
+    [StatusRequest.REJECTED]: {
         label: "Rejeitado",
         className: "bg-red-100 text-red-800 border border-red-300",
     },
@@ -109,7 +138,7 @@ export const serviceRequestColumns = (
                 </Button>
             ),
         },
-          {
+        {
             accessorKey: "nif",
             header: "Nif*",
             cell: ({ row }) => <div className="capitalize">{row.getValue("nif")}</div>,
@@ -117,23 +146,41 @@ export const serviceRequestColumns = (
         {
             accessorKey: "requesterType",
             header: "Tipo",
-            cell: ({ row }) => <div className="capitalize">{row.getValue("requesterType")}</div>,
+            cell: ({ row }) => {
+                const requesterType = row.getValue("requesterType") as string
+                return (
+                    <Badge className="rounded-full border-none bg-gradient-to-r from-sky-500 to-indigo-600 text-white">
+                        {requesterType}
+                    </Badge>
+                );
+            }
         },
         {
             accessorKey: "description",
             header: "Descrição",
             cell: ({ row }) => <div className="truncate max-w-xs">{row.getValue("description")}</div>,
         },
-           {
-            accessorKey: "createdAt",
-            header: "Criado em",
-            cell: ({ row }) => <div className="truncate max-w-xs">{row.getValue("createdAt")}</div>,
+        {
+            accessorKey: "serviceFrequency",
+            header: "Frequência",
+            cell: ({ row }) => {
+                const frequency = row.getValue("serviceFrequency") as ServiceFrequency;
+                return (
+                    <div className="capitalize">
+                        <Badge className="bg-emerald-600/10 dark:bg-emerald-600/20 hover:bg-emerald-600/10 text-emerald-500 shadow-none rounded-full">
+                            <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 mr-2" />  {serviceFrequencyLabels[frequency] || "N/A"}
+                        </Badge>
+
+
+                    </div>
+                );
+            },
         },
         {
             accessorKey: "status",
             header: "Status",
             cell: ({ row }) => {
-                const status = row.getValue("status") as string
+                const status = row.getValue("status") as StatusRequest;
                 const style = statusStyles[status] || {
                     label: status,
                     className: "bg-gray-100 text-gray-800 border border-gray-300",
