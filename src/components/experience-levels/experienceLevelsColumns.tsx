@@ -8,14 +8,12 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import type { ExperienceLevel } from "@/services/experience-levels/experience-levels.service"
 
-export type ExperienceLevel = {
-  id: string
-  name: string
-  description: string
-}
-
-export const experienceLevelColumns: ColumnDef<ExperienceLevel>[] = [
+export const experienceLevelColumns = (actions: {
+  onEdit: (item: ExperienceLevel) => void
+  onDelete: (item: ExperienceLevel) => void
+}): ColumnDef<ExperienceLevel>[] => [
   {
     accessorKey: "name",
     header: ({ column }) => (
@@ -30,7 +28,7 @@ export const experienceLevelColumns: ColumnDef<ExperienceLevel>[] = [
     cell: ({ row }) => <div className="font-medium">{row.getValue("name")}</div>,
   },
   {
-    accessorKey: "description",
+    accessorKey: "label",
     header: ({ column }) => (
       <Button
         variant="ghost"
@@ -40,14 +38,13 @@ export const experienceLevelColumns: ColumnDef<ExperienceLevel>[] = [
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: ({ row }) => <div>{row.getValue("description")}</div>,
+    cell: ({ row }) => <div>{row.getValue("label")}</div>,
   },
   {
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const experienceLevel = row.original
-
+      const item = row.original
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -58,15 +55,8 @@ export const experienceLevelColumns: ColumnDef<ExperienceLevel>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Ações</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => alert(`Ver detalhes de ${experienceLevel.name}`)}>
-              Ver Detalhes
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => alert(`Editar ${experienceLevel.name}`)}>
-              Editar
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => alert(`Excluir ${experienceLevel.name}`)}>
-              Excluir
-            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => actions.onEdit(item)}>Editar</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => actions.onDelete(item)}>Excluir</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       )

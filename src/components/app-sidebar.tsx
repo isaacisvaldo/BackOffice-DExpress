@@ -109,7 +109,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
           { title: "Relatórios de RH", url: "/rh/reports" },
     
-         
         ],
       },
       {
