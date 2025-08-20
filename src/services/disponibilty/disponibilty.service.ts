@@ -51,7 +51,6 @@ export interface UpdateDisponibilityDto {
   label?: string
 }
 export async function updateDisponibility(id: string, data: UpdateDisponibilityDto): Promise<Disponibility> {
-  // se seu backend for PATCH, troque "PUT" por "PATCH"
   return sendData(`/general-availabilities/${id}`, "PUT", data)
 }
 
