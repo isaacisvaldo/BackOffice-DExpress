@@ -15,14 +15,14 @@ export type Disponibility = {
   description: string
 }
 
-export const disponibilityColumns: ColumnDef<Disponibility>[] = [
+export const disponibilityColumns = (actions: {
+  onEdit: (d: Disponibility) => void
+  onDelete: (d: Disponibility) => void
+}): ColumnDef<Disponibility>[] => [
   {
     accessorKey: "name",
     header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
+      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
         Nome
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
@@ -32,10 +32,7 @@ export const disponibilityColumns: ColumnDef<Disponibility>[] = [
   {
     accessorKey: "description",
     header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
+      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
         Descrição
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
@@ -47,7 +44,6 @@ export const disponibilityColumns: ColumnDef<Disponibility>[] = [
     enableHiding: false,
     cell: ({ row }) => {
       const disponibility = row.original
-
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -58,15 +54,8 @@ export const disponibilityColumns: ColumnDef<Disponibility>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Ações</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => alert(`Ver detalhes de ${disponibility.name}`)}>
-              Ver Detalhes
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => alert(`Editar ${disponibility.name}`)}>
-              Editar
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => alert(`Excluir ${disponibility.name}`)}>
-              Excluir
-            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => actions.onEdit(disponibility)}>Editar</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => actions.onDelete(disponibility)}>Excluir</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       )
