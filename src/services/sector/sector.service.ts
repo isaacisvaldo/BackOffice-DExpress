@@ -1,4 +1,4 @@
-import { type FilterParams, fetchDataWithFilter, fetchData, sendData } from "../api-client"
+import { type FilterParams, fetchDataWithFilter, fetchData, sendData, deleteData } from "../api-client"
 
 // Parâmetros de busca
 interface GetSectorParams extends FilterParams {
@@ -46,6 +46,20 @@ export interface CreateSectorDto {
   label: string
 }
 
+export interface UpdateSectorDto {
+  name?: string
+  label?: string
+}
+
+
 export async function createSector(data: CreateSectorDto): Promise<Sector> {
   return sendData("/sectors", "POST", data)
+}
+
+export async function updateSector(id: string, data: UpdateSectorDto): Promise<Sector> {
+  return sendData(`/sectors/${id}`, "PATCH", data)
+}
+
+export async function deleteSector(id: string): Promise<Sector> {
+  return deleteData(`/sectors/${id}`)
 }
