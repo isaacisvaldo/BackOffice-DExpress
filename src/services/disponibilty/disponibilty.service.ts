@@ -2,13 +2,15 @@ import { type FilterParams, fetchDataWithFilter, fetchData, sendData, deleteData
 
 interface GetDisponibilityParams extends FilterParams {
   name?: string
-  description?: string
+  label?: string
 }
 
 export interface Disponibility {
   id: string
   name: string
-  description: string
+  label: string
+  createdAt?: string
+  updatedAt?: string
 }
 
 export interface PaginatedDisponibilityResponse {
@@ -21,6 +23,7 @@ export interface PaginatedDisponibilityResponse {
 
 /**
  * Lista paginada e filtrada
+ * (mantido o endpoint original)
  */
 export async function getDisponibilities(
   params: GetDisponibilityParams = {},
@@ -28,38 +31,31 @@ export async function getDisponibilities(
   return fetchDataWithFilter("/general-availabilities", params)
 }
 
-/**
- * Lista completa (sem paginação)
- */
+/** Lista completa (sem paginação) */
 export async function getDisponibilitiesList(): Promise<Disponibility[]> {
   return fetchData("/general-availabilities/list")
 }
 
-/**
- * Criar
- */
+/** Criar */
 export interface CreateDisponibilityDto {
   name: string
-  description: string
+  label: string
 }
 export async function createDisponibility(data: CreateDisponibilityDto): Promise<Disponibility> {
   return sendData("/general-availabilities", "POST", data)
 }
 
-/**
- * Atualizar
- */
+/** Atualizar */
 export interface UpdateDisponibilityDto {
   name?: string
-  description?: string
+  label?: string
 }
 export async function updateDisponibility(id: string, data: UpdateDisponibilityDto): Promise<Disponibility> {
-  return sendData(`/general-availabilities/${id}`, "PATCH", data)
+  // se seu backend for PATCH, troque "PUT" por "PATCH"
+  return sendData(`/general-availabilities/${id}`, "PUT", data)
 }
 
-/**
- * Excluir
- */
-export async function deleteDisponibility(id: string): Promise<Disponibility> {
+/** Excluir */
+export async function deleteDisponibility(id: string): Promise<void> {
   return deleteData(`/general-availabilities/${id}`)
 }

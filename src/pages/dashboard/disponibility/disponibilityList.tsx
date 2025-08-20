@@ -1,11 +1,13 @@
+"use client"
+
 import { useEffect, useState } from "react"
 import { DataTable } from "@/components/data-table"
-import { disponibilityColumns, type Disponibility } from "@/components/disponibility/disponibilityColumns"
 import {
   getDisponibilities,
   createDisponibility,
   updateDisponibility,
   deleteDisponibility,
+  type Disponibility,
 } from "@/services/disponibilty/disponibilty.service"
 import { Button } from "@/components/ui/button"
 import {
@@ -27,6 +29,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { disponibilityColumns } from "@/components/disponibility/disponibilityColumns"
 
 export default function DisponibilityList() {
   const [data, setData] = useState<Disponibility[]>([])
@@ -35,28 +38,28 @@ export default function DisponibilityList() {
   const [limit, setLimit] = useState(5)
   const [totalPages, setTotalPages] = useState(1)
 
-  // filtro
+  // filtro (mantido por nome, como estava)
   const [nameFilter, setNameFilter] = useState<string>("")
   const [debouncedNameFilter, setDebouncedNameFilter] = useState<string>("")
 
-  // estados dialog
+  // dialog criar/editar
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState<Disponibility | null>(null)
   const [name, setName] = useState("")
-  const [description, setDescription] = useState("")
+  const [label, setLabel] = useState("")
   const [saving, setSaving] = useState(false)
 
   // excluir
-  const [deleting, setDeleting] = useState(false)
   const [deletingItem, setDeletingItem] = useState<Disponibility | null>(null)
+  const [deleting, setDeleting] = useState(false)
 
-  // debounce
+  // debounce filtro
   useEffect(() => {
-    const timer = setTimeout(() => setDebouncedNameFilter(nameFilter), 500)
-    return () => clearTimeout(timer)
+    const t = setTimeout(() => setDebouncedNameFilter(nameFilter), 500)
+    return () => clearTimeout(t)
   }, [nameFilter])
 
-  // chamada API
+  // fetch
   async function fetchData() {
     setLoading(true)
     try {
@@ -65,15 +68,10 @@ export default function DisponibilityList() {
         limit: limit === 0 ? undefined : limit,
         name: debouncedNameFilter || undefined,
       })
-      const mappedData: Disponibility[] = result.data.map((item: any) => ({
-        id: item.id,
-        name: item.name,
-        description: item.description,
-      }))
-      setData(mappedData)
+      setData(result.data) // já vem com { id, name, label }
       setTotalPages(result.totalPages || 1)
-    } catch (error) {
-      console.error("Erro ao carregar disponibilidades", error)
+    } catch (e) {
+      console.error("Erro ao carregar disponibilidades", e)
     } finally {
       setLoading(false)
     }
@@ -83,50 +81,50 @@ export default function DisponibilityList() {
     fetchData()
   }, [page, limit, debouncedNameFilter])
 
-  // abrir novo
+  // abrir criar
   function openCreate() {
     setEditing(null)
     setName("")
-    setDescription("")
+    setLabel("")
     setOpen(true)
   }
 
   // abrir editar
-  function openEdit(d: Disponibility) {
-    setEditing(d)
-    setName(d.name)
-    setDescription(d.description)
+  function openEdit(item: Disponibility) {
+    setEditing(item)
+    setName(item.name ?? "")
+    setLabel(item.label ?? "")
     setOpen(true)
   }
 
-  // salvar
+  // salvar (criar/editar)
   async function handleSave() {
     setSaving(true)
     try {
       if (editing) {
-        await updateDisponibility(editing.id, { name, description })
+        await updateDisponibility(editing.id, { name, label })
       } else {
-        await createDisponibility({ name, description })
+        await createDisponibility({ name, label })
       }
       setOpen(false)
       fetchData()
-    } catch (err) {
-      console.error("Erro ao salvar:", err)
+    } catch (e) {
+      console.error("Erro ao salvar disponibilidade", e)
     } finally {
       setSaving(false)
     }
   }
 
-  // excluir
+  // confirmar excluir
   async function handleDelete() {
     if (!deletingItem) return
     setDeleting(true)
     try {
       await deleteDisponibility(deletingItem.id)
       setDeletingItem(null)
-      fetchData()
-    } catch (err) {
-      console.error("Erro ao excluir:", err)
+      setData((prev) => prev.filter((i) => i.id !== deletingItem.id))
+    } catch (e) {
+      console.error("Erro ao excluir disponibilidade", e)
     } finally {
       setDeleting(false)
     }
@@ -134,8 +132,8 @@ export default function DisponibilityList() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Lista de Disponibilidades</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Disponibilidades</h1>
         <Button onClick={openCreate}>Nova Disponibilidade</Button>
       </div>
 
@@ -146,7 +144,7 @@ export default function DisponibilityList() {
           <DataTable
             columns={disponibilityColumns({
               onEdit: openEdit,
-              onDelete: (d) => setDeletingItem(d),
+              onDelete: (item) => setDeletingItem(item),
             })}
             data={data}
             page={page}
@@ -171,23 +169,33 @@ export default function DisponibilityList() {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>
-              {editing ? "Editar Disponibilidade" : "Nova Disponibilidade"}
-            </DialogTitle>
+            <DialogTitle>{editing ? "Editar Disponibilidade" : "Nova Disponibilidade"}</DialogTitle>
           </DialogHeader>
+
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="name" className="text-right">Nome</Label>
-              <Input id="name" value={name} onChange={(e) => setName(e.target.value)} className="col-span-3" />
+              <Input
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="col-span-3"
+              />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="description" className="text-right">Descrição</Label>
-              <Input id="description" value={description} onChange={(e) => setDescription(e.target.value)} className="col-span-3" />
+              <Label htmlFor="label" className="text-right">Label</Label>
+              <Input
+                id="label"
+                value={label}
+                onChange={(e) => setLabel(e.target.value)}
+                className="col-span-3"
+              />
             </div>
           </div>
+
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
-            <Button onClick={handleSave} disabled={saving || !name || !description}>
+            <Button onClick={handleSave} disabled={saving || !name || !label}>
               {saving ? "Salvando..." : "Salvar"}
             </Button>
           </DialogFooter>
@@ -200,7 +208,8 @@ export default function DisponibilityList() {
           <AlertDialogHeader>
             <AlertDialogTitle>Tem certeza?</AlertDialogTitle>
             <AlertDialogDescription>
-              Essa ação não pode ser desfeita. A disponibilidade <b>{deletingItem?.name}</b> será removida.
+              Essa ação não pode ser desfeita. A disponibilidade{" "}
+              <b>{deletingItem?.name}</b> será removida permanentemente.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

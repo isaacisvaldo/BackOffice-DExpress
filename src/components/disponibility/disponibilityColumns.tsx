@@ -8,16 +8,11 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-
-export type Disponibility = {
-  id: string
-  name: string
-  description: string
-}
+import type { Disponibility } from "@/services/disponibilty/disponibilty.service"
 
 export const disponibilityColumns = (actions: {
-  onEdit: (d: Disponibility) => void
-  onDelete: (d: Disponibility) => void
+  onEdit: (item: Disponibility) => void
+  onDelete: (item: Disponibility) => void
 }): ColumnDef<Disponibility>[] => [
   {
     accessorKey: "name",
@@ -30,20 +25,20 @@ export const disponibilityColumns = (actions: {
     cell: ({ row }) => <div className="font-medium">{row.getValue("name")}</div>,
   },
   {
-    accessorKey: "description",
+    accessorKey: "label",
     header: ({ column }) => (
       <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-        Descrição
+        Label
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: ({ row }) => <div>{row.getValue("description")}</div>,
+    cell: ({ row }) => <div>{row.getValue("label")}</div>,
   },
   {
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const disponibility = row.original
+      const item = row.original
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -54,8 +49,8 @@ export const disponibilityColumns = (actions: {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Ações</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => actions.onEdit(disponibility)}>Editar</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => actions.onDelete(disponibility)}>Excluir</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => actions.onEdit(item)}>Editar</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => actions.onDelete(item)}>Excluir</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       )
