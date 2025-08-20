@@ -4,7 +4,6 @@ interface GetDisponibilityParams extends FilterParams {
   name?: string
   label?: string
 }
-
 export interface Disponibility {
   id: string
   name: string
@@ -25,6 +24,7 @@ export interface PaginatedDisponibilityResponse {
  * Lista paginada e filtrada
  * (mantido o endpoint original)
  */
+
 export async function getDisponibilities(
   params: GetDisponibilityParams = {},
 ): Promise<PaginatedDisponibilityResponse> {
