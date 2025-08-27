@@ -1,23 +1,84 @@
+import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { Camera, Calendar, Mail, CheckCircle } from "lucide-react";
+import toast from "react-hot-toast";
 
-import { type AdminUser } from "@/services/admin/admin.service";
+import { type AdminUser, updateAdminImageUrl } from "@/services/admin/admin.service";
+import { uploadFile } from '@/services/api-client';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface ProfileHeaderProps {
   user: AdminUser;
+  onImageUpdated: (newImageUrl: string) => void;
 }
 
-export default function ProfileHeader({ user }: ProfileHeaderProps) {
+export default function ProfileHeader({ user, onImageUpdated }: ProfileHeaderProps) {
+   const { updateProfileImage } = useAuth(); 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const defaultBanner = '/banner.png';
+  const defaultAvatar = '/user.png';
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+
+    if (file && !file.type.startsWith('image/')) {
+      toast.error("Por favor, selecione um arquivo de imagem válido (ex: .jpg, .png).");
+      setSelectedFile(null);
+      setPreviewUrl(null);
+      return;
+    }
+
+    if (file) {
+      setSelectedFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    } else {
+      setSelectedFile(null);
+      setPreviewUrl(null);
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!selectedFile) return;
+
+    setIsUploading(true);
+
+    try {
+      const data = await uploadFile('/upload', selectedFile);
+      if (data && data.url) {
+        await updateAdminImageUrl(user.id, data.url);
+         updateProfileImage(data.url); 
+        onImageUpdated(data.url);
+        toast.success("Foto de perfil atualizada com sucesso!");
+        console.log("Upload de foto concluído. A nova URL é:", data.url);
+      } else {
+        toast.error("Erro: Dados de upload inválidos.");
+        console.error("Erro: Dados de upload inválidos.");
+      }
+    } catch (error) {
+      toast.error("Erro durante o upload da foto.");
+      console.error("Erro durante o upload:", error);
+    } finally {
+      setIsUploading(false);
+      setIsModalOpen(false);
+      setSelectedFile(null);
+      setPreviewUrl(null);
+    }
+  };
+
   return (
     <Card className="overflow-hidden">
-      {/* Container com imagem de fundo, agora preenchendo o Card */}
       <div
         className="relative h-48 rounded-t-lg bg-cover bg-center -mx-6 -mt-6"
         style={{
-          backgroundImage: "url('/banner.png')",
+          backgroundImage: `url(${defaultBanner})`,
         }}
       >
         <div className="absolute inset-0 rounded-t-lg bg-black/40"></div>
@@ -27,20 +88,22 @@ export default function ProfileHeader({ user }: ProfileHeaderProps) {
         <div className="flex flex-col items-start gap-6 md:flex-row md:items-center">
           <div className="relative">
             <Avatar className="h-24 w-24 border-4 border-white">
-              <AvatarImage src="/user.png" alt="Profile" />
+              <AvatarImage src={user.avatar || defaultAvatar} alt="Profile" />
               <AvatarFallback className="text-2xl">
                 {user.name.slice(0, 2).toUpperCase()}
               </AvatarFallback>
             </Avatar>
+            
             <Button
               size="icon"
               variant="outline"
               className="absolute -right-2 -bottom-2 h-8 w-8 rounded-full"
+              onClick={() => setIsModalOpen(true)}
             >
               <Camera />
             </Button>
           </div>
-          {/* ✅ O espaço agora é criado com 'mt-16' no container principal */}
+       
           <div className="flex-1 space-y-2 mt-14">
             <div className="flex flex-col gap-2 md:flex-row md:items-center">
               <h1 className="text-2xl font-bold text-white md:text-black">{user.name}</h1>
@@ -52,7 +115,8 @@ export default function ProfileHeader({ user }: ProfileHeaderProps) {
                
               </Badge>
             </div>
-            <p className="text-muted-foreground " >{user.profile.label}</p>
+           
+            <p className="text-muted-foreground">{user.profile.label}</p>
             <div className="text-muted-foreground flex flex-wrap gap-4 text-sm">
               <div className="flex items-center gap-1">
                 <Mail className="size-4" />
@@ -66,6 +130,40 @@ export default function ProfileHeader({ user }: ProfileHeaderProps) {
           </div>
         </div>
       </CardContent>
+
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Atualizar foto de perfil</DialogTitle>
+            <DialogDescription>
+              Selecione uma nova imagem para seu perfil.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            {previewUrl && (
+              <div className="flex justify-center">
+                <img src={previewUrl} alt="Pré-visualização do perfil" className="w-32 h-32 rounded-full object-cover" />
+              </div>
+            )}
+            <input 
+              type="file" 
+              className="file:rounded-md file:border-0 file:bg-blue-500 file:text-white file:px-4 file:py-2 hover:file:bg-blue-600"
+              accept="image/*"
+              onChange={handleFileChange}
+            />
+          </div>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button type="button" variant="ghost" disabled={isUploading}>
+                Cancelar
+              </Button>
+            </DialogClose>
+            <Button type="submit" disabled={!selectedFile || isUploading} onClick={handleUpload}>
+              {isUploading ? "Enviando..." : "Salvar Foto"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }

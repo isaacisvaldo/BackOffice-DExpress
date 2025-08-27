@@ -1,14 +1,15 @@
-import { type FilterParams, fetchDataWithFilter, fetchData, sendData } from "../api-client"
+import { type FilterParams, fetchDataWithFilter, fetchData, sendData, deleteData } from "../api-client"
 
 interface GetExperienceLevelParams extends FilterParams {
   name?: string
-  description?: string
+  label?: string
 }
-
 export interface ExperienceLevel {
   id: string
   name: string
-  description: string
+  label: string
+  createdAt?: string
+  updatedAt?: string
 }
 
 export interface PaginatedExperienceLevelResponse {
@@ -36,13 +37,24 @@ export async function getExperienceLevelsList(): Promise<ExperienceLevel[]> {
 }
 
 /**
- * Criar Experience Level
+ * Criar
  */
 export interface CreateExperienceLevelDto {
   name: string
-  description: string
+  label: string
 }
-
 export async function createExperienceLevel(data: CreateExperienceLevelDto): Promise<ExperienceLevel> {
   return sendData("/experience-levels", "POST", data)
+}
+export interface UpdateExperienceLevelDto {
+  name?: string
+  label?: string
+}
+export async function updateExperienceLevel(id: string, data: UpdateExperienceLevelDto): Promise<ExperienceLevel> {
+  return sendData(`/experience-levels/${id}`, "PUT", data)
+}
+
+
+export async function deleteExperienceLevel(id: string): Promise<void> {
+  return deleteData(`/experience-levels/${id}`)
 }

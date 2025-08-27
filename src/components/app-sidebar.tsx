@@ -34,11 +34,13 @@ import { NavContratacoes } from "./nav-contratacoes"
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const logoUrl = import.meta.env.VITE_LOGO_URL || "/logo.png"
   const { user } = useAuth()
+
+  
   const data = {
     user: {
       name: user?.name || 'Usuário',
       email: user?.email || '',
-      avatar: "/user.png",
+      avatar: user?.avatar ||"/user.png",
     },
     dashboard: [
       {

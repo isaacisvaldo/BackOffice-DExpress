@@ -15,7 +15,8 @@ import { Badge } from "../ui/badge"
 
 export const packageColumns = (
   onDelete: (id: string) => void,
-  isDeleting: boolean
+  isDeleting: boolean,
+  onEdit: (pkg: Package) => void // <-- Adicione a nova propriedade aqui
 ): ColumnDef<Package>[] => [
   {
     accessorKey: "name",
@@ -29,7 +30,7 @@ export const packageColumns = (
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: ({ row }) => <div className="text-center font-medium">{row.getValue("name")}</div>, // Adicionado para centralizar o conteúdo
+    cell: ({ row }) => <div className="text-center font-medium">{row.getValue("name")}</div>,
   },
   {
     accessorKey: "price",
@@ -102,7 +103,7 @@ export const packageColumns = (
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Ações</DropdownMenuLabel>
               
-              <DropdownMenuItem onClick={() => alert(`Editar ${pkg.name}`)}>
+              <DropdownMenuItem onClick={() => onEdit(pkg)}>
                 Editar
               </DropdownMenuItem>
               

@@ -78,9 +78,7 @@ export const adminUserColumns = (
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Ações</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => alert(`Ver detalhes de ${admin.name}`)}>
-                Ver Detalhes
-              </DropdownMenuItem>
+           
               <DropdownMenuItem onClick={() => alert(`Editar ${admin.name}`)}>
                 Editar
               </DropdownMenuItem>

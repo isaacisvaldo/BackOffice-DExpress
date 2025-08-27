@@ -18,6 +18,7 @@ import {
   createPackage,
   deletePackage,
   getPackages,
+  updatePackage, // <-- Importar a nova função
   type CreatePackageDto,
   type Package,
   type PaginatedPackagesResponse,
@@ -47,7 +48,8 @@ export default function PackagesList() {
     details: [],
   });
   
-  // Adiciona o estado para um novo item de 'details' que o usuário está digitando
+  // Adiciona o estado para o pacote que está sendo editado
+  const [editingPackage, setEditingPackage] = useState<Package | null>(null); 
   const [newDetailItem, setNewDetailItem] = useState("");
 
   useEffect(() => {
@@ -103,21 +105,24 @@ export default function PackagesList() {
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, [page, limit, debouncedNameFilter]);
+  // Nova função para lidar com a edição
+  const handleEdit = (pkg: Package) => {
+    setEditingPackage(pkg);
+    setNewPackage({
+      name: pkg.name,
+      description: pkg.description,
+      employees: pkg.employees,
+      price: pkg.price,
+      details: pkg.details,
+    });
+    setIsModalOpen(true);
+  };
 
-  const handleCreatePackage = async () => {
-    if (!newPackage.name.trim() || newPackage.price <= 0) {
-      toast.error("O nome e o preço do pacote são obrigatórios.");
-      return;
-    }
-
-    setIsCreating(true);
-    try {
-      await createPackage(newPackage);
-      toast.success("Pacote cadastrado com sucesso!");
-      setIsModalOpen(false);
+  const handleModalOpenChange = (open: boolean) => {
+    setIsModalOpen(open);
+    if (!open) {
+      // Limpa os estados quando o modal é fechado
+      setEditingPackage(null);
       setNewPackage({
         name: "",
         description: "",
@@ -125,10 +130,37 @@ export default function PackagesList() {
         price: 0,
         details: [],
       });
+      setNewDetailItem("");
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [page, limit, debouncedNameFilter]);
+
+  const handleUpsertPackage = async () => {
+    if (!newPackage.name.trim() || newPackage.price <= 0) {
+      toast.error("O nome e o preço do pacote são obrigatórios.");
+      return;
+    }
+
+    setIsCreating(true);
+    try {
+      if (editingPackage) {
+        // Lógica de edição
+        await updatePackage(editingPackage.id, newPackage);
+        toast.success("Pacote atualizado com sucesso!");
+      } else {
+        // Lógica de criação
+        await createPackage(newPackage);
+        toast.success("Pacote cadastrado com sucesso!");
+      }
+
+      handleModalOpenChange(false);
       fetchData();
     } catch (error: any) {
-      console.error("Erro ao cadastrar pacote", error);
-      toast.error(error.message || "Erro ao cadastrar pacote.");
+      console.error("Erro ao salvar pacote", error);
+      toast.error(error.message || "Erro ao salvar pacote.");
     } finally {
       setIsCreating(false);
     }
@@ -140,7 +172,6 @@ export default function PackagesList() {
     setNewPackage(prev => ({ ...prev, [id]: newValue }));
   };
 
-  // Funções para lidar com os itens de 'details'
   const handleAddDetail = () => {
     if (newDetailItem.trim() !== "") {
       setNewPackage(prev => ({ ...prev, details: [...prev.details!, newDetailItem.trim()] }));
@@ -155,14 +186,14 @@ export default function PackagesList() {
     }));
   };
 
-  const columns = packageColumns(handleDelete, isDeleting);
+  const columns = packageColumns(handleDelete, isDeleting, handleEdit);
 
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-2xl font-bold mb-4">Pacotes de Serviço</h1>
 
       <div className="flex justify-end mb-4">
-        <Button onClick={() => setIsModalOpen(true)}>Cadastrar Novo Pacote</Button>
+        <Button onClick={() => handleModalOpenChange(true)}>Cadastrar Novo Pacote</Button>
       </div>
 
       <div className="container mx-auto py-6">
@@ -192,12 +223,12 @@ export default function PackagesList() {
         )}
       </div>
 
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+      <Dialog open={isModalOpen} onOpenChange={handleModalOpenChange}>
         <DialogContent className="sm:max-w-[700px]">
           <DialogHeader>
-            <DialogTitle>Cadastrar Novo Pacote</DialogTitle>
+            <DialogTitle>{editingPackage ? "Editar Pacote" : "Cadastrar Novo Pacote"}</DialogTitle>
             <DialogDescription>
-              Preencha os dados para cadastrar um novo pacote de serviço.
+              {editingPackage ? "Atualize os dados do pacote de serviço." : "Preencha os dados para cadastrar um novo pacote de serviço."}
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto">
@@ -254,11 +285,11 @@ export default function PackagesList() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsModalOpen(false)}>
+            <Button variant="outline" onClick={() => handleModalOpenChange(false)}>
               Cancelar
             </Button>
-            <Button onClick={handleCreatePackage} disabled={isCreating}>
-              {isCreating ? "Cadastrando..." : "Cadastrar"}
+            <Button onClick={handleUpsertPackage} disabled={isCreating}>
+              {isCreating ? (editingPackage ? "Atualizando..." : "Cadastrando...") : (editingPackage ? "Atualizar" : "Cadastrar")}
             </Button>
           </DialogFooter>
         </DialogContent>

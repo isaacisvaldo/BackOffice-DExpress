@@ -55,6 +55,7 @@ export interface AdminUser {
   gender: Gender; // ✅ O campo 'gender' agora é do tipo Gender
   profile: Profile;
   address:string
+  avatar?:string;
   securitySettings?: SecuritySettings;
   notificationSettings?: NotificationSettings;
 }
@@ -154,4 +155,20 @@ export async function deleteAdminUser(id: string): Promise<AdminUser> {
 export async function getCurrentUser(): Promise<AdminUser> {
    return fetchData(`/admin/profile`);
 }
+
+/**
+ * Atualiza a URL da imagem de perfil de um profissional.
+ * @param id O ID do profissional.
+ * @param imageUrl A nova URL da imagem.
+ * @returns O objeto Professional atualizado.
+ */
+export async function updateAdminImageUrl(
+  adminId: string,
+  imageUrl: string,
+): Promise<AdminUser> {
+  return sendData(`/admin/users/${adminId}/profile-image`, "PATCH", { imageUrl });
+}
+
+
+
 

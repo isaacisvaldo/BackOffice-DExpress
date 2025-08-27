@@ -13,18 +13,17 @@ export type Sector = {
   id: string
   name: string
   label: string
-  createdAt:string
+  createdAt: string
 }
 
-export const sectorColumns: ColumnDef<Sector>[] = [
- 
+export const sectorColumns = (actions: {
+  onEdit: (sector: Sector) => void
+  onDelete: (sector: Sector) => void
+}): ColumnDef<Sector>[] => [
   {
     accessorKey: "label",
     header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
+      <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
         Rótulo
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
@@ -32,17 +31,15 @@ export const sectorColumns: ColumnDef<Sector>[] = [
     cell: ({ row }) => <div>{row.getValue("label")}</div>,
   },
   {
-      accessorKey: "createdAt",
-      header: "Criado em",
-        cell: ({ row }) => <div className="font-medium">{row.getValue("createdAt")}</div>,
-       
-    },
+    accessorKey: "createdAt",
+    header: "Criado em",
+    cell: ({ row }) => <div className="font-medium">{row.getValue("createdAt")}</div>,
+  },
   {
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
       const sector = row.original
-
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -53,15 +50,8 @@ export const sectorColumns: ColumnDef<Sector>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Ações</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => alert(`Ver detalhes de ${sector.name}`)}>
-              Ver Detalhes
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => alert(`Editar ${sector.name}`)}>
-              Editar
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => alert(`Excluir ${sector.name}`)}>
-              Excluir
-            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => actions.onEdit(sector)}>Editar</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => actions.onDelete(sector)}>Excluir</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       )

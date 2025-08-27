@@ -82,7 +82,14 @@ import {
 import {
   getCoursesList
 } from '@/services/shared/courses/course.service';
-import { updateProfessional, updateProfessionalAvailability, type Professional } from '@/services/profissional/profissional.service';
+import {
+  updateProfessional,
+  updateProfessionalAvailability,
+  addExperienceToProfessional,
+  removeExperienceFromProfessional,
+  type Professional,
+  type CreateProfessionalExperienceDto
+} from '@/services/profissional/profissional.service';
 
 // Interfaces
 interface SimplifiedItem {
@@ -96,7 +103,7 @@ interface SimplifiedItemExp {
   cargo: string;
   description?: string;
   startDate: string;
-  tempo?: string;
+  tempo?: string | undefined;
   endDate?: string;
 }
 
@@ -195,7 +202,6 @@ export default function ProfessionalContent({
   });
 
   const [isLoading, setIsLoading] = useState(true);
-  
   const [errors, setErrors] = useState < Record < string, string >> ({});
   const [newExperience, setNewExperience] = useState < SimplifiedItemExp > ({
     localTrabalho: '',
@@ -325,8 +331,8 @@ export default function ProfessionalContent({
 
     try {
       // Chama o serviço de atualização com a nova disponibilidade
-      await updateProfessionalAvailability(editedProfessional.id,newAvailability);
-   
+      await updateProfessionalAvailability(editedProfessional.id, newAvailability);
+
     } catch (error) {
       console.error("Erro ao atualizar a disponibilidade:", error);
       toast.error("Falha ao atualizar a disponibilidade. Tentando reverter a alteração...");
@@ -336,7 +342,12 @@ export default function ProfessionalContent({
   };
 
 
+  /**
+   * Adiciona uma nova experiência profissional ao perfil do back-end.
+   * A experiência é validada, enviada à API e, em caso de sucesso, o estado local é atualizado.
+   */
   const handleAddExperience = async () => {
+    // 1. Valida os dados da nova experiência
     const result = experienceSchema.safeParse(newExperience);
     if (!result.success) {
       const newErrors = Object.fromEntries(result.error.issues.map(issue => [issue.path[0], issue.message]));
@@ -346,17 +357,28 @@ export default function ProfessionalContent({
     }
 
     try {
-      // Simulação de adição
+      // 2. O payload já é o objeto 'newExperience' validado
+     const payload: CreateProfessionalExperienceDto = {
+        localTrabalho: result.data.localTrabalho,
+        cargo: result.data.cargo,
+        startDate: result.data.startDate,
+        endDate: result.data.endDate,
+        description: result.data.description,
+        tempo: result.data.tempo,
+      };
+      const response = await addExperienceToProfessional(payload,professional.id);
+
+      // 4. Atualiza o estado local com a nova experiência, incluindo o ID real retornado pela API
       const addedExperience = {
         ...newExperience,
-        id: Math.random().toString(),
-        professionalId: professional.id,
+        id: response.id,
       };
-
       setEditedProfessional(prev => ({
         ...prev,
         professionalExperiences: [...prev.professionalExperiences, addedExperience]
       }));
+
+      // 5. Limpa o formulário de nova experiência e exibe sucesso
       setNewExperience({
         localTrabalho: '',
         cargo: '',
@@ -368,17 +390,31 @@ export default function ProfessionalContent({
       setIsAddingExperience(false);
       toast.success("Experiência profissional adicionada!");
     } catch (error) {
+      console.error("Erro ao adicionar a experiência:", error);
       toast.error("Falha ao adicionar a experiência.");
     }
   };
 
-  const handleDeleteExperience = (idToDelete: string | undefined) => {
+  /**
+   * Remove uma experiência profissional do perfil tanto no back-end quanto no estado local.
+   */
+  const handleDeleteExperience = async (idToDelete: string | undefined) => {
     if (!idToDelete) return;
-    setEditedProfessional(prev => ({
-      ...prev,
-      professionalExperiences: prev.professionalExperiences.filter(exp => exp.id !== idToDelete)
-    }));
-    toast.success("Experiência profissional removida!");
+
+    try {
+      // 1. Chama o serviço para remover a experiência no back-end
+      await removeExperienceFromProfessional(professional.id, idToDelete);
+
+      // 2. Se a remoção for bem-sucedida, atualiza o estado local para refletir a mudança
+      setEditedProfessional(prev => ({
+        ...prev,
+        professionalExperiences: prev.professionalExperiences.filter(exp => exp.id !== idToDelete)
+      }));
+      toast.success("Experiência profissional removida!");
+    } catch (error) {
+      console.error("Erro ao remover a experiência:", error);
+      toast.error("Falha ao remover a experiência.");
+    }
   };
 
   if (isLoading) {
@@ -496,7 +532,7 @@ export default function ProfessionalContent({
         </Card>
       </TabsContent>
 
-     <TabsContent value="habilidades">
+      <TabsContent value="habilidades">
         <Card>
           <CardHeader>
             <CardTitle>Habilidades, Idiomas e Cursos</CardTitle>
