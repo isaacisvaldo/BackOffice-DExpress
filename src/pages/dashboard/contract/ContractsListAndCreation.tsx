@@ -1,3 +1,5 @@
+// contracts/ContractsListAndCreation.tsx
+
 import { useEffect, useState } from "react";
 import { DataTable } from "@/components/data-table";
 import { Button } from "@/components/ui/button";
@@ -21,46 +23,15 @@ import {
   type Contract,
   type CreateContractDto,
 } from "@/services/contract/contract.service";
+
 import { UserType } from "@/services/serviceRequest/service-request.service";
 import { contractsColumns } from "@/components/contract/contract-column";
 import MultiSelectSearch from "@/components/ui/multi-select-search";
-
-
-interface CompanyClient { id: string; companyName: string; }
-interface IndividualClient { id: string; fullName: string; }
-interface Package { id: string; name: string; expectedSalary: number; }
-interface Professional { id: string; fullName: string; }
-
-interface DesiredPosition { id: string; name: string; }
-
-const mockFetchDropdownData = async () => {
-  await new Promise(resolve => setTimeout(resolve, 300));
-  return {
-    companyClients: [
-      { id: 'comp1', companyName: 'Tech Solutions Ltda.' },
-      { id: 'comp2', companyName: 'Global Innovations S.A.' },
-    ],
-    individualClients: [
-      { id: 'indiv1', fullName: 'Ana Paula Silva' },
-      { id: 'indiv2', fullName: 'Carlos Eduardo Souza' },
-    ],
-    packages: [
-      { id: 'pack1', name: 'Pacote Essencial', expectedSalary: 5000 },
-      { id: 'pack2', name: 'Pacote Premium', expectedSalary: 12000 },
-    ],
-    professionals: [
-      { id: 'prof1', fullName: 'Mário Fernandes' },
-      { id: 'prof2', fullName: 'Sofia Ramos' },
-      { id: 'prof3', fullName: 'Bruno Costa' },
-    ],
- 
-    desiredPositions: [
-      { id: 'pos1', name: 'Desenvolvedor' },
-      { id: 'pos2', name: 'Gerente de Projetos' },
-      { id: 'pos3', name: 'Analista de Dados' },
-    ],
-  };
-};
+import type { ClientCompanyProfile } from "@/services/client/company/client-company-profile.service";
+import type { ClientProfile } from "@/services/client/client.service";
+import type { Package } from "@/services";
+import type { Professional } from "@/services/profissional/profissional.service";
+import type { DesiredPosition } from "@/types/types";
 
 export default function ContractsListAndCreation() {
   const [contracts, setContracts] = useState<Contract[]>([]);
@@ -83,27 +54,41 @@ export default function ContractsListAndCreation() {
     status: '',
     locationId: '',
   });
-  const [companyClients, setCompanyClients] = useState<CompanyClient[]>([]);
-  const [individualClients, setIndividualClients] = useState<IndividualClient[]>([]);
+
+  // Estados para os dados dos dropdowns
+  const [companyClients, setCompanyClients] = useState<ClientCompanyProfile[]>([]);
+  const [individualClients, setIndividualClients] = useState<ClientProfile[]>([]);
   const [packages, setPackages] = useState<Package[]>([]);
   const [professionals, setProfessionals] = useState<Professional[]>([]);
-
   const [desiredPositions, setDesiredPositions] = useState<DesiredPosition[]>([]);
+
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [contractsData, dropdownData] = await Promise.all([
+      const [
+        contractsData,
+        companyClientsData,
+        individualClientsData,
+        packagesData,
+        professionalsData,
+        desiredPositionsData
+      ] = await Promise.all([
         getContracts({ page, limit }),
-        mockFetchDropdownData(),
+        fetchCompanyClients(),
+        fetchIndividualClients(),
+        fetchPackages(),
+        fetchProfessionals(),
+        fetchDesiredPositions(),
       ]);
+
       setContracts(contractsData.data);
       setTotalPages(contractsData.totalPages);
-      setCompanyClients(dropdownData.companyClients);
-      setIndividualClients(dropdownData.individualClients);
-      setPackages(dropdownData.packages);
-      setProfessionals(dropdownData.professionals);
-    
-      setDesiredPositions(dropdownData.desiredPositions);
+
+      setCompanyClients(companyClientsData);
+      setIndividualClients(individualClientsData);
+      setPackages(packagesData);
+      setProfessionals(professionalsData);
+      setDesiredPositions(desiredPositionsData);
     } catch (error: any) {
       console.error("Erro ao carregar dados", error);
       toast.error(error.message || "Erro ao carregar dados.");
@@ -171,7 +156,6 @@ export default function ContractsListAndCreation() {
         )}
       </div>
 
- 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -221,7 +205,7 @@ export default function ContractsListAndCreation() {
               <Label htmlFor="description" className="text-right">Descrição</Label>
               <Input id="description" value={newContract.description} onChange={e => setNewContract(prev => ({ ...prev, description: e.target.value }))} className="col-span-3" />
             </div>
-      
+
             {/* Bloco de campos para Pessoa Singular */}
             {contractType === 'individual' ? (
               <>
@@ -301,7 +285,6 @@ export default function ContractsListAndCreation() {
                       options={professionals.map(p => ({ value: p.id, label: p.fullName }))}
                       selectedValues={newContract.professionalIds || []}
                       onSelectChange={(selected: string[]) => setNewContract(prev => ({ ...prev, professionalIds: selected }))}
-                    
                     />
                   </div>
                 </div>
@@ -309,12 +292,11 @@ export default function ContractsListAndCreation() {
             )}
 
             {/* Campo de Localização */}
-          
-             <div className="grid grid-cols-4 items-center gap-4">
-           <Label htmlFor="locationId" className="text-right">Localização</Label>
-              <Input id="locationId" value={newContract.title} placeholder="Luanda - Maianga"  disabled className="col-span-3" />
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="locationId" className="text-right">Localização</Label>
+              <Input id="locationId" value={newContract.title} placeholder="Luanda - Maianga" disabled className="col-span-3" />
             </div>
-            
+
             {/* Campos de Data, Frequência e Valor */}
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="startDate" className="text-right">Data de Início</Label>
@@ -325,12 +307,12 @@ export default function ContractsListAndCreation() {
               <Label htmlFor="endDate" className="text-right">Data de Fim</Label>
               <Input id="endDate" type="date" value={newContract.endDate} onChange={e => setNewContract(prev => ({ ...prev, endDate: e.target.value }))} className="col-span-3" />
             </div>
-            
+
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="serviceFrequency" className="text-right">Frequência do Serviço</Label>
               <Input id="serviceFrequency" value={newContract.serviceFrequency} onChange={e => setNewContract(prev => ({ ...prev, serviceFrequency: e.target.value }))} className="col-span-3" />
             </div>
-            
+
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="agreedValue" className="text-right">Valor Acordado</Label>
               {contractType === 'company' ? (
@@ -366,7 +348,6 @@ export default function ContractsListAndCreation() {
                 </SelectContent>
               </Select>
             </div>
-
           </form>
 
           <DialogFooter>

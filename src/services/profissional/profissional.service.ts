@@ -194,7 +194,7 @@ export async function addExperienceToProfessional(
   data: CreateProfessionalExperienceDto,
   id: string
 ): Promise<Professional> {
-  return sendData(`/professionals/${id}experiences`, "POST", data);
+  return sendData(`/professionals/${id}/experiences`, "POST", data);
 }
 
 export async function getProfessionals(
