@@ -115,7 +115,7 @@ const handleSubmit = async (e: React.FormEvent) => {
       <div className="text-center text-sm">
         Não tem uma conta?{" "}
         <a href="#" className="underline underline-offset-4">
-          Cadastre-se
+        contacte a   equipa de suporte
         </a>
       </div>
     </form>

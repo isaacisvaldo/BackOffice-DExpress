@@ -67,6 +67,10 @@ export async function getClientCompanyProfiles(
 ): Promise<PaginatedClientCompanyProfilesResponse> {
   return fetchDataWithFilter("/client-company-profiles", params);
 }
+export async function fetchCompanyClients(search?: string): Promise<ClientCompanyProfile[]> {
+  const url = search ? `/client-company-profiles/all?search=${encodeURIComponent(search)}` : '/client-company-profiles/all';
+  return fetchData(url);
+}
 
 /**
  * Busca um único perfil de empresa pelo seu ID.

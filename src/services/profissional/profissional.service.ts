@@ -86,6 +86,7 @@ export interface Professional {
   ProfessionalExperience: ProfessionalExperience[];
   contracts: any;
 }
+
 export interface CreateProfessionalExperienceDto {
   localTrabalho: string ;
   cargo: string;
@@ -188,6 +189,9 @@ export async function createProfessional(
   data: CreateProfessionalDto,
 ): Promise<Professional> {
   return sendData("/professionals", "POST", data);
+}
+export async function dropdownProfessionals(): Promise<Professional[]> {
+  return fetchData("/professionals/dropdown");
 }
 
 export async function addExperienceToProfessional(

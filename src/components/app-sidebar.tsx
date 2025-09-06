@@ -106,7 +106,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         icon: BriefcaseBusiness,
         items: [
           { title: "Profissionais", url: "/rh/professionals" },
-          { title: "Vagas", url: "/rh/jobs" },
+         
           { title: "Candidaturas", url: "/rh/applications" },
 
           { title: "Relatórios de RH", url: "/rh/reports" },
@@ -135,6 +135,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           { title: "Equipes", url: "/operacoes/teams" },
         ],
       },
+        
        {
         title: "Finanças",
         url: "/financas",
@@ -144,7 +145,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           { title: "Relatórios Financeiros", url: "/financas/relatorios" },
           { title: "Contas a Pagar", url: "/financas/contas-pagar" },
           { title: "Contas a Receber", url: "/financas/contas-receber" },
-          { title: "Fluxo de Caixa", url: "/financas/fluxo-caixa" }
+          { title: "Fluxo de Caixa", url: "/financas/fluxo-caixa" },
+          { title: "Facturas", url: "/financas/facturas" },
+          { title: "Recibos", url: "/financas/recibos" }
         ],
       },
     ],
