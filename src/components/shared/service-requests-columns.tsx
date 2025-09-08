@@ -208,7 +208,7 @@ export const serviceRequestColumns = (
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Ações</DropdownMenuLabel>
                             <DropdownMenuItem asChild>
-                                <Link to={`/admin/service-requests/${request.id}/details`}>
+                                <Link to={`/service-requests/${request.id}/details`}>
                                     <InfoIcon className="mr-2 h-4 w-4" />
                                     <span>Detalhes</span>
                                 </Link>

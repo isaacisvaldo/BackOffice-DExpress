@@ -36,6 +36,7 @@ import ContractsListAndCreation from "./pages/dashboard/contract/ContractsListAn
 import DashboardFinancial from "./pages/dashboard/finance/DasboardFinancial"
 import ServiceRequestList from "./pages/dashboard/contract/ServiceRequestList"
 import NotificationList from "./pages/dashboard/notifications/notificationList"
+import ServiceRequestDetails from "./pages/dashboard/contract/ServiceRequestDetails"
 
 // 🔹 Rota protegida
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
@@ -123,6 +124,7 @@ export default function App() {
               <Route path="clients/company" element={<ClientCompanyProfileList />} /> 
               <Route path="clients/individual" element={<ClientList />} /> 
               <Route path="contratacoes/solicitacoes" element={<ServiceRequestList />} /> 
+              <Route path="service-requests/:id/details" element={<ServiceRequestDetails />} /> 
             
            <Route path="financas/dashboard" element={<DashboardFinancial />} />
            <Route path="settings/notifications" element={<NotificationList />} />

@@ -14,6 +14,30 @@ import type { District } from "@/types/types";
 import type { ClientProfile } from "../client/client.service";
 import type { ClientCompanyProfile } from "../client/company/client-company-profile.service";
 
+export const ContractStatus = {
+  DRAFT: "DRAFT",
+  PENDING_SIGNATURE: "PENDING_SIGNATURE",
+  EXPIRED: "EXPIRED",
+  ACTIVE: "ACTIVE",
+  TERMINATED: "TERMINATED",
+  CANCELED: "CANCELED",
+  PAUSED: "PAUSED",
+  COMPLETED: "COMPLETED",
+} as const;
+
+export type ContractStatus = (typeof ContractStatus)[keyof typeof ContractStatus];
+
+export const statusLabels: Record<ContractStatus, string> = {
+  [ContractStatus.DRAFT]: "Rascunho",
+  [ContractStatus.PENDING_SIGNATURE]: "Pendente de assinatura",
+  [ContractStatus.EXPIRED]: "Expirado",
+  [ContractStatus.ACTIVE]: "Ativo",
+  [ContractStatus.TERMINATED]: "Terminado",
+  [ContractStatus.CANCELED]: "Cancelado",
+  [ContractStatus.PAUSED]: "Pausado",
+  [ContractStatus.COMPLETED]: "Completo",
+};
+
 
 export interface ContractPackageProfessional {
     professionalId: string;
@@ -26,6 +50,7 @@ export interface ContractPackageProfessional {
 export interface Contract {
     id: string;
     title: string;
+    contractNumber:string
     description: string;
     clientType: UserType;
     startDate: string;
@@ -58,16 +83,21 @@ export interface CreateContractDto {
     clientType: UserType;
     startDate: string;
     endDate: string;
-    serviceFrequency: string;
-    agreedValue: string;
-    status: string;
-    professionalId?: string; 
-    professionalIds?: string[]; 
+    finalValue: number;
+    //serviceFrequency: string;
+    agreedValue: number;
+    //status: string;
+    professionalId?: string;
+    professionalIds?: string[];
     individualClientId?: string;
     companyClientId?: string;
     packageId?: string;
     desiredPositionId?: string;
-    locationId: string;
+    location: {
+        cityId: string;
+        districtId: string;
+        street: string;
+    }
 }
 
 

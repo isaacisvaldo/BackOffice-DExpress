@@ -85,6 +85,11 @@ export async function getClientProfiles(
   return fetchDataWithFilter("/client-profiles", params);
 }
 
+export async function fetchIndividualClients(search?: string): Promise<ClientProfile[]> {
+  const url = search ? `/client-profiles/all?search=${encodeURIComponent(search)}` : '/client-profiles/all';
+  return fetchData(url);
+}
+
 /**
  * Busca um único perfil de cliente pelo seu ID.
  * @param id O ID do perfil do cliente.
