@@ -54,6 +54,7 @@ export default function EmailEditor({
       setLoading(true)
       await sendEmailHtml({ to: recipient, subject, html })
       toast.success("Nota enviada com sucesso!")
+      editorRef.current?.setContent("") 
     } catch {
       toast.error("Erro ao enviar a nota.")
     } finally {

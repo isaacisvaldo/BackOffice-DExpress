@@ -92,7 +92,7 @@ export interface JobApplication {
     experienceLevelId?: string;
     generalAvailabilityId?: string;
     hasChildren: boolean;
-    knownDiseases?: string;
+    knownDiseases?: boolean;
     availabilityDate: string;
     status: JobApplicationStatus;
     createdAt: string;

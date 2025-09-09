@@ -28,8 +28,6 @@ import ProfessionalForm from "../profissional/profissionalForm"
 import type { Professional } from "@/services/profissional/profissional.service"
 import { Link } from "react-router-dom"
 import type { JobApplication } from "@/types/types"
-import { Textarea } from "../ui/textarea"
-
 
 interface ApplicationDetailTabsProps {
   application: JobApplication
@@ -114,11 +112,8 @@ export function ApplicationDetailTabs({
                 </div>
                 <div className="md:col-span-2">
                   <Label className="mb-5">Doenças Conhecidas</Label>
-                  <div className="w-full flex flex-col gap-2">
-
-                    <Textarea id="message" placeholder={application.knownDiseases} />
-                   
-                  </div>
+                  <Input value={application.knownDiseases ? "Sim" : "Não"} disabled />
+                 
 
                 </div>
               </div>

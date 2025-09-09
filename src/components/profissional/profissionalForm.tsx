@@ -27,17 +27,16 @@ import { getMaritalStatusesList } from "@/services/shared/marital-statuses/marit
 import { getExperienceLevelsList } from "@/services/shared/experience-levels/experience-levels.service";
 import { getHighestDegreesList } from "@/services/shared/highest-degrees/highest-degree.service";
 import { getCoursesList } from "@/services/shared/courses/course.service";
-import { getGeneralAvailabilitiesList } from "@/services/shared/general-availabilities/general-availability.service";
 
 import type { JobApplication } from "@/types/types";
-import SwirlingEffectSpinner from "@/components/customized/spinner/spinner-06"; // Importe seu spinner aqui
+import SwirlingEffectSpinner from "@/components/customized/spinner/spinner-06";
 
 const professionalFormSchema = z.object({
   fullName: z.string().min(1, "Nome completo é obrigatório."),
   email: z.string().email("Formato de email inválido."),
   phoneNumber: z.string().min(1, "Telefone é obrigatório."),
   identityNumber: z.string().optional(),
-  availabilityTypeId: z.string().uuid("ID de disponibilidade inválido."),
+
   experienceLevelId: z.string().uuid("ID de nível de experiência inválido."),
   jobApplicationId: z.string().uuid().optional(),
   description: z.string().optional(),
@@ -53,7 +52,7 @@ const professionalFormSchema = z.object({
   birthDate: z.string().date("Data de nascimento inválida."),
   maritalStatusId: z.string().uuid("ID de estado civil inválido."),
   hasChildren: z.boolean(),
-  knownDiseases: z.string().optional(),
+  knownDiseases:z.boolean(),
   desiredPositionId: z.string().uuid("ID de cargo desejado inválido."),
   expectedSalary: z
     .number()
@@ -77,7 +76,6 @@ export default function ProfessionalForm({
 }) {
   const [isLoading, setIsLoading] = useState<boolean>(true); 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [availabilityList, setAvailabilityList] = useState<any[]>([]);
   const [experienceList, setExperienceList] = useState<any[]>([]);
   const [genderList, setGenderList] = useState<any[]>([]);
   const [maritalStatusList, setMaritalStatusList] = useState<any[]>([]);
@@ -92,7 +90,6 @@ export default function ProfessionalForm({
     email: "",
     phoneNumber: "",
     identityNumber: "",
-    availabilityTypeId: "",
     experienceLevelId: "",
     jobApplicationId: "", // Será preenchido
     description: "",
@@ -105,7 +102,7 @@ export default function ProfessionalForm({
     birthDate: "",
     maritalStatusId: "",
     hasChildren: false,
-    knownDiseases: "",
+    knownDiseases: false,
     desiredPositionId: "",
     expectedSalary: 0,
     highestDegreeId: "",
@@ -125,7 +122,6 @@ export default function ProfessionalForm({
       try {
         // Carrega todas as listas de opções em paralelo
         const [
-          availabilities,
           experiences,
           genders,
           maritalStatuses,
@@ -135,7 +131,7 @@ export default function ProfessionalForm({
           languages,
           skills,
         ] = await Promise.all([
-          getGeneralAvailabilitiesList(),
+         
           getExperienceLevelsList(),
           getGendersList(),
           getMaritalStatusesList(),
@@ -146,7 +142,6 @@ export default function ProfessionalForm({
           getSkillsList(),
         ]);
 
-        setAvailabilityList(availabilities);
         setExperienceList(experiences);
         setGenderList(genders);
         setMaritalStatusList(maritalStatuses);
@@ -165,7 +160,7 @@ export default function ProfessionalForm({
             phoneNumber: application.phoneNumber || "",
             identityNumber: application.identityNumber || "",
 
-            availabilityTypeId: application.generalAvailabilityId || "",
+          
             experienceLevelId: application.experienceLevelId || "",
             genderId: application.genderId || "",
             maritalStatusId: application.maritalStatusId || "",
@@ -181,7 +176,7 @@ export default function ProfessionalForm({
             locationId: application.locationId || "",
             birthDate: application.birthDate ? new Date(application.birthDate).toISOString().split('T')[0] : "",
             hasChildren: application.hasChildren ?? false,
-            knownDiseases: application.knownDiseases || "",
+            knownDiseases: application.knownDiseases ?? false,
             expectedSalary: 0, // Não vem da JobApplication
             courseIds: application.courses?.map(c => c.id) || [],
             languageIds: application.languages?.map(l => l.id) || [],
@@ -301,13 +296,7 @@ return (
       />
 
       {/* SELECTS */}
-      <SelectBlock
-        label="Disponibilidade"
-        value={form.availabilityTypeId}
-        onChange={(v) => handleChange("availabilityTypeId", v)}
-        options={availabilityList}
-        error={errors.availabilityTypeId}
-      />
+    
       <SelectBlock
         label="Nível de Experiência"
         value={form.experienceLevelId}
@@ -361,18 +350,12 @@ return (
         error={errors.desiredPositionId}
         options={desiredPositionList}
       />
+      
 
       {/* OUTROS CAMPOS */}
+     
       <div className="gap-2">
-        <Label className="mb-5" htmlFor="knownDiseases">Doenças Conhecidas</Label>
-        <Textarea
-          id="knownDiseases"
-          value={form.knownDiseases || ""}
-          onChange={(e) => handleChange("knownDiseases", e.target.value)}
-        />
-      </div>
-      <div className="gap-2">
-        <Label className="mb-5" htmlFor="description">Descrição</Label>
+        <Label htmlFor="description">Descrição</Label>
         <Textarea
           id="description"
           value={form.description || ""}
@@ -438,10 +421,15 @@ return (
             checked={form.hasChildren}
             onChange={(v) => handleChange("hasChildren", v)}
           />
+            <CheckboxField
+            label="Doenças Conhecidas"
+            checked={form.knownDiseases}
+            onChange={(v) => handleChange("knownDiseases", v)}
+          />
         </div>
       </div>
       <div className="md:col-span-6 space-y-4">
-  <Label className="mb-5  font-semibold text-gray-800" htmlFor="description">Experiência Profissional</Label>
+  <Label className="font-semibold text-gray-800" htmlFor="description">Experiência Profissional</Label>
   
   {application.ProfessionalExperience.map((experience: any, index: any) => (
     <div key={index}> {/* Remove as classes de borda e arredondamento */}
@@ -467,7 +455,7 @@ return (
 }
 
 // ==============================================================================
-// Componentes Reutilizáveis (inalterados, mas necessários para a completude)
+// Componentes Reutilizáveis
 // ==============================================================================
 
 function InputBlock({
@@ -485,7 +473,7 @@ function InputBlock({
 }) {
   return (
     <div className="grid gap-2">
-      <Label className="mb-5">{label}</Label>
+      <Label>{label}</Label>
       <Input
         type={type}
         value={value}
@@ -511,7 +499,7 @@ function SelectBlock({
 }) {
   return (
     <div className="grid gap-2">
-      <Label className="mb-5">{label}</Label>
+      <Label>{label}</Label>
       <Select value={value} onValueChange={onChange}>
         <SelectTrigger className="w-full">
           {/* Mostra o label correspondente ao valor selecionado */}
@@ -550,7 +538,7 @@ function MultiSelectPopover({
 
   return (
     <div className="grid gap-2">
-      <Label className="mb-5">{label}</Label>
+      <Label>{label}</Label>
       <Popover>
         <PopoverTrigger asChild>
           <Button variant="outline" className="w-full justify-between">
@@ -601,7 +589,7 @@ function CheckboxField({
   return (
     <div className="flex items-center gap-2">
       <Checkbox checked={checked} onCheckedChange={onChange} />
-      <Label className="mb-5">{label}</Label>
+      <Label>{label}</Label>
     </div>
   );
 }
