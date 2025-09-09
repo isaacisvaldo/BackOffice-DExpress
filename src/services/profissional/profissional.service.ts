@@ -101,7 +101,6 @@ export interface CreateProfessionalDto {
   email: string;
   phoneNumber: string;
   identityNumber?: string;
-  availabilityTypeId: string;
   experienceLevelId: string;
   applicationId?: string;
   description?: string;
@@ -114,7 +113,7 @@ export interface CreateProfessionalDto {
   birthDate: string;
   maritalStatusId: string;
   hasChildren: boolean;
-  knownDiseases?: string;
+  knownDiseases?: boolean;
   desiredPositionId: string;
   expectedSalary: number;
   highestDegreeId: string;
