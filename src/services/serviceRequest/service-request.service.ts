@@ -7,6 +7,9 @@ import {
   sendData,
   deleteData,
 } from "../api-client";
+import type { Package } from "../client/company/package/package.service";
+import type { Contract } from "../contract/contract.service";
+import type { Professional } from "../profissional/profissional.service";
 
 const API_BASE_PATH = "/service-requests";
 // src/types/types.ts (ou onde você define seus tipos)
@@ -26,6 +29,8 @@ export const StatusRequest = {
   CONTRACT_GENERATED: 'CONTRACT_GENERATED',
   COMPLETED: 'COMPLETED',
   REJECTED: 'REJECTED',
+  APPROVED: 'APPROVED',
+
 } as const;
 export const ServiceFrequency = {
     MONTHLY: 'MONTHLY',
@@ -56,10 +61,12 @@ export interface ServiceRequest {
   companyDistrictId?: string;
   companySectorId?: string;
   description: string;
-serviceFrequency:ServiceFrequency 
+  serviceFrequency:ServiceFrequency 
   createdAt: string;
   status: StatusRequest;
   planId?: string;
+  professional:Professional;
+  package:Package
   professionalId?: string;
   individualClientId?: string;
   companyClientId?: string;
@@ -83,6 +90,32 @@ export interface CreateServiceRequestDto {
   endDate: string;
   planId?: string;
   professionalId?: string;
+}
+interface CreateContractInRequestDto{
+    companyName: string
+  nif: string
+  phone: string
+  fullName: string
+  identityNumber: string
+  title: string
+  description: string
+  clientType: UserType
+  individualClientId?: string
+  companyClientId?: string
+  professionalId?: string
+  professionalIds: string[]
+  packageId?: string
+  desiredPositionId?: string
+  location: { cityId: string; districtId: string; street: string }
+  agreedValue: number
+  discountPercentage: number
+  finalValue: number
+  paymentTerms: string
+  startDate: string
+  endDate: string
+  notes: string
+  status: string
+
 }
 
 export interface UpdateServiceRequestDto {
@@ -150,6 +183,19 @@ export async function updateServiceRequest(
 ): Promise<ServiceRequest> {
   return sendData(`${API_BASE_PATH}/${id}`, "PATCH", data);
 }
+
+export async function updateStatusServiceRequest(id: string, status: StatusRequest) {
+  return sendData(`${API_BASE_PATH}/${id}/status`, "PATCH", { status });
+  
+}
+
+export async function createContractInRequest(
+  id: string,
+  data: CreateContractInRequestDto,
+):Promise<Contract> {
+  return sendData(`${API_BASE_PATH}/${id}/contract`, "POST", data);
+}
+
 
 /**
  * Remove uma solicitação de serviço.
