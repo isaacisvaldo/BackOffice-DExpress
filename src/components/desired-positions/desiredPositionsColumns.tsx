@@ -12,7 +12,7 @@ import {
 export type DesiredPosition = {
   id: string
   name: string
-  description: string
+  label: string
 }
 
 export const desiredPositionColumns: ColumnDef<DesiredPosition>[] = [
@@ -40,7 +40,7 @@ export const desiredPositionColumns: ColumnDef<DesiredPosition>[] = [
         <ArrowUpDown className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: ({ row }) => <div>{row.getValue("description")}</div>,
+    cell: ({ row }) => <div>{row.getValue("label")}</div>,
   },
   {
     id: "actions",

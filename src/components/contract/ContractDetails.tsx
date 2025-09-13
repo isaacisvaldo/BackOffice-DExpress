@@ -1,37 +1,23 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { MapPin, Phone, Mail, Home, Calendar, DollarSign, Clock, FileText } from "lucide-react";
+import {
+  MapPin,
+  Phone,
+  Mail,
+  User,
+  Calendar,
+  DollarSign,
+  FileText,
+ 
+} from "lucide-react";
+import type { MappedContract } from "@/pages/dashboard/contract/ContractView";
+import { UserType } from "@/services/serviceRequest/service-request.service";
+import { formatDate } from "@/util";
 
 interface ContractDetailsProps {
-  contract: {
-    id: string;
-    clientName: string;
-    clientEmail: string;
-    clientPhone: string;
-    address: string;
-    serviceType: string;
-    serviceDetails: string;
-    startDate: string;
-    endDate?: string;
-    monthlyValue: number;
-    rooms: number;
-    frequency: "weekly" | "biweekly" | "monthly";
-    nextServiceDate: string;
-    totalServices: number;
-    completedServices: number;
-    terms?: string;
-  };
+  contract: MappedContract;
 }
 
-const frequencyConfig = {
-  weekly: "Semanal",
-  biweekly: "Quinzenal", 
-  monthly: "Mensal",
-};
-
 export function ContractDetails({ contract }: ContractDetailsProps) {
-  const completionPercentage = Math.round((contract.completedServices / contract.totalServices) * 100);
-
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* Informações do Cliente */}
@@ -42,33 +28,45 @@ export function ContractDetails({ contract }: ContractDetailsProps) {
         <CardContent className="space-y-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-accent rounded-lg">
+              <User className="h-4 w-4 text-accent-foreground" />
+            </div>
+            <div>
+              <p className="text-sm font-medium">Nome</p>
+              <p className="text-sm text-muted-foreground">{contract.client.name}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-accent rounded-lg">
               <Mail className="h-4 w-4 text-accent-foreground" />
             </div>
             <div>
               <p className="text-sm font-medium">Email</p>
-              <p className="text-sm text-muted-foreground">{contract.clientEmail}</p>
+              <p className="text-sm text-muted-foreground">{contract.client.email}</p>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-3">
             <div className="p-2 bg-accent rounded-lg">
               <Phone className="h-4 w-4 text-accent-foreground" />
             </div>
             <div>
               <p className="text-sm font-medium">Telefone</p>
-              <p className="text-sm text-muted-foreground">{contract.clientPhone}</p>
+              <p className="text-sm text-muted-foreground">{contract.client.phoneNumber}</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-accent rounded-lg">
-              <MapPin className="h-4 w-4 text-accent-foreground" />
+          {contract.client.address && (
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-accent rounded-lg">
+                <MapPin className="h-4 w-4 text-accent-foreground" />
+              </div>
+              <div>
+                <p className="text-sm font-medium">Endereço</p>
+                <p className="text-sm text-muted-foreground">{contract.client.address}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-sm font-medium">Endereço</p>
-              <p className="text-sm text-muted-foreground">{contract.address}</p>
-            </div>
-          </div>
+          )}
         </CardContent>
       </Card>
 
@@ -78,25 +76,13 @@ export function ContractDetails({ contract }: ContractDetailsProps) {
           <CardTitle className="text-lg">Detalhes do Contrato</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-accent rounded-lg">
-                <Home className="h-4 w-4 text-accent-foreground" />
-              </div>
-              <div>
-                <p className="text-sm font-medium">Cômodos</p>
-                <p className="text-sm text-muted-foreground">{contract.rooms}</p>
-              </div>
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-accent rounded-lg">
+              <FileText className="h-4 w-4 text-accent-foreground" />
             </div>
-
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-accent rounded-lg">
-                <Clock className="h-4 w-4 text-accent-foreground" />
-              </div>
-              <div>
-                <p className="text-sm font-medium">Frequência</p>
-                <p className="text-sm text-muted-foreground">{frequencyConfig[contract.frequency]}</p>
-              </div>
+            <div>
+              <p className="text-sm font-medium">Serviço Contratado</p>
+              <p className="text-sm text-muted-foreground">{contract.desiredPosition}</p>
             </div>
           </div>
 
@@ -105,8 +91,8 @@ export function ContractDetails({ contract }: ContractDetailsProps) {
               <DollarSign className="h-4 w-4 text-accent-foreground" />
             </div>
             <div>
-              <p className="text-sm font-medium">Valor Mensal</p>
-              <p className="text-sm text-muted-foreground">€{contract.monthlyValue}</p>
+              <p className="text-sm font-medium">Valor Final</p>
+              <p className="text-sm text-muted-foreground">{contract.finalValue} Kz</p>
             </div>
           </div>
 
@@ -114,60 +100,86 @@ export function ContractDetails({ contract }: ContractDetailsProps) {
             <p className="text-sm font-medium">Período do Contrato</p>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Calendar className="h-4 w-4" />
-              <span>{contract.startDate}</span>
+              <span>{  formatDate(contract.startDate)}</span>
               {contract.endDate && (
                 <>
                   <span>até</span>
-                  <span>{contract.endDate}</span>
+                  <span>{  formatDate(contract.endDate)}</span>
                 </>
               )}
             </div>
           </div>
 
-          <div className="space-y-2">
-            <p className="text-sm font-medium">Próximo Serviço</p>
-            <p className="text-sm text-muted-foreground">{contract.nextServiceDate}</p>
-          </div>
         </CardContent>
       </Card>
 
-      {/* Progresso do Contrato */}
+    
+       {/* Profissional ou Plano */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Progresso do Contrato</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">Serviços Realizados</span>
-            <Badge variant="secondary">{completionPercentage}%</Badge>
-          </div>
-          
-          <div className="w-full bg-secondary rounded-full h-2">
-            <div 
-              className="bg-primary h-2 rounded-full transition-all duration-300" 
-              style={{ width: `${completionPercentage}%` }}
-            />
-          </div>
-          
-          <div className="flex items-center justify-between text-sm text-muted-foreground">
-            <span>{contract.completedServices} de {contract.totalServices} serviços</span>
-            <span>{contract.totalServices - contract.completedServices} restantes</span>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Descrição do Serviço */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Descrição do Serviço</CardTitle>
+          <CardTitle className="text-lg">
+            {contract.client.type === UserType.CORPORATE
+              ? "Plano Escolhido"
+              : "Profissional Selecionado"}
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground mb-4">{contract.serviceDetails}</p>
+          {contract.client.type === UserType.CORPORATE ? (
+            <div className="space-y-2">
+              <p className="text-sm font-medium">Plano</p>
+              <p className="text-sm text-muted-foreground">
+                {contract.package.name ? "N/A" : "Nenhum plano associado"}
+                
+              </p>
+              <p className="text-sm text-muted-foreground">{contract.package.description ? "N/A" : "Nenhum plano associado"}</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <p className="text-sm font-medium">Profissional Responsável</p>
+              {contract.professional ? (
+                <div className="flex items-center gap-4 p-3 border rounded-lg shadow-sm">
+                  {/* Foto */}
+                  {contract.professional.profileImage ? (
+                    <img
+                      src={contract.professional.profileImage}
+                      alt={contract.professional.fullName}
+                      className="w-12 h-12 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center text-xs text-muted-foreground">
+                      Sem foto
+                    </div>
+                  )}
+
+                  {/* Dados */}
+                  <div className="space-y-1">
+                    <p className="text-sm font-semibold">{contract.professional.fullName}</p>
+                    <p className="text-xs text-muted-foreground">{contract.professional.email}</p>
+                    <p className="text-xs text-muted-foreground">{contract.professional.phoneNumber}</p>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  Nenhum profissional associado
+                </p>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Status */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Termos de Pagamentos</CardTitle>
+        </CardHeader>
+        <CardContent>
           
-          {contract.terms && (
-            <div className="border-t pt-4">
-              <p className="text-sm font-medium mb-2">Termos e Condições</p>
-              <p className="text-sm text-muted-foreground">{contract.terms}</p>
+          {contract.paymentTerms && (
+            <div className="space-y-2">
+              <p className="text-sm font-medium">Termos</p>
+              <p className="text-sm text-muted-foreground">{contract.paymentTerms}</p>
+              <p className="text-sm text-muted-foreground">  Acordado: {contract.agreedValue} Kz | Final: {contract.finalValue} Kz</p>
             </div>
           )}
         </CardContent>

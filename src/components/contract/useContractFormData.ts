@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { fetchCompanyClients, type ClientCompanyProfile } from "@/services/client/company/client-company-profile.service";
-import { fetchIndividualClients, type ClientProfile } from "@/services/client/client.service";
+
 import { getAllPackages, type Package } from "@/services";
 import { dropdownProfessionals, type Professional } from "@/services/profissional/profissional.service";
 import { getDesiredPositionsList, type DesiredPosition } from "@/services/desired-positions/desired-positions.service";
@@ -10,11 +9,13 @@ import { getCitiesList } from "@/services/location/cities.service";
 import { getDistrictsByCityId } from "@/services/location/districts.service";
 import type { City } from "@/components/location/citiesColunn";
 import type { District } from "@/types/types";
+import { getSectorsList } from "@/services/shared/sector/sector.service";
+import type { Sector } from "@/services/sector/sector.service";
 
 
 export function useContractFormData(cityId?: string) {
-  const [companyClients, setCompanyClients] = useState<ClientCompanyProfile[]>([]);
-  const [individualClients, setIndividualClients] = useState<ClientProfile[]>([]);
+
+  const [sectors, setSectores] = useState<Sector[]>([]);
   const [packages, setPackages] = useState<Package[]>([]);
   const [professionals, setProfessionals] = useState<Professional[]>([]);
   const [desiredPositions, setDesiredPositions] = useState<DesiredPosition[]>([]);
@@ -28,23 +29,21 @@ export function useContractFormData(cityId?: string) {
       setLoading(true);
       try {
         const [
-          companyClientsData,
-          individualClientsData,
+          sectors,
           packagesData,
           professionalsData,
           desiredPositionsData,
           citiesData,
         ] = await Promise.all([
-          fetchCompanyClients(),
-          fetchIndividualClients(),
+          getSectorsList(),
           getAllPackages(),
           dropdownProfessionals(),
           getDesiredPositionsList(),
           getCitiesList(),
         ]);
 
-        setCompanyClients(companyClientsData);
-        setIndividualClients(individualClientsData);
+
+       setSectores(sectors);
         setPackages(packagesData);
         setProfessionals(professionalsData);
         setDesiredPositions(desiredPositionsData);
@@ -82,8 +81,7 @@ export function useContractFormData(cityId?: string) {
 
   return {
     loading,
-    companyClients,
-    individualClients,
+   sectors,
     packages,
     professionals,
     desiredPositions,

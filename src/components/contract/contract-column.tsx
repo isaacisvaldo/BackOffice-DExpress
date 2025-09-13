@@ -180,7 +180,7 @@ const label = statusLabels[status] ?? status;
               >
                 Copiar Cod* do Contrato
               </DropdownMenuItem>
-              <DropdownMenuItem> <Link to={`/contratacoes/contratos/${contract.id}details`}>
+              <DropdownMenuItem> <Link to={`/contratacoes/contratos/${contract.id}/details`}>
               Ver Detalhes
             </Link></DropdownMenuItem>
 

@@ -33,7 +33,8 @@ export type MappedServiceRequest = {
 export default function ServiceRequestDetails() {
   const { id } = useParams<{ id: string }>()
   const [serviceRequest, setServiceRequest] = useState<MappedServiceRequest | null>(null)
-const [status, setStatus] = useState<StatusRequest>(StatusRequest.PENDING);
+const [status, setStatus]= useState<StatusRequest | "PENDING">("PENDING");
+
 
 
   useEffect(() => {
@@ -102,10 +103,10 @@ const handleStatusChange = async (requestId:string,newStatus: StatusRequest) => 
           <RequestHeader
           
             status={status}
-            cleintEmail={serviceRequest?.requesterEmail}
+            clientEmail={serviceRequest?.requesterEmail}
             clientName={serviceRequest?.name}
             requestDate={serviceRequest.createdAt}
-            serviceType={serviceRequest.requesterType}
+          
 
           />
 
@@ -117,6 +118,7 @@ const handleStatusChange = async (requestId:string,newStatus: StatusRequest) => 
 
             {/* Ações */}
             <RequestActions
+            TheProfissional={serviceRequest.professional}
                requestId={serviceRequest.id}
               requestClientType={serviceRequest.requesterType}
               currentStatus={status}

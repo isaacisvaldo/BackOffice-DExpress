@@ -15,9 +15,12 @@ export type ContractFormData = {
   companyName: string
   nif: string
   phone: string
-  fullName: string
+  firstName: string
+  lastName: string
   identityNumber: string
+  email:string;
   title: string
+  sectorId?:string
   description: string
   clientType: UserType
   individualClientId?: string
@@ -38,10 +41,10 @@ export type ContractFormData = {
 }
 
 type ContractFormProps = {
+  TheProfissional?:any,
   clientType: UserType
   initialData?: ContractFormData
-  companyClients?: { id: string; companyName: string }[]
-  individualClients?: { id: string; fullName: string }[]
+  sectorOptions?: { id: string; label: string }[]
   professionals?: { id: string; fullName: string }[]
   desiredPositions?: { id: string; name: string,label:string }[]
   packages?: { id: string; name: string; price: number }[]
@@ -53,8 +56,8 @@ type ContractFormProps = {
 export default function ContractForm({
   clientType,
   initialData,
-  companyClients = [],
-  individualClients = [],
+  sectorOptions = [],
+  TheProfissional,
   professionals = [],
   desiredPositions = [],
   packages = [],
@@ -67,14 +70,18 @@ export default function ContractForm({
     companyName: "",
       nif: "",
       phone: "",
-      fullName: "",
+      firstName: "",
+      email: "",
+      lastName: "",
       identityNumber: "",
       title: "",
       description: "",
    clientType: clientType === UserType.CORPORATE ? UserType.CORPORATE : UserType.INDIVIDUAL,
       individualClientId: "",
       companyClientId: "",
-      professionalId: "",
+     
+      professionalId: TheProfissional.id||"",
+      sectorId:"",
       professionalIds: [],
       packageId: "",
       desiredPositionId: "",
@@ -90,7 +97,7 @@ export default function ContractForm({
   )
 
  const updateForm = (key: keyof ContractFormData, value: any) => {
-  const updated = { ...form, [key]: value, clientType};
+  const updated = { ...form, [key]: value, clientType,professionalId:TheProfissional.id};
   setForm(updated);
   onChange(updated);
 };
@@ -150,15 +157,56 @@ export default function ContractForm({
         className="col-span-3"
       />
     </div>
+     <div className="grid grid-cols-4 items-center gap-4">
+      <Label className="text-right">Email</Label>
+      <Input
+        value={form.email || ""}
+        onChange={e => updateForm("email", e.target.value)}
+        className="col-span-3"
+      />
+    </div>
+     <div className="grid grid-cols-4 items-center gap-4">
+        <Label className="text-right">Sector</Label>
+        <Select
+          value={form.sectorId}
+          onValueChange={val => updateForm("sectorId", val)}
+        >
+          <SelectTrigger className="col-span-3">
+            <SelectValue placeholder="Selecione o Sector" />
+          </SelectTrigger>
+          <SelectContent>
+            {sectorOptions.map(p => (
+              <SelectItem key={p.id} value={p.id}>
+                {p.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      
   </>
 ) : (
   <>
     {/* Campos para Cliente */}
     <div className="grid grid-cols-4 items-center gap-4">
-      <Label className="text-right">Nome Completo</Label>
+      <Label className="text-right">Primero Nome</Label>
       <Input
-        value={form.fullName || ""}
-        onChange={e => updateForm("fullName", e.target.value)}
+        value={form.firstName || ""}
+        onChange={e => updateForm("firstName", e.target.value)}
+        className="col-span-3"
+      />
+       <Label className="text-right">Ultimo Nome</Label>
+      <Input
+        value={form.lastName || ""}
+        onChange={e => updateForm("lastName", e.target.value)}
+        className="col-span-3"
+      />
+    </div>
+      <div className="grid grid-cols-4 items-center gap-4">
+      <Label className="text-right">Email</Label>
+      <Input
+        value={form.email || ""}
+        onChange={e => updateForm("email", e.target.value)}
         className="col-span-3"
       />
     </div>
@@ -206,26 +254,9 @@ export default function ContractForm({
         </div>
       )}
 
-      {/* Profissional (único) */}
-      <div className="grid grid-cols-4 items-center gap-4">
-        <Label className="text-right">Profissional</Label>
-        <Select
-          value={form.professionalId}
-          onValueChange={val => updateForm("professionalId", val)}
-        >
-          <SelectTrigger className="col-span-3">
-            <SelectValue placeholder="Selecione o profissional" />
-          </SelectTrigger>
-          <SelectContent>
-            {professionals.map(p => (
-              <SelectItem key={p.id} value={p.id}>
-                {p.fullName}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
+      {/* Profissional (único) */} 
+     
+  <input type="text" name="professionalId" value={TheProfissional.id} />
       {/* Profissionais (múltiplos) */}
         {clientType === UserType.CORPORATE && (
         <div className="grid grid-cols-4 items-center gap-4">

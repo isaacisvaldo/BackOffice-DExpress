@@ -1,49 +1,52 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { 
-  Play, Pause, Square, Calendar, FileText, Mail, CheckCircle, Download
+  Play, Pause, Square,  CheckCircle, Download,
+  Trash
 } from "lucide-react";
+import type { ContractStatus, Document } from "@/services/contract/contract.service";
+import DocumentUploader from "./DocumentUploader";
 
 interface ContractActionsProps {
+  docs: Document[];
   contractId: string;
-  currentStatus: "active" | "completed" | "cancelled" | "suspended";
+  contractNumber: string;
+  currentStatus:  ContractStatus
   onStatusChange: (newStatus: string, actionData?: any) => Promise<void>;
 }
 
-interface ContractDocument {
-  id: string;
-  name: string;
-  url: string;
-}
+
+const statusConfig: Record<
+  ContractStatus,
+  { label: string; variant: "default" | "secondary" | "destructive" | "outline" }
+> = {
+  DRAFT: { label: "Rascunho", variant: "outline" },
+  PENDING_SIGNATURE: { label: "Pendente de Assinatura", variant: "default" },
+  EXPIRED: { label: "Expirado", variant: "destructive" },
+  ACTIVE: { label: "Ativo", variant: "default" },
+  TERMINATED: { label: "Terminado", variant: "secondary" },
+  CANCELED: { label: "Cancelado", variant: "destructive" },
+  PAUSED: { label: "Pausado", variant: "outline" },
+  COMPLETED: { label: "Concluído", variant: "secondary" },
+};
 
 export function ContractActions({ 
+  docs,
   contractId, 
+  contractNumber,
   currentStatus, 
   onStatusChange 
 }: ContractActionsProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [notes, setNotes] = useState("");
-  const [documents, setDocuments] = useState<ContractDocument[]>([]);
+  const [documents, setDocuments] = useState<Document[]>([]);
 
-  // 🔹 Mock inicial
   useEffect(() => {
-    const mockDocs: ContractDocument[] = [
-      {
-        id: "1",
-        name: "Contrato_Assinado.pdf",
-        url: "/mock/Contrato_Assinado.pdf",
-      },
-      {
-        id: "2",
-        name: "Comprovativo_Pagamento.png",
-        url: "/mock/Comprovativo_Pagamento.png",
-      },
-    ];
-    setDocuments(mockDocs);
-  }, [contractId]);
+     setDocuments(docs);
+  }, []);
+   
 
   const handleAction = async (action: string, actionData?: any) => {
     setIsLoading(true);
@@ -56,128 +59,145 @@ export function ContractActions({
       setIsLoading(false);
     }
   };
+  const handleDelete = async (docId: string) => {
+  try {
+    // 1. Chama a API para remover o documento
+    // Exemplo (ajusta para o teu service real):
+    // await contractService.deleteDocument(contractId, docId);
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
+    // 2. Atualiza a lista local
+    setDocuments((prev) => prev.filter((doc) => doc.id !== docId));
+  } catch (error) {
+    console.error("Erro ao deletar documento:", error);
+  }
+};
 
-    const newDocs: ContractDocument[] = Array.from(files).map((file, idx) => ({
-      id: `${Date.now()}-${idx}`,
-      name: file.name,
-      url: URL.createObjectURL(file), // 🔹 Simula o link do arquivo
-    }));
 
-    setDocuments((prev) => [...prev, ...newDocs]);
-    e.target.value = "";
-  };
+const getAvailableActions = () => {
+  switch (currentStatus) {
+    case "ACTIVE":
+      return [
+        {
+          action: "suspend",
+          label: "Suspender Contrato",
+          icon: Pause,
+          variant: "outline" as const,
+        },
+        {
+          action: "complete",
+          label: "Marcar como Concluído",
+          icon: CheckCircle,
+          variant: "default" as const,
+        },
+        {
+          action: "cancel",
+          label: "Cancelar Contrato",
+          icon: Square,
+          variant: "destructive" as const,
+        },
+      ];
 
-  const getAvailableActions = () => {
-    switch (currentStatus) {
-      case "active":
-        return [
-          { action: "suspend", label: "Suspender Contrato", icon: Pause, variant: "outline" as const },
-          { action: "complete", label: "Marcar como Concluído", icon: CheckCircle, variant: "default" as const },
-          { action: "cancel", label: "Cancelar Contrato", icon: Square, variant: "destructive" as const }
-        ];
-      case "suspended":
-        return [
-          { action: "reactivate", label: "Reativar Contrato", icon: Play, variant: "default" as const },
-          { action: "cancel", label: "Cancelar Contrato", icon: Square, variant: "destructive" as const }
-        ];
-      default:
-        return [];
-    }
-  };
+    case "PAUSED":
+      return [
+        {
+          action: "reactivate",
+          label: "Reativar Contrato",
+          icon: Play,
+          variant: "default" as const,
+        },
+        {
+          action: "cancel",
+          label: "Cancelar Contrato",
+          icon: Square,
+          variant: "destructive" as const,
+        },
+      ];
 
-  const quickActions = [
-    { action: "schedule_service", label: "Agendar Próximo Serviço", icon: Calendar, variant: "outline" as const },
-    { action: "send_notification", label: "Notificar Cliente", icon: Mail, variant: "outline" as const },
-  
-  ];
+    default:
+      return [];
+  }
+};
+
 
   const availableActions = getAvailableActions();
 
   return (
     <div className="space-y-6">
       {/* STATUS */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Status do Contrato</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-sm font-medium">Status Atual:</span>
-            <Badge variant={currentStatus === "active" ? "default" : "secondary"}>
-              {currentStatus === "active" && "Ativo"}
-              {currentStatus === "suspended" && "Suspenso"}
-              {currentStatus === "completed" && "Concluído"}
-              {currentStatus === "cancelled" && "Cancelado"}
-            </Badge>
-          </div>
-          <p className="text-sm text-muted-foreground mb-4">
-            ID do Contrato: {contractId}
-          </p>
-        </CardContent>
-      </Card>
+     <Card>
+  <CardHeader>
+    <CardTitle className="text-lg">Status do Contrato</CardTitle>
+  </CardHeader>
+  <CardContent>
+    <div className="flex items-center justify-between mb-4">
+      <span className="text-sm font-medium">Status Atual:</span>
+      <Badge variant={statusConfig[currentStatus].variant}>
+        {statusConfig[currentStatus].label}
+      </Badge>
+    </div>
+    <p className="text-sm text-muted-foreground mb-4">
+      ID do Contrato: {contractNumber}
+    </p>
+  </CardContent>
+</Card>
 
-      {/* AÇÕES RÁPIDAS */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Ações Rápidas</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {quickActions.map((action) => {
-            const Icon = action.icon;
-            return (
-              <Button
-                key={action.action}
-                variant={action.variant}
-                className="w-full justify-start"
-                onClick={() => handleAction(action.action)}
-                disabled={isLoading}
-              >
-                <Icon className="h-4 w-4 mr-2" />
-                {action.label}
-              </Button>
-            );
-          })}
-        </CardContent>
-      </Card>
+
+  
 
       {/* DOCUMENTOS */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Documentos</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <input type="file" multiple onChange={handleUpload} />
-          <p className="text-xs text-muted-foreground">
-            Formatos permitidos: PDF, DOCX, JPG, PNG
-          </p>
 
-          {/* Lista de documentos */}
-          <ul className="space-y-2 mt-3">
-            {documents.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Nenhum documento enviado ainda.</p>
-            ) : (
-              documents.map((doc) => (
-                <li key={doc.id} className="flex items-center justify-between border p-2 rounded-md">
-                  <span className="text-sm">{doc.name}</span>
-                  <Button 
-                    size="sm" 
-                    variant="outline" 
-                    asChild
-                  >
-                    <a href={doc.url} download>
-                      <Download className="h-4 w-4 mr-1" /> Baixar
-                    </a>
-                  </Button>
-                </li>
-              ))
-            )}
-          </ul>
-        </CardContent>
-      </Card>
+
+<Card>
+  <CardHeader>
+    <CardTitle className="text-lg">Documentos</CardTitle>
+  </CardHeader>
+  <CardContent className="space-y-3">
+    <DocumentUploader
+      contractId={contractId}
+      onAdd={(newDoc) => setDocuments((prev) => [...prev, newDoc])}
+    />
+
+    {/* Lista de documentos */}
+    <ul className="space-y-2 mt-3">
+      {documents?.length === 0 ? (
+        <p className="text-sm text-muted-foreground">
+          Nenhum documento enviado ainda.
+        </p>
+      ) : (
+        documents?.map((doc) => (
+          <li
+            key={doc.id}
+            className="flex items-center justify-between border p-2 rounded-md"
+          >
+            <div className="space-y-1">
+              <p className="text-sm font-semibold">{doc.name}</p>
+              <p className="text-xs text-muted-foreground">{doc.description}</p>
+            </div>
+
+            <div className="flex gap-2">
+              {/* Botão de download */}
+              <Button size="sm" variant="outline" asChild>
+                <a href={doc.url} download>
+                  <Download className="h-4 w-4 mr-1" /> Baixar
+                </a>
+              </Button>
+
+              {/* Botão de deletar */}
+              <Button
+                size="sm"
+                variant="destructive"
+                onClick={() => handleDelete(doc.id)}
+              >
+                <Trash className="h-4 w-4 mr-1" /> Deletar
+              </Button>
+            </div>
+          </li>
+        ))
+      )}
+    </ul>
+  </CardContent>
+</Card>
+
 
       {/* AÇÕES DO CONTRATO */}
       {availableActions.length > 0 && (
@@ -186,18 +206,7 @@ export function ContractActions({
             <CardTitle className="text-lg">Ações do Contrato</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <label htmlFor="notes" className="text-sm font-medium">
-                Observações (opcional)
-              </label>
-              <Textarea
-                id="notes"
-                placeholder="Adicione observações sobre a ação..."
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                className="min-h-[80px]"
-              />
-            </div>
+           
             <div className="space-y-2">
               {availableActions.map((action) => {
                 const Icon = action.icon;

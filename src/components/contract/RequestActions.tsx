@@ -7,17 +7,19 @@ import { Badge } from "@/components/ui/badge";
 import { Check, X, Clock, MessageSquare } from "lucide-react";
 
 import { createContractInRequest, StatusRequest, UserType } from "@/services/serviceRequest/service-request.service";
+
 import ContractForm from "./ContractForm";
 import { useContractFormData } from "./useContractFormData";
 
 interface RequestActionsProps {
+  TheProfissional?:any
   requestId:string
   requestClientType: UserType;
-  currentStatus: StatusRequest;
+  currentStatus: any;
   onStatusChange: (requestId:string,status: StatusRequest) => void;
 }
 
-export function RequestActions({ requestId,requestClientType, currentStatus, onStatusChange }: RequestActionsProps) {
+export function RequestActions({ TheProfissional,requestId,requestClientType, currentStatus, onStatusChange }: RequestActionsProps) {
   const [selectedAction, setSelectedAction] = useState<StatusRequest | "">("");
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -25,8 +27,7 @@ export function RequestActions({ requestId,requestClientType, currentStatus, onS
 
   const {
     
-    companyClients,
-    individualClients,
+sectors,
     packages,
     professionals,
     desiredPositions,
@@ -40,7 +41,7 @@ const handleActionSubmit = async () => {
   try {
     if (selectedAction === StatusRequest.APPROVED) {
 
-      console.log("CONTRATO::",newContract);
+   
       
       // Cria contrato
       const createdContract = await createContractInRequest(requestId, newContract);
@@ -95,41 +96,33 @@ const handleActionSubmit = async () => {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="action">Ação a Tomar</Label>
-          <Select value={selectedAction} onValueChange={(v) => setSelectedAction(v as StatusRequest)}>
-            <SelectTrigger>
-              <SelectValue placeholder="Selecione uma ação" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={StatusRequest.APPROVED}>
-                <div className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-success" />
-                  Aprovar Solicitação
-                </div>
-              </SelectItem>
-              <SelectItem value={StatusRequest.REJECTED}>
-                <div className="flex items-center gap-2">
-                  <X className="h-4 w-4 text-destructive" />
-                  Rejeitar Solicitação
-                </div>
-              </SelectItem>
-              <SelectItem value={StatusRequest.IN_REVIEW}>
-                <div className="flex items-center gap-2">
-                  <MessageSquare className="h-4 w-4 text-pending" />
-                  Colocar em Análise
-                </div>
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+      {currentStatus !== StatusRequest.APPROVED && (
+  <div className="space-y-2">
+    <Label htmlFor="action">Ação a Tomar</Label>
+    <Select
+      value={selectedAction}
+      onValueChange={(v) => setSelectedAction(v as StatusRequest)}
+      disabled={currentStatus === StatusRequest.APPROVED } 
+    >
+      <SelectTrigger>
+        <SelectValue placeholder="Selecione uma ação" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value={StatusRequest.APPROVED}>Aprovar Solicitação</SelectItem>
+        <SelectItem value={StatusRequest.REJECTED}>Rejeitar Solicitação</SelectItem>
+        <SelectItem value={StatusRequest.IN_REVIEW}>Colocar em Análise</SelectItem>
+      </SelectContent>
+    </Select>
+  </div>
+)}
+
 
         {selectedAction === StatusRequest.APPROVED && (
            <ContractForm
+           TheProfissional={TheProfissional}
      clientType={requestClientType}
      initialData={newContract}
-     companyClients={companyClients}
-     individualClients={individualClients}
+       sectorOptions={sectors}
      professionals={professionals}
      desiredPositions={desiredPositions}
      packages={packages}

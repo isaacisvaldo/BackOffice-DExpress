@@ -1,5 +1,4 @@
 import { Calendar, Clock, User, Mail } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { StatusRequest } from "@/services/serviceRequest/service-request.service";
 import { useState } from "react";
@@ -14,10 +13,10 @@ import EmailEditor from "../EmailEditor";
 
 interface RequestHeaderProps {
   status: StatusRequest;
-  cleintEmail: string;
+  clientEmail: string;
   clientName: string;
   requestDate: string;
-  serviceType: string;
+ 
 }
 
 const statusConfig: Record<
@@ -35,10 +34,9 @@ const statusConfig: Record<
 
 export function RequestHeader({
   status,
-  cleintEmail,
+  clientEmail,
   clientName,
   requestDate,
-  serviceType,
 }: RequestHeaderProps) {
   const statusInfo = statusConfig[status];
   const [open, setOpen] = useState(false);
@@ -75,10 +73,11 @@ export function RequestHeader({
       </div>
 
       {/* Ação de Enviar Nota */}
+       {status !== StatusRequest.APPROVED && (
       <div className="mt-6 flex items-center justify-between p-3 border rounded-lg bg-muted/30">
         <div className="flex items-center gap-2">
           <Mail className="h-4 w-4 text-primary" />
-          <span className="text-sm text-foreground">{cleintEmail}</span>
+          <span className="text-sm text-foreground">{clientEmail}</span>
         </div>
         <Button
           size="sm"
@@ -89,6 +88,7 @@ export function RequestHeader({
           Enviar Nota
         </Button>
       </div>
+ )}
 
       {/* Modal */}
       <Dialog open={open} onOpenChange={setOpen}>
@@ -98,7 +98,7 @@ export function RequestHeader({
           </DialogHeader>
           <div className="space-y-4">
             <EmailEditor
-              recipient={cleintEmail}
+              recipient={clientEmail}
               subject="Contrato de prestação de serviços - Importante"
             />
           </div>
