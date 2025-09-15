@@ -163,7 +163,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
           { title: "Histórico de Contratações", url: "/contratacoes/historico" },
 
-          { title: "Modelos de Contrato", url: "/contratacoes/modelos" },
+          { title: "Modelos de Contrato", url: "/contratacoes/modelos-contratos" },
         ],
       },
         {

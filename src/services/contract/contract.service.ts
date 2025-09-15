@@ -46,6 +46,20 @@ export interface ContractPackageProfessional {
     updatedAt: string;
     professional: Professional;
 }
+export type Document = {
+  id: string;
+  name: string;
+  description: string;
+  url: string;
+
+};
+
+export type ContractDoc = {
+  id: string;
+  contractId: string;
+  documentId: string;
+  document: Document;
+};
 
 export interface Contract {
     id: string;
@@ -66,14 +80,17 @@ export interface Contract {
     locationId: string;
     createdAt: string;
     updatedAt: string;
-
+   finalValue: number,
+    paymentTerms: string,
+    notes: string,
     // Relações incluídas
-    professional?: Professional | null;
-    individualClient?: ClientProfile | null;
-    companyClient?: ClientCompanyProfile | null;
-    package?: Package | null;
-    desiredPosition?: DesiredPosition | null;
-    location?: Location & { city: City; district: District };
+    professional: Professional ;
+    individualClient: ClientProfile ;
+    companyClient: ClientCompanyProfile ;
+    package: Package ;
+     contractDoc: ContractDoc[];
+    desiredPosition: DesiredPosition ;
+    location: Location & { city: City; district: District };
     contractPackegeProfissional: ContractPackageProfessional[];
 }
 
@@ -137,11 +154,20 @@ export interface PaginatedContractsResponse {
     totalPages: number;
 }
 
-
+export interface createDocument {
+     name: string;
+  description: string;
+  url: string;
+}
 export async function createContract(
     data: CreateContractDto,
 ): Promise<Contract> {
     return sendData("/contracts", "POST", data);
+}
+
+export async function createContractDoc(id:string,doc:createDocument):Promise<Document> {
+    return sendData(`/contracts/${id}/documents`, "POST", doc);
+    
 }
 
 export async function getContracts(
@@ -153,7 +179,9 @@ export async function getContracts(
 export async function getContractById(id: string): Promise<Contract> {
     return fetchData(`/contracts/${id}`);
 }
-
+ export async function updateStatusContract(id: string, status: ContractStatus) {
+    return sendData(`/contracts/${id}/status`, "PATCH", { status });
+}
 export async function updateContract(
     id: string,
     data: UpdateContractDto,

@@ -8,6 +8,7 @@ interface GetDesiredPositionParams extends FilterParams {
 export interface DesiredPosition {
   id: string
   name: string
+  label: string
   description: string
 }
 

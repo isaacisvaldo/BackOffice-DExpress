@@ -19,6 +19,7 @@ import { UserType } from "@/services/serviceRequest/service-request.service";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "../ui/alert-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { Badge } from "../ui/badge";
+import { Link } from "react-router-dom";
 export const statusColors: Record<string, string> = {
   DRAFT: "bg-gray-500",
   PENDING_SIGNATURE: "bg-yellow-500",
@@ -179,7 +180,9 @@ const label = statusLabels[status] ?? status;
               >
                 Copiar Cod* do Contrato
               </DropdownMenuItem>
-              <DropdownMenuItem>Ver detalhes</DropdownMenuItem>
+              <DropdownMenuItem> <Link to={`/contratacoes/contratos/${contract.id}/details`}>
+              Ver Detalhes
+            </Link></DropdownMenuItem>
 
               {/* AlertDialog dentro do Dropdown */}
 
