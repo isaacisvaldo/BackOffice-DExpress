@@ -26,11 +26,20 @@ export function RequestActions({requestService, TheProfissional,requestId,reques
 
   const [isSubmitting, setIsSubmitting] = useState(false);
    const [newContract, setNewContract] = useState<any>(() => ({
+      firstName: requestClientType === UserType.INDIVIDUAL 
+    ? requestService.name?.split(" ")[0] ?? "" 
+    : "" ,
+
+  lastName: requestClientType === UserType.INDIVIDUAL 
+    ? requestService.name?.split(" ").slice(1).join(" ") ?? "" 
+    : "",
   companyName: requestService.name ?? "",
   nif: requestService.nif ?? "",
   phone: requestService.phone ?? "",
   email: requestService.requesterEmail ?? "",
-  title: requestService.name ?? "",
+ title: `Contrata-Serviço - ${
+  requestClientType === UserType.INDIVIDUAL ? "Individual" : "Empresa"
+}`,
   description: requestService.description ?? "",
   clientType: requestClientType,
   professionalId: TheProfissional?.id || requestService.professional?.id || null,
