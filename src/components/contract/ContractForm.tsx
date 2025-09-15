@@ -307,13 +307,7 @@ export default function ContractForm({
             selectedValues={form.professionalIds ?? []}
             onSelectChange={(selected: string[]) => updateForm("professionalIds", selected)}
           />
-        </div>
-      )}
-
-
-      {/* Pacote de Serviço */}
-    <div className="grid grid-cols-4 items-center gap-4">
-          <Label className="text-right">Pacote</Label>
+              <Label className="text-right">Pacote</Label>
           <Select
             value={form.packageId}
             onValueChange={val => {
@@ -337,7 +331,11 @@ export default function ContractForm({
             </SelectContent>
           </Select>
         </div>
-      
+      )}
+
+
+      {/* Pacote de Serviço */}
+ 
 
 
 
