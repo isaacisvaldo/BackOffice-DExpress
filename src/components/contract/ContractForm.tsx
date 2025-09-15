@@ -117,7 +117,7 @@ export default function ContractForm({
         firstName: clientType === UserType.INDIVIDUAL ? requestService.name?.split(" ")[0] ?? "" : prev.firstName,
         lastName: clientType === UserType.INDIVIDUAL ? requestService.name?.split(" ").slice(1).join(" ") ?? "" : prev.lastName,
         email: requestService.requesterEmail ?? prev.email,
-        title: requestService.name ?? prev.title,
+        title: requestService.description ?? prev.title,
         description: requestService.description ?? prev.description,
         professionalId: TheProfissional?.id || requestService.professional?.id || null,
         packageId: requestService.package?.id ?? prev.packageId,
