@@ -11,6 +11,8 @@ import { formatDate } from "@/util/formatDate";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom"
+import type { Sector } from "@/services/sector/sector.service";
+import type { Location } from "@/types/types";
 
 
 export type MappedServiceRequest = {
@@ -27,6 +29,8 @@ export type MappedServiceRequest = {
   address?: string;
   professional:Professional;
   package:Package
+  companySector:Sector
+  location:Location
  };
 
 
@@ -61,7 +65,9 @@ const [status, setStatus]= useState<StatusRequest | "PENDING">("PENDING");
           phone: data.requesterPhoneNumber || "",
           address: data.individualAddress || data.companyAddress || "",
           professional:data.professional,
-          package:data.package
+          package:data.package,
+          companySector:data.companySector,
+          location:data.location
         };
         setServiceRequest(mappedData);
         setStatus(mappedData.status)
@@ -118,6 +124,7 @@ const handleStatusChange = async (requestId:string,newStatus: StatusRequest) => 
 
             {/* Ações */}
             <RequestActions
+            requestService={serviceRequest}
             TheProfissional={serviceRequest.professional}
                requestId={serviceRequest.id}
               requestClientType={serviceRequest.requesterType}

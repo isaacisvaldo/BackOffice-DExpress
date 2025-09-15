@@ -10,8 +10,10 @@ import { createContractInRequest, StatusRequest, UserType } from "@/services/ser
 
 import ContractForm from "./ContractForm";
 import { useContractFormData } from "./useContractFormData";
+import type { MappedServiceRequest } from "@/pages/dashboard/contract/ServiceRequestDetails";
 
 interface RequestActionsProps {
+  requestService: MappedServiceRequest;
   TheProfissional?:any
   requestId:string
   requestClientType: UserType;
@@ -19,11 +21,31 @@ interface RequestActionsProps {
   onStatusChange: (requestId:string,status: StatusRequest) => void;
 }
 
-export function RequestActions({ TheProfissional,requestId,requestClientType, currentStatus, onStatusChange }: RequestActionsProps) {
+export function RequestActions({requestService, TheProfissional,requestId,requestClientType, currentStatus, onStatusChange }: RequestActionsProps) {
   const [selectedAction, setSelectedAction] = useState<StatusRequest | "">("");
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-    const [newContract, setNewContract] = useState<any>({}); 
+   const [newContract, setNewContract] = useState<any>(() => ({
+  companyName: requestService.name ?? "",
+  nif: requestService.nif ?? "",
+  phone: requestService.phone ?? "",
+  email: requestService.requesterEmail ?? "",
+  title: requestService.name ?? "",
+  description: requestService.description ?? "",
+  clientType: requestClientType,
+  professionalId: TheProfissional?.id || requestService.professional?.id || null,
+  sectorId: requestService.companySector?.id ?? "",
+  packageId: requestService.package?.id ?? "",
+  agreedValue: requestService.package?.price ?? 0,
+  finalValue: requestService.package?.price ?? 0,
+  location: { cityId: "", districtId: "", street: requestService.address ?? "" },
+  discountPercentage: 0,
+  paymentTerms: "",
+  startDate: "",
+  endDate: "",
+  notes: "",
+}));
+
 
   const {
     
@@ -119,6 +141,7 @@ const handleActionSubmit = async () => {
 
         {selectedAction === StatusRequest.APPROVED && (
            <ContractForm
+           requestService={requestService}
            TheProfissional={TheProfissional}
      clientType={requestClientType}
      initialData={newContract}

@@ -1,8 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MapPin, Phone, Mail, Calendar } from "lucide-react";
+import { MapPin, Phone, Mail, Calendar, Building, IdCard } from "lucide-react";
 import { StatusRequest, ServiceFrequency, UserType } from "@/services/serviceRequest/service-request.service";
 import type { Professional } from "@/services/profissional/profissional.service";
 import type { Package } from "@/services";
+import type { Sector } from "@/services/sector/sector.service";
+
 
 export interface RequestDetailsProps {
   request: {
@@ -19,6 +21,7 @@ export interface RequestDetailsProps {
     address?: string;
     professional:Professional;
     package:Package
+     companySector:Sector
   };
 }
 
@@ -28,51 +31,70 @@ export function RequestDetails({ request }: RequestDetailsProps) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* Informações do Cliente */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Informações do Cliente</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-accent rounded-lg">
-              <Mail className="h-4 w-4 text-accent-foreground" />
-            </div>
-            <div>
-              <p className="text-sm font-medium">Email</p>
-              <p className="text-sm text-muted-foreground">{request.requesterEmail}</p>
-            </div>
-          </div>
+     <Card>
+  <CardHeader>
+    <CardTitle className="text-lg">Informações do Cliente</CardTitle>
+  </CardHeader>
+  <CardContent className="space-y-4">
+    {/* Email */}
+    <div className="flex items-center gap-3">
+      <div className="p-2 bg-accent rounded-lg">
+        <Mail className="h-4 w-4 text-accent-foreground" />
+      </div>
+      <div>
+        <p className="text-sm font-medium">Email</p>
+        <p className="text-sm text-muted-foreground">{request.requesterEmail}</p>
+      </div>
+    </div>
 
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-accent rounded-lg">
-              <Phone className="h-4 w-4 text-accent-foreground" />
-            </div>
-            <div>
-              <p className="text-sm font-medium">Telefone</p>
-              <p className="text-sm text-muted-foreground">{request.phone || "N/A"}</p>
-            </div>
-          </div>
+    {/* Telefone */}
+    <div className="flex items-center gap-3">
+      <div className="p-2 bg-accent rounded-lg">
+        <Phone className="h-4 w-4 text-accent-foreground" />
+      </div>
+      <div>
+        <p className="text-sm font-medium">Telefone</p>
+        <p className="text-sm text-muted-foreground">{request.phone || "N/A"}</p>
+      </div>
+    </div>
 
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-accent rounded-lg">
-              <MapPin className="h-4 w-4 text-accent-foreground" />
-            </div>
-            <div>
-              <p className="text-sm font-medium">Endereço</p>
-              <p className="text-sm text-muted-foreground">{request.address || "N/A"}</p>
-            </div>
-          </div>
-            <div className="flex items-center gap-3">
-            <div className="p-2 bg-accent rounded-lg">
-              <MapPin className="h-4 w-4 text-accent-foreground" />
-            </div>
-            <div>
-              <p className="text-sm font-medium">Nif</p>
-              <p className="text-sm text-muted-foreground">{request.nif || "N/A"}</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+    {/* Endereço */}
+    <div className="flex items-center gap-3">
+      <div className="p-2 bg-accent rounded-lg">
+        <MapPin className="h-4 w-4 text-accent-foreground" />
+      </div>
+      <div>
+        <p className="text-sm font-medium">Endereço</p>
+        <p className="text-sm text-muted-foreground">{request.address || "N/A"}</p>
+      </div>
+    </div>
+
+    {/* NIF */}
+    <div className="flex items-center gap-3">
+      <div className="p-2 bg-accent rounded-lg">
+       <IdCard className="h-4 w-4 text-accent-foreground" />
+      </div>
+      <div>
+        <p className="text-sm font-medium">Nif</p>
+        <p className="text-sm text-muted-foreground">{request.nif || "N/A"}</p>
+      </div>
+    </div>
+
+    {/* Sector - só mostra se for empresa */}
+    {request.requesterType === "CORPORATE" && (
+      <div className="flex items-center gap-3">
+        <div className="p-2 bg-accent rounded-lg">
+          <Building className="h-4 w-4 text-accent-foreground" />
+        </div>
+        <div>
+          <p className="text-sm font-medium">Sector Empresarial </p>
+          <p className="text-sm text-muted-foreground">{request.companySector.label || "N/A"}</p>
+        </div>
+      </div>
+    )}
+  </CardContent>
+</Card>
+
 
       {/* Detalhes do Serviço */}
     <Card>

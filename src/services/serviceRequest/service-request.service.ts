@@ -1,5 +1,6 @@
 
 
+import type { Location } from "@/types/types";
 import {
   type FilterParams,
   fetchDataWithFilter,
@@ -10,6 +11,7 @@ import {
 import type { Package } from "../client/company/package/package.service";
 import type { Contract } from "../contract/contract.service";
 import type { Professional } from "../profissional/profissional.service";
+import type { Sector } from "../sector/sector.service";
 
 const API_BASE_PATH = "/service-requests";
 // src/types/types.ts (ou onde você define seus tipos)
@@ -67,6 +69,8 @@ export interface ServiceRequest {
   planId?: string;
   professional:Professional;
   package:Package
+  location:Location
+  companySector:Sector
   professionalId?: string;
   individualClientId?: string;
   companyClientId?: string;

@@ -18,6 +18,9 @@ interface ContractDetailsProps {
 }
 
 export function ContractDetails({ contract }: ContractDetailsProps) {
+
+  console.log("LOGOLOGLO:",contract);
+  
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* Informações do Cliente */}
@@ -128,10 +131,17 @@ export function ContractDetails({ contract }: ContractDetailsProps) {
             <div className="space-y-2">
               <p className="text-sm font-medium">Plano</p>
               <p className="text-sm text-muted-foreground">
-                {contract.package.name ? "N/A" : "Nenhum plano associado"}
+                {contract.package.name ? contract.package.name : "N/A"}
                 
               </p>
-              <p className="text-sm text-muted-foreground">{contract.package.description ? "N/A" : "Nenhum plano associado"}</p>
+              <p className="text-sm text-muted-foreground">{contract.package.description ?  contract.package.description :"N/A" }</p>
+
+                 {/* Renderizar os detalhes */}
+                    <ul className="list-disc list-inside text-sm text-muted-foreground">
+  {(contract.package.details ?? []).map((detail: string, index: number) => (
+  <li key={index}>{detail}</li>
+))}
+      </ul>
             </div>
           ) : (
             <div className="space-y-4">
