@@ -112,6 +112,7 @@ const statusLabels: Record<StatusRequest, string> = {
   CONTRACT_GENERATED: "Aprovado",
   COMPLETED: "Concluído",
   REJECTED: "Rejeitado",
+  APPROVED: "Aprovado"
 };
 
 // ... no seu componente ...
