@@ -33,6 +33,9 @@ export const StatusRequest = {
     CONTRACT_GENERATED: 'CONTRACT_GENERATED',
     COMPLETED: 'COMPLETED',
     REJECTED: 'REJECTED',
+    APPROVED: 'APPROVED',
+    PAUSED: 'PAUSED',
+    CANCELED: 'CANCELED',
 } as const;
 
 // Definindo o ServiceFrequency como um objeto com 'as const'
@@ -93,10 +96,23 @@ const statusStyles: Record<StatusRequest, { label: string; className: string }> 
         label: "Aprovado",
         className: "bg-green-100 text-green-800 border border-green-300",
     },
+    [StatusRequest.APPROVED]:{
+        label: "Aprovado",
+        className: "bg-green-100 text-green-800 border border-green-300",
+    },
+    [StatusRequest.PAUSED]: {
+        label: "Pausado",
+        className: "bg-yellow-100 text-yellow-800 border border-yellow-300"
+
+    },
     [StatusRequest.REJECTED]: {
         label: "Rejeitado",
         className: "bg-red-100 text-red-800 border border-red-300",
     },
+    [StatusRequest.CANCELED]:{
+        label: "Cancelado",
+        className: "bg-red-100 text-red-800 border border-red-300"
+    }
 }
 
 // Define a função que retorna as colunas da tabela
