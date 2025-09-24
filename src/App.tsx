@@ -115,7 +115,7 @@ export default function App() {
            
               <Route path="profile" element={<ProfilePage />} />
 
-              <Route path="contratacoes/contratos-ativos" element={<ContractsListAndCreation />} />
+              <Route path="contratacoes/contratos-gestao" element={<ContractsListAndCreation />} />
               <Route path="contratacoes/contratos/:id/details" element={<ContractView />} />
               <Route path="contratacoes/modelos-contratos" element={<ContractTemplatesPage />} />
 
