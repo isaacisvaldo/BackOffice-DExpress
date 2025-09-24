@@ -135,7 +135,7 @@ const handleSave = async () => {
 
                   <div className="flex gap-2">
                     <Button asChild className="flex-1">
-                      <a href={tpl.urlFile} download>
+                      <a href={tpl.urlFile} download  target="_blank" rel="noopener noreferrer">
                         <Download className="w-4 h-4 mr-2" />
                         Baixar
                       </a>

@@ -131,14 +131,14 @@ export function ContractDetails({ contract }: ContractDetailsProps) {
             <div className="space-y-2">
               <p className="text-sm font-medium">Plano</p>
               <p className="text-sm text-muted-foreground">
-                {contract.package.name ? contract.package.name : "N/A"}
+                {contract?.package?.name ? contract?.package?.name : "N/A"}
                 
               </p>
-              <p className="text-sm text-muted-foreground">{contract.package.description ?  contract.package.description :"N/A" }</p>
+              <p className="text-sm text-muted-foreground">{contract?.package?.description ?  contract?.package.description :"N/A" }</p>
 
                  {/* Renderizar os detalhes */}
                     <ul className="list-disc list-inside text-sm text-muted-foreground">
-  {(contract.package.details ?? []).map((detail: string, index: number) => (
+  {(contract?.package?.details ?? []).map((detail: string, index: number) => (
   <li key={index}>{detail}</li>
 ))}
       </ul>

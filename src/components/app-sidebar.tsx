@@ -159,9 +159,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         items: [
           { title: "Solicitações de Serviço", url: "/contratacoes/solicitacoes" },
 
-          { title: "Contratos Ativos", url: "/contratacoes/contratos-ativos" },
+          { title: "Gestão de Contratos", url: "/contratacoes/contratos-gestao" },
 
-          { title: "Histórico de Contratações", url: "/contratacoes/historico" },
 
           { title: "Modelos de Contrato", url: "/contratacoes/modelos-contratos" },
         ],
