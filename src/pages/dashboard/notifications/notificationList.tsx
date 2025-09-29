@@ -152,7 +152,7 @@ export default function NotificationList() {
 
   return (
     <div className="flex flex-col gap-4 p-6 bg-background">
-      <h1 className="text-2xl font-bold mb-4">Notificações</h1>
+      <h1 className="text-2xl font-bold mb-4">Notificações*</h1>
       <div className="container mx-auto max-h-[80vh] overflow-y-auto pr-2">
         {notifications.map((notif) => (
           <div key={notif.id} className="border-b border-border last:border-b-0">

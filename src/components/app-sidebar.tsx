@@ -192,10 +192,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         icon: Settings2,
       },
       {
+        name:"Auditoria",
+        url: "settings/audit-log",
+        icon: Shield,
+      },
+      {
         name: "Notificações",
         url: "settings/notifications",
         icon: Users,
       },
+
     ]
 
   }
