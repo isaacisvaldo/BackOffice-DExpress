@@ -47,7 +47,7 @@ const professionalFormSchema = z.object({
   hasCriminalRecord: z.boolean(),
   hasMedicalCertificate: z.boolean(),
   hasTrainingCertificate: z.boolean(),
-  locationId: z.string().uuid("ID de localização inválido."),
+  locationId: z.string(),
   genderId: z.string().uuid("ID de gênero inválido."),
   birthDate: z.string().date("Data de nascimento inválida."),
   maritalStatusId: z.string().uuid("ID de estado civil inválido."),
@@ -182,7 +182,7 @@ export default function ProfessionalForm({
             languageIds: application.languages?.map(l => l.id) || [],
             skillIds: application.skills?.map(s => s.id) || [],
             profileImage: undefined,
-            experienceIds: application.ProfessionalExperience?.map((s: any) => s.id) || [],
+            experienceIds: application?.ProfessionalExperience?.map((s: any) => s.id) || [],
           }));
         }
       } catch (error) {
@@ -431,7 +431,7 @@ return (
       <div className="md:col-span-6 space-y-4">
   <Label className="font-semibold text-gray-800" htmlFor="description">Experiência Profissional</Label>
   
-  {application.ProfessionalExperience.map((experience: any, index: any) => (
+  {application?.ProfessionalExperience?.map((experience: any, index: any) => (
     <div key={index}> {/* Remove as classes de borda e arredondamento */}
       <h4 className="font-medium">{experience.cargo}</h4>
       <p className="text-sm text-gray-600">{experience.localTrabalho}</p>
@@ -439,7 +439,7 @@ return (
         {experience.startDate} - {experience.endDate}
       </p>
       {/* Adiciona uma linha horizontal para separar os itens, exceto o último */}
-      {index < application.ProfessionalExperience.length - 1 && (
+      {index < application?.ProfessionalExperience?.length - 1 && (
         <hr className="my-4" />
       )}
     </div>

@@ -105,10 +105,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         url: "/rh",
         icon: BriefcaseBusiness,
         items: [
-          { title: "Profissionais", url: "/rh/professionals" },
+          {title:"Dashboard de RH", url: "/rh/dashboard"},
+          { title: "Colaboradores", url: "/rh/professionals" },
          
           { title: "Candidaturas", url: "/rh/applications" },
-
           { title: "Relatórios de RH", url: "/rh/reports" },
     
         ],
