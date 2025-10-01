@@ -59,3 +59,7 @@ export async function getGrowthData(range: string): Promise<IGrowthDataResponse>
 export async function getCompaniesBySector(): Promise<ICompaniesBySectorResponse> {
     return fetchData("/dashboard/companies-by-sector");
 }
+
+export async function getClientsBySegment(): Promise<any> {
+    return fetchData("/dashboard/clients-by-segment");
+}

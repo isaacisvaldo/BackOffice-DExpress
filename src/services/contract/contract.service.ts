@@ -169,6 +169,10 @@ export async function createContractDoc(id:string,doc:createDocument):Promise<Do
     return sendData(`/contracts/${id}/documents`, "POST", doc);
     
 }
+export async function deleteContractDoc(documentId:string): Promise<Contract> {
+    return deleteData(`/contracts/documents/${documentId}`);
+}
+
 
 export async function getContracts(
     params: FilterContractDto = {},

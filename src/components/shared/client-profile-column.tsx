@@ -5,7 +5,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
+
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -23,7 +23,8 @@ import type { ClientProfile } from "@/services/client/client.service";
 
 export const clientProfileColumns = (
   onDelete: (id: string) => void,
-  isDeleting: boolean
+  isDeleting: boolean,
+  onEdit: (client: ClientProfile) => void
 ): ColumnDef<ClientProfile>[] => [
   {
     accessorKey: "fullName",
@@ -70,7 +71,6 @@ export const clientProfileColumns = (
     enableHiding: false,
     cell: ({ row }) => {
       const profile = row.original;
-
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -80,11 +80,8 @@ export const clientProfileColumns = (
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Ações</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => alert(`Ver ${profile.fullName}`)}>
-              Ver
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => alert(`Editar ${profile.fullName}`)}>
+          
+            <DropdownMenuItem onClick={() => onEdit(profile)}>
               Editar
             </DropdownMenuItem>
             <AlertDialog>

@@ -6,7 +6,7 @@ import {
   Play, Pause, Square, CheckCircle, Download,
   Trash
 } from "lucide-react";
-import type { ContractStatus, Document } from "@/services/contract/contract.service";
+import { deleteContractDoc, type ContractStatus, type Document } from "@/services/contract/contract.service";
 import DocumentUploader from "./DocumentUploader";
 import {
   AlertDialog,
@@ -76,8 +76,8 @@ export function ContractActions({
   const handleDelete = async (docId: string) => {
     try {
       setIsDeleting(true);
-      // Chama API (exemplo)
-      // await contractService.deleteDocument(contractId, docId);
+     
+     await  deleteContractDoc(docId);
 
       setDocuments((prev) => prev.filter((doc) => doc.id !== docId));
     } catch (error) {

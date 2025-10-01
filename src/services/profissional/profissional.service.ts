@@ -108,13 +108,15 @@ export interface CreateProfessionalDto {
   hasCriminalRecord: boolean;
   hasMedicalCertificate: boolean;
   hasTrainingCertificate: boolean;
-  locationId: string;
+  locationId?: string;
   genderId: string;
   birthDate: string;
   maritalStatusId: string;
   hasChildren: boolean;
   knownDiseases?: boolean;
   desiredPositionId: string;
+  cityId?: string;
+  districtId?: string;
   expectedSalary: number;
   highestDegreeId: string;
   profileImage?: any;

@@ -8,7 +8,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
@@ -25,14 +24,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import SwirlingEffectSpinner from "@/components/customized/spinner/spinner-06";
 import {
-  createClientProfileInternal,
+  createClientProfile,
+ 
   deleteClientProfile,
   getClientProfiles,
+  updateClientProfile,
   type ClientProfile,
   type CreateClientProfileDto,
+  type UpdateClientProfileDto,
 } from "@/services/client/client.service";
 import { clientProfileColumns } from "@/components/shared/client-profile-column";
-import { createUser, type CreateUserDto } from "@/services/users-client/user-client.service";
+//import {  updateUser, type UpdateUserDto } from "@/services/users-client/user-client.service";
 import { formatDate } from "@/util";
 
 const formSchema = z.object({
@@ -56,6 +58,7 @@ export default function ClientProfileList() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [optionalContacts, setOptionalContacts] = useState<string[]>([]);
+  const [editingClient, setEditingClient] = useState<ClientProfile | null>(null);
  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -89,6 +92,34 @@ export default function ClientProfileList() {
     const newContacts = [...optionalContacts];
     newContacts[index] = value;
     setOptionalContacts(newContacts);
+  };
+
+  const handleEdit = (client: ClientProfile) => {
+    setEditingClient(client);
+    
+    // Extrair primeiro e último nome do fullName
+    const nameParts = client.fullName.split(" ");
+    const firstName = nameParts[0] || "";
+    const lastName = nameParts.slice(1).join(" ") || "";
+    
+    form.reset({
+      firstName: firstName,
+      lastName: lastName,
+      email: client.email,
+      identityNumber: client.identityNumber,
+      phoneNumber: client.phoneNumber,
+      address: client.address,
+    });
+    
+    setOptionalContacts(client.optionalContacts || []);
+    setIsModalOpen(true);
+  };
+
+  const handleOpenCreateModal = () => {
+    setEditingClient(null);
+    form.reset();
+    setOptionalContacts([]);
+    setIsModalOpen(true);
   };
 
   const fetchData = async () => {
@@ -137,48 +168,65 @@ export default function ClientProfileList() {
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
     try {
-   
-      const createUserDto: CreateUserDto = {
-        firstName: values.firstName,
-        lastName: values.lastName,
-        email: values.email,
-        type: "INDIVIDUAL",
-      };
-        const fullName = `${values.firstName} ${values.lastName}`;
-      
+
       const processedOptionalContacts = optionalContacts.filter(contact => contact.trim().length > 0);
 
-    
-      const createProfileDto: CreateClientProfileDto = {
-        fullName: fullName,
-        email: values.email,
-        identityNumber: values.identityNumber,
-        phoneNumber: values.phoneNumber,
-        optionalContacts: processedOptionalContacts, 
-        address: values.address,
-      };
-      
+      if (editingClient) {
+        // Modo de edição
+        /*
+        const updateUserDto: UpdateUserDto = {
+          firstName: values.firstName,
+          lastName: values.lastName,
+          email: values.email,
+        };
+        
+        await updateUser(editingClient.userId, updateUserDto);
+*/
+        const updateProfileDto: UpdateClientProfileDto = {
+          firstName: values.firstName,
+          lastName: values.lastName,
+          email: values.email,
+          identityNumber: values.identityNumber,
+          phoneNumber: values.phoneNumber,
+          optionalContacts: processedOptionalContacts,
+          address: values.address,
+        };
 
-     
-      const newUser = await createUser(createUserDto);
-   
-      if (!newUser || !newUser.userId) {
-        throw new Error("Falha ao criar o usuário. ID não retornado.");
+        await updateClientProfile(editingClient.id, updateProfileDto);
+
+        toast.success("Sucesso", {
+          description: "Cliente atualizado com sucesso!",
+        });
+      } else {
+ 
+        const createProfileDto: CreateClientProfileDto = {
+          firstName: values.firstName,
+          lastName: values.lastName,
+          email: values.email,
+          identityNumber: values.identityNumber,
+          phoneNumber: values.phoneNumber,
+          optionalContacts: processedOptionalContacts, 
+          address: values.address,
+        };
+
+      
+        
+        await createClientProfile(createProfileDto);
+        
+        toast.success("Sucesso", {
+          description: "Cliente criado com sucesso!",
+        });
       }
       
-    
-      await createClientProfileInternal(newUser.userId, createProfileDto);
-
-     
-      
       setIsModalOpen(false); 
+      setEditingClient(null);
       form.reset();
       setOptionalContacts([]);
       fetchData(); 
     } catch (error) {
-      console.error("Erro ao criar perfil:", error);
+      console.error("Erro ao processar perfil:", error);
       toast.error("Erro", {
-        description: "Falha ao criar o usuário ou o perfil. Tente novamente.",
+        description: `Falha ao ${editingClient ? "atualizar" : "criar"} o cliente. Tente novamente.`,
       });
     } finally {
       setIsSubmitting(false);
@@ -196,164 +244,178 @@ export default function ClientProfileList() {
     fetchData();
   }, [page, limit, debouncedSearchFilter]);
 
-  const columns = clientProfileColumns(handleDelete, isDeleting);
+  const columns = clientProfileColumns(handleDelete, isDeleting, handleEdit);
 
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-2xl font-bold">Clientes (Individual)</h1>
-        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Adicionar Novo Cliente
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[700px]">
-            <DialogHeader>
-              <DialogTitle>Adicionar Novo Cliente</DialogTitle>
-              <DialogDescription>
-                Preencha os dados para criar um novo usuário e seu perfil de cliente.
-              </DialogDescription>
-            </DialogHeader>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleSubmit)} className="grid gap-4 py-4">
-                {/* Campos do Usuário */}
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="firstName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Primeiro Nome</FormLabel>
-                        <FormControl>
-                          <Input placeholder="João" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="lastName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Sobrenome</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Silva" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+        <Button onClick={handleOpenCreateModal}>
+          <PlusCircle className="mr-2 h-4 w-4" />
+          Adicionar Novo Cliente
+        </Button>
+      </div>
 
-                <div className="grid w-full ">
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input   placeholder="joao.silva@exemplo.com" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                {/* Campos do Perfil de Cliente */}
-                <h3 className="text-lg font-semibold mt-4">Dados do Perfil</h3>
-                <p className="text-sm text-gray-500">
-                  O nome completo será gerado automaticamente a partir do primeiro e último nome.
-                </p>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="phoneNumber"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Telefone Principal</FormLabel>
-                        <FormControl>
-                          <Input placeholder="+244912345678" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="identityNumber"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Nº de Identificação (BI)</FormLabel>
-                        <FormControl>
-                          <Input placeholder="123456789XA001" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                
-                {/* Campos de Contatos Opcionais (Dinâmicos) */}
-                <div className="flex flex-col gap-2">
-                  <FormLabel>Contatos Opcionais</FormLabel>
-                  {optionalContacts.map((contact, index) => (
-                    <div key={index} className="flex items-center gap-2 w-full">
-                      <Input
-                        className="w-full"
-                        placeholder={`Contato opcional ${index + 1}`}
-                        value={contact}
-                        onChange={(e) => handleContactChange(index, e.target.value)}
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        onClick={() => handleRemoveContact(index)}
-                        className="text-red-500 hover:text-red-600"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleAddContact}
-                    className="mt-2 w-fit"
-                    disabled={optionalContacts.length >= 4}
-                  >
-                    <PlusCircle className="mr-2 h-4 w-4" />
-                    Adicionar Contato
-                  </Button>
-                </div>
-
+      {/* Modal Única para Criar e Editar */}
+      <Dialog open={isModalOpen} onOpenChange={(open) => {
+        setIsModalOpen(open);
+        if (!open) {
+          setEditingClient(null);
+          form.reset();
+          setOptionalContacts([]);
+        }
+      }}>
+        <DialogContent className="sm:max-w-[700px]">
+          <DialogHeader>
+            <DialogTitle>
+              {editingClient ? "Editar Cliente" : "Adicionar Novo Cliente"}
+            </DialogTitle>
+            <DialogDescription>
+              {editingClient 
+                ? "Atualize os dados do cliente e seu perfil."
+                : "Preencha os dados para criar um novo usuário e seu perfil de cliente."
+              }
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleSubmit)} className="grid gap-4 py-4">
+              <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
-                  name="address"
+                  name="firstName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Endereço</FormLabel>
+                      <FormLabel>Primeiro Nome</FormLabel>
                       <FormControl>
-                        <Input placeholder="Rua de Exemplo, 456" {...field} />
+                        <Input placeholder="João" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+                <FormField
+                  control={form.control}
+                  name="lastName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Sobrenome</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Silva" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
-                <Button type="submit" className="mt-4" disabled={isSubmitting}>
-                  {isSubmitting ? "Criando..." : "Criar Cliente"}
+              <div className="grid w-full ">
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input placeholder="joao.silva@exemplo.com" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <h3 className="text-lg font-semibold mt-4">Dados do Perfil</h3>
+              {!editingClient && (
+                <p className="text-sm text-gray-500">
+                  O nome completo será gerado automaticamente a partir do primeiro e último nome.
+                </p>
+              )}
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="phoneNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Telefone Principal</FormLabel>
+                      <FormControl>
+                        <Input placeholder="+244912345678" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="identityNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Nº de Identificação (BI)</FormLabel>
+                      <FormControl>
+                        <Input placeholder="123456789XA001" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              
+              <div className="flex flex-col gap-2">
+                <FormLabel>Contatos Opcionais</FormLabel>
+                {optionalContacts.map((contact, index) => (
+                  <div key={index} className="flex items-center gap-2 w-full">
+                    <Input
+                      className="w-full"
+                      placeholder={`Contato opcional ${index + 1}`}
+                      value={contact}
+                      onChange={(e) => handleContactChange(index, e.target.value)}
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={() => handleRemoveContact(index)}
+                      className="text-red-500 hover:text-red-600"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleAddContact}
+                  className="mt-2 w-fit"
+                  disabled={optionalContacts.length >= 4}
+                >
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  Adicionar Contato
                 </Button>
-              </form>
-            </Form>
-          </DialogContent>
-        </Dialog>
-      </div>
+              </div>
+
+              <FormField
+                control={form.control}
+                name="address"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Endereço</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Rua de Exemplo, 456" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Button type="submit" className="mt-4" disabled={isSubmitting}>
+                {isSubmitting 
+                  ? (editingClient ? "Atualizando..." : "Criando...") 
+                  : (editingClient ? "Atualizar Cliente" : "Criar Cliente")
+                }
+              </Button>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
 
       <div className="container mx-auto py-6">
         {loading ? (
