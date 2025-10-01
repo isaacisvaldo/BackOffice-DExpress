@@ -22,10 +22,11 @@ import {
 import { Badge } from "../ui/badge";
 import type { ClientCompanyProfile } from "@/services/client/company/client-company-profile.service";
 
-
+// ALTERAÇÃO: Adiciona a função onEdit como um novo parâmetro
 export const clientCompanyProfileColumns = (
   onDelete: (id: string) => void,
-  isDeleting: boolean
+  isDeleting: boolean,
+  onEdit: (profile: ClientCompanyProfile) => void 
 ): ColumnDef<ClientCompanyProfile>[] => [
   {
     accessorKey: "companyName",
@@ -66,6 +67,9 @@ export const clientCompanyProfileColumns = (
     header: "Setor",
     cell: ({ row }) => {
       const sector = row.original.sector;
+      // Trata o caso de setor ser nulo/indefinido (boa prática)
+      if (!sector) return <Badge variant="destructive">Sem Setor</Badge>;
+      
       return (
         <Badge variant="secondary">
           {sector.label}
@@ -95,15 +99,18 @@ export const clientCompanyProfileColumns = (
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Ações</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => alert(`Ver ${profile.companyName}`)}>
-              Ver
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => alert(`Editar ${profile.companyName}`)}>
+            
+            
+          
+            <DropdownMenuItem onClick={() => onEdit(profile)}>
               Editar
             </DropdownMenuItem>
+            
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                <DropdownMenuItem 
+                    onSelect={(e) => e.preventDefault()} 
+                >
                   Excluir
                 </DropdownMenuItem>
               </AlertDialogTrigger>

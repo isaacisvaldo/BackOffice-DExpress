@@ -17,7 +17,9 @@ export interface ClientCompanyProfile {
   createdAt: string;
   updatedAt: string;
   sectorId: string;
+  districtId: string;
   sector: Sector;
+  district: any;
 }
 
 // Define a interface para a resposta paginada
@@ -37,7 +39,8 @@ export interface CreateCompanyProfileDto {
   phoneNumber: string;
   optionalContact?: string;
   address: string;
-  sectorId: string;
+    sectorId: string;
+   districtId?: string;
 }
 
 export interface UpdateCompanyProfileDto {
@@ -49,6 +52,7 @@ export interface UpdateCompanyProfileDto {
   address?: string;
   state?: string;
   sectorId?: string;
+  districtId?: string;
 }
 
 // Parâmetros de filtro para busca
@@ -97,7 +101,7 @@ export async function createClientCompanyProfile(data: CreateCompanyProfileDto):
  * Atualiza um perfil de empresa existente pelo seu ID.
  */
 export async function updateClientCompanyProfile(id: string, data: UpdateCompanyProfileDto): Promise<ClientCompanyProfile> {
-  return sendData(`/client-company-profiles/${id}`, "PATCH", data);
+  return sendData(`/client-company-profiles/${id}`, "PUT", data);
 }
 
 /**
