@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import {
   Users,
   FileText,
@@ -9,8 +9,7 @@ import {
   DollarSign,
   BarChart3,
   Settings,
-  Menu,
-  X,
+
   Building
 } from "lucide-react";
 import {
@@ -22,11 +21,11 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarTrigger,
-  useSidebar,
+
+
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+
 
 const menuItems = [
   {
@@ -75,12 +74,11 @@ const settingsItems = [
 ];
 
 export function AppSidebar() {
-  const { open: sidebarOpen } = useSidebar();
-  const [collapsed, setCollapsed] = useState(false);
-  const location = useLocation();
-  const currentPath = location.pathname;
 
-  const isActive = (path: string) => currentPath === path;
+  const [collapsed, ] = useState(false);
+
+
+
   const getNavClass = ({ isActive }: { isActive: boolean }) =>
     cn(
       "group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-200",
