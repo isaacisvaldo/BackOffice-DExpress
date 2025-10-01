@@ -43,7 +43,8 @@ export interface PaginatedClientProfilesResponse {
  * DTO para a criação de um novo perfil de cliente.
  */
 export interface CreateClientProfileDto {
-  fullName: string;
+ firstName: string;
+ lastName: string;
   email: string;
   identityNumber?: string;
   phoneNumber: string;
@@ -55,7 +56,8 @@ export interface CreateClientProfileDto {
  * DTO para a atualização de um perfil de cliente existente.
  */
 export interface UpdateClientProfileDto {
-  fullName?: string;
+ firstName?: string;
+ lastName?: string;
   email?: string;
   identityNumber?: string;
   phoneNumber?: string;

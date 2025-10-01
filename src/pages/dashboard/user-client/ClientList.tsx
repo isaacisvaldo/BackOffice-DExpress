@@ -24,7 +24,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import SwirlingEffectSpinner from "@/components/customized/spinner/spinner-06";
 import {
-  createClientProfileInternal,
+  createClientProfile,
+ 
   deleteClientProfile,
   getClientProfiles,
   updateClientProfile,
@@ -33,7 +34,7 @@ import {
   type UpdateClientProfileDto,
 } from "@/services/client/client.service";
 import { clientProfileColumns } from "@/components/shared/client-profile-column";
-import { createUser, updateUser, type CreateUserDto, type UpdateUserDto } from "@/services/users-client/user-client.service";
+//import {  updateUser, type UpdateUserDto } from "@/services/users-client/user-client.service";
 import { formatDate } from "@/util";
 
 const formSchema = z.object({
@@ -167,11 +168,12 @@ export default function ClientProfileList() {
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsSubmitting(true);
     try {
-      const fullName = `${values.firstName} ${values.lastName}`;
+
       const processedOptionalContacts = optionalContacts.filter(contact => contact.trim().length > 0);
 
       if (editingClient) {
         // Modo de edição
+        /*
         const updateUserDto: UpdateUserDto = {
           firstName: values.firstName,
           lastName: values.lastName,
@@ -179,9 +181,10 @@ export default function ClientProfileList() {
         };
         
         await updateUser(editingClient.userId, updateUserDto);
-
+*/
         const updateProfileDto: UpdateClientProfileDto = {
-          fullName: fullName,
+          firstName: values.firstName,
+          lastName: values.lastName,
           email: values.email,
           identityNumber: values.identityNumber,
           phoneNumber: values.phoneNumber,
@@ -195,16 +198,10 @@ export default function ClientProfileList() {
           description: "Cliente atualizado com sucesso!",
         });
       } else {
-        // Modo de criação
-        const createUserDto: CreateUserDto = {
+ 
+        const createProfileDto: CreateClientProfileDto = {
           firstName: values.firstName,
           lastName: values.lastName,
-          email: values.email,
-          type: "INDIVIDUAL",
-        };
-
-        const createProfileDto: CreateClientProfileDto = {
-          fullName: fullName,
           email: values.email,
           identityNumber: values.identityNumber,
           phoneNumber: values.phoneNumber,
@@ -212,13 +209,9 @@ export default function ClientProfileList() {
           address: values.address,
         };
 
-        const newUser = await createUser(createUserDto);
-   
-        if (!newUser || !newUser.userId) {
-          throw new Error("Falha ao criar o usuário. ID não retornado.");
-        }
+      
         
-        await createClientProfileInternal(newUser.userId, createProfileDto);
+        await createClientProfile(createProfileDto);
         
         toast.success("Sucesso", {
           description: "Cliente criado com sucesso!",
