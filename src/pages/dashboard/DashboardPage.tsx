@@ -1,55 +1,15 @@
-import { useState, useEffect } from "react"
-import { columns, type MappedJobApplication } from "@/components/application/columns"
-import { getApplications } from "@/services/application/application.service"
+
 import { SectionCards } from "@/components/section-cards"
 import { ChartAreaInteractive } from "@/components/chart-area-interactive"
 import { ChartPieInteractive } from "@/components/ui/chart-pie-interactive"
-import { DataTable } from "@/components/data-table"
-import type { JobApplication } from "@/types/types"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import ClientSegmentationCard from "./components/ClientSegmentationCard"
 
 export default function DashboardPage() {
-  const [data, setData] = useState<MappedJobApplication[]>([])
-  const [, setLoading] = useState(true)
-  const [page, setPage] = useState(1)
-  const [limit, setLimit] = useState(10)
-  const [totalPages, setTotalPages] = useState(1)
-  const columnsWithoutActions = columns.filter((col) => col.id !== "actions")
 
-  const [emailFilter, setEmailFilter] = useState("")
-  const [statusFilter, setStatusFilter] = useState<string>("")
 
-  useEffect(() => {
-    async function fetchData() {
-      setLoading(true)
-      try {
-        const result = await getApplications({
-          page,
-          limit: limit === 0 ? undefined : limit,
-          status: statusFilter,
-        })
-const mappedData: MappedJobApplication[] = result.data.map(
-  (item: JobApplication) => ({
-    id: item.id,
-    candidateName: item.fullName,
-    email: item.email,
-    phone: item.phoneNumber || "-",
-    location:`${item.location?.city?.name ?? ""} - ${item.location?.district?.name ?? ""}`,
-    position: item.desiredPosition?.label ?? "N/A",
-    status: item.status,
-    appliedAt: new Date(item.createdAt).toLocaleDateString("pt-PT"),
-  })
-);
-   
-        setData(mappedData)
-        setTotalPages(result.totalPages || 1)
-      } catch (error) {
-        console.error("Erro ao carregar candidaturas", error)
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchData()
-  }, [page, limit, statusFilter])
+
+
 
   return (
     <div className="flex flex-1 flex-col">
@@ -61,54 +21,61 @@ const mappedData: MappedJobApplication[] = result.data.map(
             <ChartAreaInteractive />
           </div>
 
-          <div className="px-4 lg:px-6 flex flex-wrap gap-4">
-            <div className="flex-1 min-w-[300px]">
+         
+                {/* Main Content Grid */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        {/* Top Clients */}
+        <div className="space-y-4">
               <ChartPieInteractive />
             </div>
-             {/* Vou substituir pela listagens das solicitacoes de contratacao ou os historicos */}
-            
-            <div className="flex-[2] min-w-[450px]">
-              <div className="bg-white dark:bg-gray-900 rounded-xl shadow-md p-4 h-[450px] flex flex-col">
-                <div className="flex-1 overflow-y-auto">
-                  <DataTable
-                    className="flex-1 h-full"
-                    columns={columnsWithoutActions}
-                    data={data}
-                    page={page}
-                    setPage={setPage}
-                    totalPages={totalPages}
-                    limit={limit}
-                    setLimit={setLimit}
-                    filters={[
-                      {
-                        type: "input",
-                        column: "email",
-                        placeholder: "Filtrar emails...",
-                        value: emailFilter,
-                        onChange: setEmailFilter,
-                      },
-                      {
-                        type: "select",
-                        placeholder: "Filtrar status",
-                        value: statusFilter || "all",
-                        onChange: (val) => setStatusFilter(val === "all" ? "" : val),
-                        options: [
-                          { label: "Todos", value: "all" },
-                          { label: "Pendente", value: "PENDING" },
-                          { label: "Em Análise", value: "IN_REVIEW" },
-                          { label: "Entrevista", value: "INTERVIEW" },
-                          { label: "Aprovado", value: "ACCEPTED" },
-                          { label: "Rejeitado", value: "REJECTED" },
-                        ],
-                      },
-                    ]}
-                  />
-                </div>
+
+        {/* Client Segments */}
+          <ClientSegmentationCard 
+              
+                barHeightClass="h-12"
+            />
+      </div>
+
+      {/* Alerts Card */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Alertas e Notificações</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3">
+            <div className="flex items-start gap-3 p-3 bg-warning/10 rounded-lg border border-warning/20">
+              <div className="h-2 w-2 mt-2 rounded-full bg-warning" />
+              <div className="flex-1">
+                <p className="font-medium text-sm">Contratos a Renovar</p>
+                <p className="text-sm text-muted-foreground">
+                  47 contratos de clientes empresa vencem nos próximos 30 dias
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 p-3 bg-primary/10 rounded-lg border border-primary/20">
+              <div className="h-2 w-2 mt-2 rounded-full bg-primary" />
+              <div className="flex-1">
+                <p className="font-medium text-sm">Novos Cadastros</p>
+                <p className="text-sm text-muted-foreground">
+                  23 novos clientes cadastrados nos últimos 7 dias
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 p-3 bg-accent/10 rounded-lg border border-accent/20">
+              <div className="h-2 w-2 mt-2 rounded-full bg-accent" />
+              <div className="flex-1">
+                <p className="font-medium text-sm">Oportunidades de Upgrade</p>
+                <p className="text-sm text-muted-foreground">
+                  156 clientes elegíveis para upgrade de plano
+                </p>
               </div>
             </div>
           </div>
+        </CardContent>
+      </Card>
+          </div>
         </div>
       </div>
-    </div>
+ 
   )
 }
