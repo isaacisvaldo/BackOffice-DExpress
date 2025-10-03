@@ -1,18 +1,20 @@
 import { InputFormField } from "@/components/inputFormField";
 import type { ContractForm } from "../../types";
+import { useFinalValue } from "../../hooks/use-final-value";
 
 type PaymentFormInputGroupProps = {
   form: ContractForm;
 };
 
 export const PaymentFormInputGroup = ({ form }: PaymentFormInputGroupProps) => {
-  const finalValue =
-    form.watch("agreedValue") * (1 - form.watch("discountPercentage") / 100);
-  form.setValue("finalValue", finalValue);
+  useFinalValue(form);
+
+  const clientType = form.watch("clientType");
 
   return (
     <div className="grid md:grid-cols-2 gap-4">
       <InputFormField
+        disabled={clientType === "CORPORATE"}
         label="Valor acordado"
         control={form.control}
         name="agreedValue"
