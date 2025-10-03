@@ -50,7 +50,7 @@ export default function CourseList() {
       const result = await getCourses({
         page,
         limit: limit === 0 ? undefined : limit,
-        search: debouncedNameFilter || undefined, // Filter by 'name' for courses
+        search: debouncedNameFilter || undefined, 
       });
 
       const mappedData: Course[] = result.data.map((item: any) => ({
@@ -145,7 +145,7 @@ export default function CourseList() {
             filters={[
               {
                 type: "input",
-                column: "label", // Filter by 'name' for courses
+                column: "label", 
                 placeholder: "Filtrar por Rotulo...",
                 value: nameFilter,
                 onChange: setNameFilter,

@@ -41,6 +41,7 @@ import ContractView from "./pages/dashboard/contract/ContractView"
 import ContractTemplatesPage from "./pages/dashboard/contract/ContractTemplatesPage"
 import AuditLog from "./pages/dashboard/auditLog/auditLog"
 import DashboardRh from "./pages/dashboard/rh/DashboardRh"
+import {  NewsLetter } from "./pages/dashboard/shared/newsLetter"
 
 // 🔹 Rota protegida
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
@@ -136,6 +137,9 @@ export default function App() {
            <Route path="settings/notifications" element={<NotificationList />} />
            <Route path="settings/audit-log" element={<AuditLog />} />
            <Route path="/rh/dashboard" element={<DashboardRh />} />
+           <Route path="/portal/newsletter-subscribers" element={<NewsLetter />} />
+
+           
 
 
               <Route path="admin/users" element={<AdminList />} />
