@@ -2,6 +2,7 @@ import SwirlingEffectSpinner from "@/components/customized/spinner/spinner-06";
 import { DataTable } from "@/components/data-table";
 import { NewsLetterColumns } from "@/components/shared/newsLetter-column";
 import { DeleteNewsLetterSubscription, GetNewsLetterSubscriptionsList, type NewsLetterSubscription } from "@/services/shared/newsLetter/newsLetter.service";
+import { formatDate } from "@/util";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -39,11 +40,9 @@ export function NewsLetter() {
       const mappedData: NewsLetterSubscription[] = result.data.map((item: any) => ({
         id: item.id,
         email: item.email,
-
-        createdAt: new Date(item.createdAt).toLocaleDateString("pt-PT"),
+        createdAt: formatDate(item.createdAt),
 
       }));
-
       setData(mappedData);
       setTotalPages(result.totalPages || 1);
     } catch (error) {
@@ -97,7 +96,7 @@ export function NewsLetter() {
               filters={[
                 {
                   type: "input",
-                  column: "label",
+                  column: "email",
                   placeholder: "Filtrar por Email...",
                   value: emailFilter,
                   onChange: setEmailFilter,

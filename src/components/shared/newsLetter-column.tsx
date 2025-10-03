@@ -33,7 +33,7 @@ export const NewsLetterColumns = (
   {
     accessorKey: "createdAt",
     header: "Criado em",
-    cell: ({ row }) => <div className="font-medium">{row.getValue("email")}</div>,
+    cell: ({ row }) => <div className="font-medium">{row.getValue("createdAt")}</div>,
   },
   {
     id: "actions",
