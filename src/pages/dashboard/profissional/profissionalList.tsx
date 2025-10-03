@@ -23,7 +23,7 @@ export default function ProfessionalsList() {
   const [totalPages, setTotalPages] = useState(1);
 
   const [nameFilter, setNameFilter] = useState("");
-  const [availabilityTypeIdFilter, setAvailabilityTypeIdFilter] = useState("all");
+
   const [experienceLevelIdFilter, setExperienceLevelIdFilter] = useState("all");
   const [desiredPositionIdFilter, setDesiredPositionIdFilter] = useState("all");
 
@@ -44,7 +44,7 @@ export default function ProfessionalsList() {
         // 2. Com os dados dos filtros em mãos, faz a requisição da lista de profissionais
         const filters = {
           name: nameFilter,
-          availabilityTypeId: availabilityTypeIdFilter !== "all" ? availabilityTypeIdFilter : undefined,
+      
           experienceLevelId: experienceLevelIdFilter !== "all" ? experienceLevelIdFilter : undefined,
           desiredPositionId: desiredPositionIdFilter !== "all" ? desiredPositionIdFilter : undefined,
           page,
@@ -82,7 +82,7 @@ export default function ProfessionalsList() {
     return () => clearTimeout(debounceTimeout);
   }, [
     nameFilter,
-    availabilityTypeIdFilter,
+   
     experienceLevelIdFilter,
     desiredPositionIdFilter,
     page,
@@ -98,7 +98,7 @@ export default function ProfessionalsList() {
       setLoading(true);
       const filters = {
         name: nameFilter,
-        availabilityTypeId: availabilityTypeIdFilter !== "all" ? availabilityTypeIdFilter : undefined,
+      
         experienceLevelId: experienceLevelIdFilter !== "all" ? experienceLevelIdFilter : undefined,
         desiredPositionId: desiredPositionIdFilter !== "all" ? desiredPositionIdFilter : undefined,
         page,
@@ -155,10 +155,7 @@ export default function ProfessionalsList() {
     { label: "Todas", value: "all" },
     ...desiredPositions.map(p => ({ label: p.label || 'N/A', value: p.id })),
   ];
-  const availabilityOptions = [
-    { label: "Todas", value: "all" },
-    ...availabilities.map(a => ({ label: a.label || 'N/A', value: a.id })),
-  ];
+
   const experienceLevelOptions = [
     { label: "Todos", value: "all" },
     ...experienceLevels.map(e => ({ label: e.label || 'N/A', value: e.id })),
@@ -183,7 +180,7 @@ export default function ProfessionalsList() {
             setLimit={setLimit}
             filters={[
               { type: "input", column: "fullName", placeholder: "Filtrar por nome...", value: nameFilter, onChange: setNameFilter },
-              { type: "select", placeholder: "Filtrar por disponibilidade", value: availabilityTypeIdFilter, onChange: setAvailabilityTypeIdFilter, options: availabilityOptions },
+
               { type: "select", placeholder: "Filtrar por experiência", value: experienceLevelIdFilter, onChange: setExperienceLevelIdFilter, options: experienceLevelOptions },
               { type: "select", placeholder: "Filtrar por Posição", value: desiredPositionIdFilter, onChange: setDesiredPositionIdFilter, options: desiredPositionOptions },
             ]}
