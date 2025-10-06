@@ -179,6 +179,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             title: "Leads",
             url: "/portal/leads",
           },
+          {
+            title: "Assinantes da Newsletter",
+            url: "/portal/newsletter-subscribers",
+          }
         ],
       },
 

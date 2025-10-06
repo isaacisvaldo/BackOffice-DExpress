@@ -85,6 +85,7 @@ export interface Professional {
 
   ProfessionalExperience: ProfessionalExperience[];
   contracts: any;
+  contractPackegeProfissional: any;
 }
 
 export interface CreateProfessionalExperienceDto {

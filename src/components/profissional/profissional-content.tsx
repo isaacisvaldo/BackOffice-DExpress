@@ -90,6 +90,7 @@ import {
   type Professional,
   type CreateProfessionalExperienceDto
 } from '@/services/profissional/profissional.service';
+import { UserType } from '@/services/serviceRequest/service-request.service';
 
 // Interfaces
 interface SimplifiedItem {
@@ -176,7 +177,7 @@ interface ProfessionalContentProps {
 export default function ProfessionalContent({
   professional
 }: ProfessionalContentProps) {
-  const [editedProfessional, setEditedProfessional] = useState < EditedProfessionalState > ({
+  const [editedProfessional, setEditedProfessional] = useState<EditedProfessionalState>({
     ...professional,
     professionalSkills: professional.professionalSkills?.map(s => s.skill ? {
       id: s.skill.id,
@@ -202,8 +203,8 @@ export default function ProfessionalContent({
   });
 
   const [isLoading, setIsLoading] = useState(true);
-  const [errors, setErrors] = useState < Record < string, string >> ({});
-  const [newExperience, setNewExperience] = useState < SimplifiedItemExp > ({
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [newExperience, setNewExperience] = useState<SimplifiedItemExp>({
     localTrabalho: '',
     tempo: "",
     cargo: '',
@@ -212,12 +213,38 @@ export default function ProfessionalContent({
     description: '',
   });
 
-  const [gendersList, setGendersList] = useState < any[] > ([]);
-  const [desiredPositionsList, setDesiredPositionsList] = useState < any[] > ([]);
-  const [experienceLevelsList, setExperienceLevelsList] = useState < any[] > ([]);
-  const [availableSkills, setAvailableSkills] = useState < any[] > ([]);
-  const [availableLanguages, setAvailableLanguages] = useState < any[] > ([]);
-  const [availableCourses, setAvailableCourses] = useState < any[] > ([]);
+  const mappedContracts = [
+    // contratos diretos
+    ...(professional.contracts || []).map((contract: any) => ({
+      id: contract.id,
+      companyName: contract.companyClient?.companyName || contract.individualClient?.fullName || "N/A",
+      position: contract.clientType, // ou pode ser outro campo como cargo
+      startDate: contract.startDate,
+      endDate: contract.endDate,
+      status: contract.status,
+    })),
+
+    // contratos de pacotes
+    ...(professional.contractPackegeProfissional || []).map((item: any) => {
+      const contract = item.contract;
+      return {
+        id: contract.id,
+        companyName: contract.companyClient?.companyName || contract.individualClient?.fullName || "N/A",
+        position: contract.clientType === UserType.INDIVIDUAL ? "Individual" : "Empresa",
+        startDate: contract.startDate,
+        endDate: contract.endDate,
+        status: contract.status,
+      };
+    }),
+  ];
+
+
+  const [gendersList, setGendersList] = useState<any[]>([]);
+  const [desiredPositionsList, setDesiredPositionsList] = useState<any[]>([]);
+  const [experienceLevelsList, setExperienceLevelsList] = useState<any[]>([]);
+  const [availableSkills, setAvailableSkills] = useState<any[]>([]);
+  const [availableLanguages, setAvailableLanguages] = useState<any[]>([]);
+  const [availableCourses, setAvailableCourses] = useState<any[]>([]);
   const [isAddingExperience, setIsAddingExperience] = useState(false);
 
   useEffect(() => {
@@ -358,7 +385,7 @@ export default function ProfessionalContent({
 
     try {
       // 2. O payload já é o objeto 'newExperience' validado
-     const payload: CreateProfessionalExperienceDto = {
+      const payload: CreateProfessionalExperienceDto = {
         localTrabalho: result.data.localTrabalho,
         cargo: result.data.cargo,
         startDate: result.data.startDate,
@@ -366,7 +393,7 @@ export default function ProfessionalContent({
         description: result.data.description,
         tempo: result.data.tempo,
       };
-      const response = await addExperienceToProfessional(payload,professional.id);
+      const response = await addExperienceToProfessional(payload, professional.id);
 
       // 4. Atualiza o estado local com a nova experiência, incluindo o ID real retornado pela API
       const addedExperience = {
@@ -654,31 +681,37 @@ export default function ProfessionalContent({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Empresa</TableHead>
-                  <TableHead>Posição</TableHead>
+                  <TableHead>Entidate</TableHead>
+                  <TableHead>Tipo de Cliente</TableHead>
                   <TableHead>Período</TableHead>
                   <TableHead>Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {editedProfessional.contracts?.length > 0 ? (
-                  editedProfessional.contracts?.map((contract: any) => (
+                {mappedContracts.length > 0 ? (
+                  mappedContracts.map((contract: any) => (
                     <TableRow key={contract.id}>
                       <TableCell>{contract.companyName}</TableCell>
                       <TableCell>{contract.position}</TableCell>
-                      <TableCell>{new Date(contract.startDate).toLocaleDateString()} - {contract.endDate ? new Date(contract.endDate).toLocaleDateString() : 'Presente'}</TableCell>
                       <TableCell>
-                        <Badge variant={contract.status === 'Active' ? 'default' : 'secondary'}>
-                          {contract.status === 'Active' ? 'Ativo' : 'Terminado'}
+                        {new Date(contract.startDate).toLocaleDateString()} -{" "}
+                        {contract.endDate ? new Date(contract.endDate).toLocaleDateString() : "Presente"}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={contract.status === "ACTIVE" ? "default" : "secondary"}>
+                          {contract.status === "ACTIVE" ? "Ativo" : "Terminado"}
                         </Badge>
                       </TableCell>
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={4} className="text-center text-muted-foreground">Nenhum contrato encontrado.</TableCell>
+                    <TableCell colSpan={4} className="text-center text-muted-foreground">
+                      Nenhum contrato encontrado.
+                    </TableCell>
                   </TableRow>
                 )}
+
               </TableBody>
             </Table>
           </CardContent>
@@ -761,9 +794,9 @@ function MultiSelectPopover({ label, options, selectedIds, onChange }: {
           <Button variant="outline" className="w-full justify-between">
             {selectedIds.length > 0
               ? options
-              .filter((s) => selectedIds.includes(s.id))
-              .map((s) => getOptionText(s))
-              .join(", ")
+                .filter((s) => selectedIds.includes(s.id))
+                .map((s) => getOptionText(s))
+                .join(", ")
               : "Selecione as opções"}
             <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
