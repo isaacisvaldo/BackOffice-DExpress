@@ -265,7 +265,7 @@ export default function ClientProfileList() {
           setOptionalContacts([]);
         }
       }}>
-        <DialogContent className="sm:max-w-[700px]">
+        <DialogContent className="sm:max-w-[900px]">
           <DialogHeader>
             <DialogTitle>
               {editingClient ? "Editar Cliente" : "Adicionar Novo Cliente"}

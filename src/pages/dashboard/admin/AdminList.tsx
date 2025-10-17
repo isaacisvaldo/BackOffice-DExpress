@@ -200,7 +200,7 @@ export default function AdminList() {
               Adicionar Novo Admin
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[700px]">
+        <DialogContent className="sm:max-w-[900px]">
             <DialogHeader>
               <DialogTitle>Adicionar Novo Administrador</DialogTitle>
               <DialogDescription>

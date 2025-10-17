@@ -5,6 +5,18 @@ import { DeleteNewsLetterSubscription, GetNewsLetterSubscriptionsList, type News
 import { formatDate } from "@/util";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Send } from "lucide-react"; 
+
+import EmailEditor from "@/components/EmailEditor";
 
 
 export function NewsLetter() {
@@ -16,6 +28,8 @@ export function NewsLetter() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [emailFilter, setEmailFilter] = useState<string>("");
   const [debouncedemailFilter, setDebouncedemailFilter] = useState<string>("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
 
 
   useEffect(() => {
@@ -47,7 +61,10 @@ export function NewsLetter() {
       setTotalPages(result.totalPages || 1);
     } catch (error) {
       console.error("Erro ao carregar cursos", error);
-
+      // Adicione um toast de erro se necessário
+      toast.error("Erro", {
+        description: "Falha ao carregar a lista de inscritos na Newsletter.",
+      });
     } finally {
       setLoading(false);
     }
@@ -61,13 +78,13 @@ export function NewsLetter() {
     try {
       await DeleteNewsLetterSubscription(id);
       toast.success("Sucesso", {
-        description: "Curso excluído com sucesso!",
+        description: "Inscrição excluída com sucesso!",
       });
       fetchData();
     } catch (error) {
-      console.error("Erro ao excluir curso:", error);
+      console.error("Erro ao excluir inscrição:", error);
       toast.error("Erro", {
-        description: "Falha ao excluir o curso. Tente novamente.",
+        description: "Falha ao excluir a inscrição. Tente novamente.",
       });
     } finally {
       setIsDeleting(false);
@@ -78,7 +95,29 @@ export function NewsLetter() {
   return (
     <div className="card mb-4">
       <div className="card-body">
-        <h5 className="card-title">Newsletter</h5>
+        <div className="flex items-center justify-between mb-4"> 
+          <h5 className="card-title mb-0">Newsletter</h5>
+          
+          {/* Componente Dialog (Modal) */}
+          <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline">
+                <Send className="mr-2 h-4 w-4" />
+                Enviar Broadcast
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[900px]">
+              <DialogHeader>
+                <DialogTitle>Enviar Mensagem para Inscritos</DialogTitle>
+                <DialogDescription>
+                  Crie uma mensagem que será enviada para todos os e-mails inscritos na Newsletter.
+                </DialogDescription>
+              </DialogHeader>
+            <EmailEditor recipient="broadcast" subject="Novidades da Newsletter" />
+            </DialogContent>
+          </Dialog>
+        </div>
+        
         <div className="container mx-auto py-6">
           {loading ? (
             <div className="flex justify-center items-center py-10">
@@ -109,4 +148,4 @@ export function NewsLetter() {
       </div>
     </div>
   );
-} 
+}
