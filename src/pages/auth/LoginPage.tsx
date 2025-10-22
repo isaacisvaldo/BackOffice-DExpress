@@ -1,5 +1,5 @@
 
-import { LoginForm } from "@/components/login-form"
+import { LoginForm } from "@/pages/auth/components/login-form"
 import { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 

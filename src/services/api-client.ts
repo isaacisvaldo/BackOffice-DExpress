@@ -16,13 +16,22 @@ async function handleResponse(
 ): Promise<Response> {
   if (response.ok) {
     if (method !== 'GET' || showSuccessToastForGet) {
+      toast.dismiss();
 
       toast.success(successMessage || 'Operação concluída com sucesso!');
     }
   } else {
+    if (response.status === 401) {
+      const errorBody = await response.json();
+      const errorMessage = errorBody?.message || "Unauthorized.";
+      toast.dismiss();
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
+    }
     try {
       const errorBody = await response.json();
       const errorMessage = errorBody?.message || "Ocorreu um erro inesperado ao se comunicar com a API.";
+      toast.dismiss();
       toast.error(errorMessage);
       throw new Error(errorMessage);
     } catch {
@@ -47,7 +56,7 @@ async function apiFetch(
   if (options.body instanceof FormData) {
     delete defaultHeaders['Content-Type'];
   }
-  
+
   const defaultOptions: RequestInit = {
     credentials: 'include',
     headers: {
@@ -99,17 +108,17 @@ export async function fetchData(endpoint: string, successMessage = "Dados carreg
   return res.json();
 }
 
-export async function sendData<T>(endpoint: string, method: "POST" | "PUT" | "PATCH", body: T,successMessage="Dados enviados com sucesso!") {
+export async function sendData<T>(endpoint: string, method: "POST" | "PUT" | "PATCH", body: T, successMessage = "Dados enviados com sucesso!") {
   const res = await apiFetch(
     endpoint,
     { method, body: JSON.stringify(body) },
-   successMessage ,
+    successMessage,
     method
   );
   return res.json();
 }
 
-export async function deleteData(endpoint: string,successMessage="Recurso removido com sucesso!") {
+export async function deleteData(endpoint: string, successMessage = "Recurso removido com sucesso!") {
   const res = await apiFetch(
     endpoint,
     { method: 'DELETE' },
@@ -134,7 +143,7 @@ export async function uploadFile(
   successMessage = "Arquivo enviado com sucesso!"
 ): Promise<FileUploadResponse> {
   const formData = new FormData();
-  formData.append('file', file); 
+  formData.append('file', file);
 
   const res = await apiFetch(
     endpoint,
