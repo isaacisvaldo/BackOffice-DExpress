@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { GalleryVerticalEnd } from "lucide-react"
+
 import { Link, useNavigate, useParams } from "react-router-dom"
 
 import { cn } from "@/lib/utils"
@@ -64,12 +64,15 @@ export function ResetPasswordForm({
               className="flex flex-col items-center gap-2 font-medium"
             >
               <div className="flex size-8 items-center justify-center rounded-md">
-                <GalleryVerticalEnd className="size-6" />
+           <img
+            src="/logo.png"
+            alt="DExpress"
+            className="h-auto w-50 max-w-xs"
+          />
               </div>
               <span className="sr-only">Braleza</span>
             </Link>
 
-            <h1 className="text-xl font-bold">Definir nova senha</h1>
             <FieldDescription>
               Insira sua nova senha e confirme para concluir a redefinição.
             </FieldDescription>

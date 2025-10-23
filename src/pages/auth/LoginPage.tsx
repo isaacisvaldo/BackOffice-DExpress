@@ -1,10 +1,9 @@
-
 import { LoginForm } from "@/pages/auth/components/login-form"
 import { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 
 export default function LoginPage() {
-    const navigate = useNavigate()
+  const navigate = useNavigate()
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken")
@@ -15,24 +14,19 @@ export default function LoginPage() {
   
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
-      <div className="flex flex-col gap-4 p-6 md:p-10">
-        <div className="flex justify-center gap-2 md:justify-start">
-          <a href="#" className="flex items-center gap-2 font-medium">
-            <img
-              src="/logo.png"
-              alt="DExpress"
-              className="h-auto max-w-xs w-40"
-            />
-         
-          </a>
-        </div>
-        <div className="flex flex-1 items-center justify-center">
-          <div className="w-full max-w-xs">
-            <LoginForm />
-          </div>
+      <div className="flex flex-col items-center justify-center gap-8 p-6 md:p-10">
+        <a href="#" className="flex items-center gap-2 font-medium">
+          <img
+            src="/logo.png"
+            alt="DExpress"
+            className="h-auto w-80 max-w-xs"
+          />
+        </a>
+        <div className="w-full max-w-xs">
+          <LoginForm />
         </div>
       </div>
-      <div className="bg-muted relative hidden lg:block">
+      <div className="relative hidden bg-muted lg:block">
         <img
           src="/login.png"
           alt="Image"

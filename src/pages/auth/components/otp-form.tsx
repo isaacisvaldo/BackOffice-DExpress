@@ -1,5 +1,4 @@
 import { useState } from "react"
-import { GalleryVerticalEnd } from "lucide-react"
 import { cn } from "@/lib/utils"
 import toast from "react-hot-toast"
 import { Button } from "@/components/ui/button"
@@ -57,12 +56,15 @@ if (result.valid) navigate("/new-password")
               className="flex flex-col items-center gap-2 font-medium"
             >
               <div className="flex size-8 items-center justify-center rounded-md">
-                <GalleryVerticalEnd className="size-6" />
+                <img
+            src="/logo.png"
+            alt="DExpress"
+            className="h-auto w-50 max-w-xs"
+          />
               </div>
               <span className="sr-only">Braleza</span>
             </a>
 
-            <h1 className="text-xl font-bold">Introduza o código de verificação</h1>
             <FieldDescription>
               Enviámos um código de 6 dígitos para o seu endereço de e-mail.
             </FieldDescription>
