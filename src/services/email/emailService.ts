@@ -6,9 +6,10 @@ export interface SendEmailParams {
   to: string
   subject?: string
   html: string
+ 
 }
 
-export async function sendEmailHtml({ to, subject, html }: SendEmailParams): Promise<void> {
+export async function sendEmailHtml({ to, subject, html}: SendEmailParams): Promise<void> {
   const res = await fetch(`${API_URL}/email/send/html`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -16,6 +17,7 @@ export async function sendEmailHtml({ to, subject, html }: SendEmailParams): Pro
       to,
       subject,
       html,
+    
     }),
   })
 

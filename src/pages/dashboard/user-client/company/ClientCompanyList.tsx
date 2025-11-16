@@ -322,7 +322,7 @@ export default function ClientCompanyProfileList() {
             }
         }}
       >
-        <DialogContent className="sm:max-w-[700px]">
+       <DialogContent className="sm:max-w-[900px]">
           <DialogHeader>
             <DialogTitle>{editingCompany ? "Editar Empresa" : "Adicionar Nova Empresa"}</DialogTitle>
             <DialogDescription>

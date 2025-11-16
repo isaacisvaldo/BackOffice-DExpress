@@ -43,6 +43,9 @@ import AuditLog from "./pages/dashboard/auditLog/auditLog"
 import DashboardRh from "./pages/dashboard/rh/DashboardRh"
 import { ReactQueryProvider } from "./providers/react-query.provider";
 import { NewsLetter } from "./pages/dashboard/shared/newsLetter";
+import ForgotPasswordPage from "./pages/auth/forget-passwor-page";
+import OTPPage from "./pages/auth/otp-page";
+import ResetPasswordFormPage from "./pages/auth/reset-passwor-page";
 
 // 🔹 Rota protegida
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
@@ -84,7 +87,7 @@ export default function App() {
                     <LoginPage />
                   </PublicRoute>
                 }
-              />
+              /> 
               <Route
                 path="/login"
                 element={
@@ -92,7 +95,38 @@ export default function App() {
                     <LoginPage />
                   </PublicRoute>
                 }
+                
               />
+                 <Route
+                path="/forget-password"
+                element={
+                  <PublicRoute>
+                    <ForgotPasswordPage />
+                  </PublicRoute>
+                }
+                
+              />
+                 <Route
+                path="/otp-verification"
+                element={
+                  <PublicRoute>
+                    <OTPPage />
+                  </PublicRoute>
+                }
+                
+              />
+
+                 <Route
+                path="/reset-password/:token"
+                element={
+                  <PublicRoute>
+                    <ResetPasswordFormPage />
+                  </PublicRoute>
+                }
+                
+              />
+              
+              
 
               {/* Rotas protegidas com layout */}
               <Route

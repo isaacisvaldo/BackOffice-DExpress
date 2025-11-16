@@ -13,7 +13,7 @@ export default function PrivateRoute({ children }: { children: JSX.Element }) {
     async function check() {
       try {
         const isValid = await isAuthenticated();
-        setAuth(isValid);
+        setAuth(isValid?.valid!);
         setLoading(false);
       } catch {
         if (!refreshTried) {
@@ -21,7 +21,7 @@ export default function PrivateRoute({ children }: { children: JSX.Element }) {
           try {
             await refreshAccessToken();
             const isValid = await isAuthenticated();
-            setAuth(isValid);
+           setAuth(isValid?.valid!);
           } catch {
             setShowReauthModal(true);
             setAuth(false);
@@ -39,7 +39,7 @@ export default function PrivateRoute({ children }: { children: JSX.Element }) {
 
   async function handleReauth(email: string, password: string) {
     try {
-      await login(email, password); // Tokens já vão como cookie
+      await login({email, password}); 
       setAuth(true);
       setShowReauthModal(false);
     } catch (e) {

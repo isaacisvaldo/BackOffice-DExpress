@@ -16,9 +16,11 @@ function getCurrentTheme(): "dark" | "light" {
 export default function EmailEditor({
   recipient,
   subject: subjectProp = "Nota sobre sua candidatura",
+
 }: {
   recipient: string
   subject?: string
+  isBroadcast?: boolean
 }) {
   const editorRef = useRef<any>(null)
   const [loading, setLoading] = useState(false)
@@ -51,7 +53,14 @@ export default function EmailEditor({
     if (!TINEMCE_API_KEY) return toast.error("Chave da API do TinyMCE não configurada!")
 
     try {
+        if (recipient === 'broadcast') {
+        // Envia uma mensagem para o backend com uma flag de broadcast isBroadcast: true
+        setLoading(true)
+        toast.success("Estou a Implemetar o Broadcast, aguarde...")
+        return 
+    }
       setLoading(true)
+
       await sendEmailHtml({ to: recipient, subject, html })
       toast.success("Nota enviada com sucesso!")
       editorRef.current?.setContent("") 

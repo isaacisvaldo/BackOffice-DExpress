@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import toast from "react-hot-toast"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -16,26 +16,26 @@ export function LoginForm({
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
 
-  const { login } = useAuth() 
+  const { login } = useAuth()
 
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setLoading(true);
-  toast.dismiss();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    toast.dismiss();
 
-  try {
-    toast.loading("Entrando...");
-     await login(email, password);
-    toast.dismiss();
-    toast.success("Login realizado com sucesso!");
-    setTimeout(() => navigate("/dashboard"), 1000);
-  } catch (err: any) {
-    toast.dismiss();
-    toast.error(err.message || "Erro ao autenticar");
-  } finally {
-    setLoading(false);
-  }
-};
+    try {
+      toast.loading("Entrando...");
+      await login(email, password);
+      toast.dismiss();
+      toast.success("Login realizado com sucesso!");
+      setTimeout(() => navigate("/dashboard"), 1000);
+    } catch (err: any) {
+      toast.dismiss();
+      toast.error(err.message || "Erro ao autenticar");
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <form
       onSubmit={handleSubmit}
@@ -69,12 +69,12 @@ const handleSubmit = async (e: React.FormEvent) => {
         <div className="grid gap-3">
           <div className="flex items-center">
             <Label htmlFor="password">Senha</Label>
-            <a
-              href="#"
+            <Link
+              to="/forget-password"
               className="ml-auto text-sm underline-offset-4 hover:underline"
             >
-              Esqueci minha senha
-            </a>
+              Esqueceu a senha?
+            </Link>
           </div>
           <Input
             id="password"
@@ -115,7 +115,7 @@ const handleSubmit = async (e: React.FormEvent) => {
       <div className="text-center text-sm">
         Não tem uma conta?{" "}
         <a href="#" className="underline underline-offset-4">
-        contacte a   equipa de suporte
+          contacte a   equipa de suporte
         </a>
       </div>
     </form>

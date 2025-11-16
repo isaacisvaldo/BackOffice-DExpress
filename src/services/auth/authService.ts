@@ -1,59 +1,127 @@
-const API_URL = import.meta.env.VITE_API_URL
+import { sendData, fetchData } from "../api-client";
 
-// ✅ LOGIN (tokens virão via cookies, não no corpo)
-export async function login(email: string, password: string) {
-  const response = await fetch(`${API_URL}/admin/auth/login`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include", // ESSENCIAL para enviar e receber cookies
-    body: JSON.stringify({ email, password }),
-  })
+// ===============================
+// 🔐 Interfaces e Tipos
+// ===============================
 
-  if (!response.ok) {
-    const error = await response.json()
-    throw new Error(error.message || "Erro ao autenticar")
+/**
+ * Representa o usuário autenticado.
+ */
+export interface AuthUser {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+}
+
+/**
+ * Estrutura da resposta de autenticação (login).
+ */
+export interface AuthResponse {
+  user: AuthUser;
+  message: string;
+}
+
+/**
+ * DTO para login.
+ */
+export interface LoginDto {
+  email: string;
+  password: string;
+}
+
+/**
+ * DTO para redefinir senha.
+ */
+export interface ResetPasswordDto {
+  token: string;
+  newPassword: string;
+}
+
+/**
+ * DTO para solicitar recuperação de senha.
+ */
+export interface RequestPasswordResetDto {
+  email: string;
+}
+
+/**
+ * DTO para verificação do código de recuperação.
+ */
+export interface VerifyResetCodeDto {
+  token: string;
+}
+
+// ===============================
+// 🔑 Funções de Autenticação
+// ===============================
+
+/**
+ * Realiza login do usuário e armazena os cookies HTTP-only.
+ * @param data Credenciais de login.
+ * @returns Usuário autenticado e mensagem de sucesso.
+ */
+export async function login(data: LoginDto): Promise<AuthResponse> {
+  return sendData("/admin/auth/login", "POST", data, );
+}
+
+/**
+ * Faz logout do usuário (limpa cookies HTTP-only).
+ */
+export async function logout(): Promise<void> {
+  await sendData("/admin/auth/logout", "POST", undefined,"Sessão Terminada");
+  window.location.href = "/";
+}
+
+/**
+ * Valida se o usuário está autenticado.
+ * @returns Dados do usuário autenticado, se válido.
+ */
+export async function isAuthenticated(): Promise<{ valid: boolean; user?: AuthUser } | null> {
+  try {
+    return await fetchData("/admin/auth/validate");
+  } catch {
+    return null;
   }
-
-  // Tokens estão no cookie HTTP-only, só retorna o user
-  return response.json()
 }
 
-// ✅ LOGOUT (limpa os cookies no backend)
-export async function logout() {
-  await fetch(`${API_URL}/admin/auth/logout`, {
-    method: "POST",
-    credentials: "include",
-  })
-
-  window.location.href = "/"
+/**
+ * Atualiza o token de acesso usando cookies.
+ */
+export async function refreshAccessToken(): Promise<{ accessToken: string }> {
+  return sendData("/admin/auth/refresh", "POST", undefined, );
 }
 
-// ✅ CHECA SE O USUÁRIO ESTÁ AUTENTICADO
-export async function isAuthenticated() {
-  const response = await fetch(`${API_URL}/admin/auth/validate`, {
-    method: "GET",
-    credentials: "include",
-  });
+// ===============================
+// 🔒 Funções de Recuperação de Senha
+// ===============================
 
-  if (!response.ok) return null;
-
-  return response.json(); // ← Aqui retorna { valid: true, user: {...} }
+/**
+ * Solicita o envio de um código de recuperação de senha.
+ * @param data Objeto contendo o e-mail do usuário.
+ */
+export async function requestPasswordReset(
+  data: RequestPasswordResetDto,
+): Promise<{ message: string }> {
+  return sendData("/admin/auth/request-reset", "POST", data);
 }
 
-// ✅ REFRESH TOKEN usando cookie
-export async function refreshAccessToken() {
-  const response = await fetch(`${API_URL}/admin/auth/refresh`, {
-    method: "POST",
-    credentials: "include",
-  })
-
-  if (!response.ok) {
-    throw new Error("Erro ao atualizar o token de acesso")
-  }
-
-  return response.json() // geralmente { accessToken: novoToken }
+/**
+ * Verifica se o código de recuperação é válido.
+ * @param data Objeto contendo o token/código.
+ */
+export async function verifyResetCode(
+  data: VerifyResetCodeDto,
+): Promise<{ valid: boolean; userId?: string }> {
+  return sendData("/admin/auth/verify-reset", "POST", data);
 }
 
-
+/**
+ * Redefine a senha de um usuário usando o código de recuperação.
+ * @param data Objeto contendo token e nova senha.
+ */
+export async function resetPassword(
+  data: ResetPasswordDto,
+): Promise<{ message: string }> {
+  return sendData("/admin/auth/reset-password", "POST", data);
+}
