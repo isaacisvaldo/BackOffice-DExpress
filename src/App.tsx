@@ -26,7 +26,7 @@ import CourseList from "./pages/dashboard/shared/courseList";
 import HighestDegreeList from "./pages/dashboard/shared/HighestDegreeList";
 import MaritalStatusList from "./pages/dashboard/shared/MaritalStatusList";
 import GenderList from "./pages/dashboard/shared/GenderList";
-import SwirlingEffectSpinner from "./components/customized/spinner/spinner-06";
+
 import UserClientLeadsList from "./pages/dashboard/user-client/UserClientLeadsList";
 import UserClientList from "./pages/dashboard/user-client/UserClientList";
 import ClientCompanyProfileList from "./pages/dashboard/user-client/company/ClientCompanyList";
@@ -47,27 +47,10 @@ import ForgotPasswordPage from "./pages/auth/forget-passwor-page";
 import OTPPage from "./pages/auth/otp-page";
 import ResetPasswordFormPage from "./pages/auth/reset-passwor-page";
 
-// 🔹 Rota protegida
-const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isLoggedIn, isLoading } = useAuth();
-  if (isLoading)
-    return (
-      <div className="flex justify-center items-center py-10">
-        <SwirlingEffectSpinner></SwirlingEffectSpinner>
-      </div>
-    );
-  return isLoggedIn ? <>{children}</> : <Navigate to="/login" replace />;
-};
-
 // 🔹 Rota pública (se logado → manda para dashboard)
 const PublicRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isLoggedIn, isLoading } = useAuth();
-  if (isLoading)
-    return (
-      <div className="flex justify-center items-center py-10">
-        <SwirlingEffectSpinner></SwirlingEffectSpinner>
-      </div>
-    );
+  const { isLoggedIn } = useAuth();
+
   return !isLoggedIn ? <>{children}</> : <Navigate to="/dashboard" replace />;
 };
 
@@ -123,14 +106,7 @@ export default function App() {
               />
 
               {/* Rotas protegidas com layout */}
-              <Route
-                path="/"
-                element={
-                  <PrivateRoute>
-                    <LayoutDashboard />
-                  </PrivateRoute>
-                }
-              >
+              <Route path="/" element={<LayoutDashboard />}>
                 <Route path="dashboard" element={<DashboardPage />} />
                 <Route path="locations/cities" element={<CitiesList />} />
                 <Route path="setor/setor" element={<SectorList />} />
