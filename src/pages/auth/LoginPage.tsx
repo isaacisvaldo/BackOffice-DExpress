@@ -1,17 +1,17 @@
-import { LoginForm } from "@/pages/auth/components/login-form"
-import { useEffect } from "react"
-import { useNavigate } from "react-router-dom"
+import { LoginForm } from "@/pages/auth/components/login-form";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("accessToken")
+    const token = localStorage.getItem("accessToken");
     if (token) {
-      navigate("/dashboard") 
+      navigate("/dashboard");
     }
-  }, [navigate])
-  
+  }, [navigate]);
+
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
       <div className="flex flex-col items-center justify-center gap-8 p-6 md:p-10">
@@ -30,9 +30,9 @@ export default function LoginPage() {
         <img
           src="/login.png"
           alt="Image"
-          className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+          className="absolute inset-0 h-full w-full object-cover"
         />
       </div>
     </div>
-  )
+  );
 }
