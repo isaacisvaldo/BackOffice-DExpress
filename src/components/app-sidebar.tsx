@@ -218,7 +218,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <img
             src={logoUrl}
             alt="DExpress Logo"
-            className="h-10 w-auto"
+            className="h-30 w-auto"
           />
         </Link>
       </SidebarHeader>
